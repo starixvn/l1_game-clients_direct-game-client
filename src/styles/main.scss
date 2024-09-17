@@ -1,0 +1,48 @@
+
+
+html {
+    // font-size: 10px !important;
+    overscroll-behavior: none;
+    -ms-overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+
+    --font-family: "Montserrat", -apple-system, arial, sans-serif;
+    --font-money: "BebasNeue", Arial, sans-serif;
+    --font-number: "Montserrat", Arial, sans-serif;
+
+    //background
+    --black-background: #000;
+
+    // z-index
+  
+    // spacing size
+    --spacing-size-1: 0.4rem;
+    --spacing-size-2: 0.8rem;
+    --spacing-size-3: 1.2rem;
+    --spacing-size-4: 1.6rem;
+    --spacing-size-5: 2rem;
+    --spacing-size-6: 2.4rem;
+
+    --zoom-game: 1.25;
+
+    // footer
+    --color-copyright: rgba(161, 161, 161, 0.6);
+}
+
+// To dock the footer
+html,
+body {
+    height: 100%;
+    scrollbar-width: none;
+}
+
+
+body {
+    padding: 0;
+    margin: 0;
+    background-color: var(--page-background-color);
+    font: 1.4rem/1.5 var(--font-family);
+    color: var(--text-color);
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+}
