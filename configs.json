@@ -1,0 +1,11 @@
+{
+    "sentry": {
+        "dsn": "https://2af29bdacdbf4d9ba2db6600b450541f@sentry.lumigame.com/28",
+        "environment": "LOCAL1"
+    },
+    "systemType": "SG",
+    "serverDomain": "lumigame.com",
+    "ssl": true,
+    "subDomain": "l1-proxy1",
+    "env": "LOCAL1"
+}
