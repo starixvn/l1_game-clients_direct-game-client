@@ -1,6 +1,8 @@
 import { Container } from "react-bootstrap";
 import React from "react";
 import Lobby from "./components/lobby";
+import { languageMapping, LanguageKey } from "./components/consts";
+import { getParamCurrentUrl } from "./components/utils/url-helper";
 
 import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
@@ -20,8 +22,9 @@ const resources = {
     zh_tw: { translation: translationZHTW },
 };
 
+const lang = getParamCurrentUrl("lang") ?? "en";
 i18next.use(initReactI18next).init({
-    lng: "vi", // if you're using a language detector, do not define the lng option
+    lng: languageMapping[lang as LanguageKey], // if you're using a language detector, do not define the lng option
     debug: true,
     resources,
 });

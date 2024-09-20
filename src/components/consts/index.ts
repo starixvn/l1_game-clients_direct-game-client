@@ -7,3 +7,5 @@ export const languageMapping = {
     "zh-CN": "zh_cn",
     "zh-TW": "zh_tw",
 };
+
+export type LanguageKey = keyof typeof languageMapping;

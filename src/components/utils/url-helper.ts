@@ -9,7 +9,7 @@ export const getGameUrl = (gameId: number) => {
     return url;
 };
 
-const getParamCurrentUrl = (param: string): string | null => {
+export const getParamCurrentUrl = (param: string): string | null => {
     const parsedUrl = new URL(window.location.href);
     return parsedUrl.searchParams.get(param);
 };
