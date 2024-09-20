@@ -4,8 +4,7 @@
         "environment": "LOCAL1"
     },
     "systemType": "SG",
-    "serverDomain": "lumigame.com",
     "ssl": true,
-    "subDomain": "l1-proxy1",
+    "gameDomain": "https://l1-proxy1.lumigame.com",
     "env": "LOCAL1"
 }

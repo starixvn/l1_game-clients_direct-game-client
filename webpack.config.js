@@ -20,6 +20,7 @@ module.exports = {
         },
         open: true,
         hot: true,
+        port: 7456,
     },
     resolve: {
         extensions: [".tsx", ".ts", ".js"],

@@ -1,9 +1,15 @@
+import { appSettings } from "../game-setting";
+
 export const getGameUrl = (gameId: number) => {
-    const token = "17fe6058-a2be-40d2-a7ec-ad803ad6dcfc";
-    const lang = "vi-VN";
-    const ref = "f_direct";
-    const baseUrl = "https://l1-proxy1.lumigame.com";
-    const url = `${baseUrl}/direct-client-${gameId}?token=${token}&lang=${lang}&ref=${ref}`;
+    const token = getParamCurrentUrl("token");
+    const lang = getParamCurrentUrl("lang");
+    const ref = getParamCurrentUrl("ref");
+    const url = `${appSettings.gameDomain}/direct-client-${gameId}/?token=${token}&lang=${lang}&ref=${ref}`;
 
     return url;
+};
+
+const getParamCurrentUrl = (param: string): string | null => {
+    const parsedUrl = new URL(window.location.href);
+    return parsedUrl.searchParams.get(param);
 };
