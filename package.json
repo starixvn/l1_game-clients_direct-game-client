@@ -6,7 +6,8 @@
     "scripts": {
         "dev": "cross-env NODE_ENV=development webpack serve --open",
         "build": "cross-env NODE_ENV=production webpack --mode production",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "generate-tolgee-data": "ts-node ./tolgee-generator/index.ts"
     },
     "keywords": [],
     "author": "",
@@ -15,17 +16,19 @@
         "node": ">=20"
     },
     "dependencies": {
-        "@emotion/react": "^11.13.3",
-        "@emotion/styled": "^11.13.0",
-        "@mui/material": "^6.1.0",
+        "bootstrap": "^5.3.3",
+        "i18next": "^23.15.1",
         "react": "^18.3.1",
-        "react-dom": "^18.3.1"
+        "react-bootstrap": "^2.10.4",
+        "react-dom": "^18.3.1",
+        "react-i18next": "^15.0.2"
     },
     "devDependencies": {
         "@babel/core": "^7.25.2",
         "@babel/preset-env": "^7.25.4",
         "@babel/preset-react": "^7.24.7",
         "@babel/preset-typescript": "^7.24.7",
+        "@tolgee/web": "^5.28.6",
         "@types/react": "^18.3.6",
         "@types/react-dom": "^18.3.0",
         "babel-loader": "^9.2.1",
@@ -42,6 +45,8 @@
         "sass-loader": "^16.0.1",
         "style-loader": "^4.0.0",
         "terser-webpack-plugin": "^5.3.10",
+        "ts-node": "^10.9.2",
+        "ts-node-esm": "^0.0.6",
         "typescript": "^5.6.2",
         "url-loader": "^4.1.1",
         "webpack": "^5.94.0",
