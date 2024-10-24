@@ -2052,6 +2052,13 @@ balanced-match@^1.0.0:
   resolved "http://npm.lumigame.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
+base64-string@^1.1.3:
+  version "1.1.3"
+  resolved "http://npm.lumigame.com/base64-string/-/base64-string-1.1.3.tgz#97bc37f082eb686ab0292d4f08942b7c2a990690"
+  integrity sha512-RfiU9itiUaNmbsZL8BTAtCcsNzWY9IG8tvpBeDWSKwGAJYaHZ497xVNcrJqL/0Bp1jngUXeIYAdDYJfQRITQmA==
+  dependencies:
+    mkdirp "^1.0.4"
+
 batch@0.6.1:
   version "0.6.1"
   resolved "http://npm.lumigame.com/batch/-/batch-0.6.1.tgz#dc34314f4e679318093fc760272525f94bf25c16"
@@ -4477,6 +4484,11 @@ minimatch@^3.0.4, minimatch@^3.1.1, minimatch@^3.1.2:
   integrity sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==
   dependencies:
     brace-expansion "^1.1.7"
+
+mkdirp@^1.0.4:
+  version "1.0.4"
+  resolved "http://npm.lumigame.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
+  integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
 mri@^1.1.0:
   version "1.2.0"

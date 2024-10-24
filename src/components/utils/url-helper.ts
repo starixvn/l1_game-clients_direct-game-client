@@ -1,12 +1,43 @@
 import { appSettings } from "../game-setting";
+import Base64Util from "./base64-util";
+import { getSession } from "./session-manager";
+
+export const getBaseGameUrl = (gameId: number) => {
+    let baseUrl = `${appSettings.gameDomain}/direct-client-${gameId}/`;
+    if (process.env.NODE_ENV === "development1") {
+        baseUrl = `http://localhost:7456`;
+        if (gameId === 22) {
+            baseUrl = `http://localhost:7458`;
+        }
+    }
+
+    return baseUrl;
+};
 
 export const getGameUrl = (gameId: number) => {
     const token = getParamCurrentUrl("token");
     const lang = getParamCurrentUrl("lang");
-    const ref = getParamCurrentUrl("ref");
-    const url = `${appSettings.gameDomain}/direct-client-${gameId}/?token=${token}&lang=${lang}&ref=${ref}`;
+    let baseUrl = getBaseGameUrl(gameId);
 
-    return url;
+    return token
+        ? `${baseUrl}?token=${token}&lang=${lang}&purl=${Base64Util.base64Encode(window.location.href)}`
+        : `${baseUrl}?${buildSessionParams()}`;
+};
+
+const buildSessionParams = () => {
+    const sessionInfo = getSession();
+    const params: any = {
+        ss: sessionInfo.session,
+        uname: sessionInfo.username,
+        lang: sessionInfo.language,
+        appType: sessionInfo.system,
+        purl: Base64Util.base64Encode(window.location.href),
+    };
+    const searchParams = new URLSearchParams();
+    Object.keys(params).forEach((key) => params[key] !== undefined && searchParams.append(key, params[key]));
+    const encodedQueryString = Base64Util.base64Encode(searchParams.toString());
+
+    return `params=${encodedQueryString}`;
 };
 
 export const getParamCurrentUrl = (param: string): string | null => {
