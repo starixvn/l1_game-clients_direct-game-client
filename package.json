@@ -12,9 +12,6 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "engines": {
-        "node": ">=20"
-    },
     "dependencies": {
         "base64-string": "^1.1.3",
         "bootstrap": "^5.3.3",
