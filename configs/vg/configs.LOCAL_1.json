@@ -5,6 +5,6 @@
     },
     "systemType": "VG",
     "ssl": true,
-    "subDomain": "l2-proxy1",
+    "gameDomain": "https://l2-proxy1.lumigame.com",
     "env": "LOCAL1"
 }
