@@ -5,13 +5,7 @@ import { initLanguage } from "./i18n";
 
 initLanguage();
 const App: React.FC = () => {
-    return (
-        <div>
-            <Container>
-                <Lobby />
-            </Container>
-        </div>
-    );
+    return <Lobby />;
 };
 
 export default App;

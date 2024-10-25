@@ -30,9 +30,7 @@ export default function Lobby() {
                 {getSortedGameSettings().map((gameSetting, index) => {
                     return (
                         <Tab eventKey={index} title={t(`gameNames.${gameSetting.id}`)} key={index} unmountOnExit={true}>
-                            <div className="iframe-div">
-                                <iframe title={`Game ${gameSetting.id}`} width="100%" height="100%" src={iframeSrc} />
-                            </div>
+                            <iframe title={`Game ${gameSetting.id}`} width="100%" height="100%" src={iframeSrc} />
                         </Tab>
                     );
                 })}
