@@ -43,7 +43,7 @@ export function removeMicrositeGameId() {
 
 export const observeSessionFromGame = () => {
     window.addEventListener("message", (event) => {
-        if (appSettings.gameDomain === event.origin) {
+        if (appSettings.gameDomain === event.origin || event.origin === "http://localhost:7456") {
             const receivedMessage = event.data;
             if (receivedMessage.sessionInfo) {
                 storeSessionData(receivedMessage.sessionInfo);

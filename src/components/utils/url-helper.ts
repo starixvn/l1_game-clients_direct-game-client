@@ -4,8 +4,10 @@ import { getSession } from "./session-manager";
 
 export const getBaseGameUrl = (gameId: number) => {
     let baseUrl = `${appSettings.gameDomain}/direct-client-${gameId}/`;
-    if (process.env.NODE_ENV === "development1") {
-        baseUrl = `http://localhost:7456`;
+    if (process.env.NODE_ENV === "development") {
+        //baseUrl = `http://localhost:7456`;
+        baseUrl = `http://localhost:7456/web-mobile/web-mobile/index.html`;
+
         if (gameId === 22) {
             baseUrl = `http://localhost:7458`;
         }
@@ -17,10 +19,11 @@ export const getBaseGameUrl = (gameId: number) => {
 export const getGameUrl = (gameId: number) => {
     const token = getParamCurrentUrl("token");
     const lang = getParamCurrentUrl("lang");
+    const appType = getParamCurrentUrl("appType");
     let baseUrl = getBaseGameUrl(gameId);
 
     return token
-        ? `${baseUrl}?token=${token}&lang=${lang}&purl=${Base64Util.base64Encode(window.location.href)}`
+        ? `${baseUrl}?token=${token}&lang=${lang}&purl=${Base64Util.base64Encode(window.location.href)}&appType=${appType}`
         : `${baseUrl}?${buildSessionParams()}`;
 };
 
