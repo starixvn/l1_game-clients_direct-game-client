@@ -1,4 +1,3 @@
-import { Container } from "react-bootstrap";
 import React from "react";
 import Lobby from "./components/lobby";
 import { initLanguage } from "./i18n";
