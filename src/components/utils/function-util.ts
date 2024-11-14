@@ -7,11 +7,9 @@ export default class FunctionUtil {
 
         // Check for WebView specifics
         const isWebView = !!(
-            (
-                (window?.AndroidBridge && isAndroid) || // Detect AndroidBridge
-                (userAgent.includes("wv") && isAndroid) || // Check for 'wv' in user agent (common for WebView)
-                (userAgent.includes("Version/") && !userAgent.includes("Chrome/"))
-            ) // For WebViews
+            (window?.AndroidBridge && isAndroid) ||
+            (userAgent.includes("wv") && isAndroid) ||
+            (userAgent.includes("Version/") && !userAgent.includes("Chrome/"))
         );
 
         return isAndroid && isWebView;
@@ -19,14 +17,10 @@ export default class FunctionUtil {
 
     public static async copyText(text: string) {
         try {
-            // Ensure we are in the browser environment before using navigator.clipboard
             if (typeof window !== "undefined") {
-                // Check if running inside an Android WebView (or another custom check for WebView)
                 if (this.isAndroidWebView()) {
-                    // Send message to React Native WebView for copying to clipboard
                     window.ReactNativeWebView?.postMessage(JSON.stringify({ eventType: "copy_to_clipboard", data: text }));
                 } else {
-                    // Use the browser clipboard API to copy text
                     await navigator.clipboard.writeText(text);
                 }
             } else {
