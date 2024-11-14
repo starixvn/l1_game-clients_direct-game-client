@@ -19,14 +19,23 @@ export default class FunctionUtil {
 
     public static async copyText(text: string) {
         try {
-            if (this.isAndroidWebView()) {
-                window?.ReactNativeWebView?.postMessage(JSON.stringify({ eventType: "copy_to_clipboard", data: text }));
+            // Ensure we are in the browser environment before using navigator.clipboard
+            if (typeof window !== "undefined") {
+                // Check if running inside an Android WebView (or another custom check for WebView)
+                if (this.isAndroidWebView()) {
+                    // Send message to React Native WebView for copying to clipboard
+                    window.ReactNativeWebView?.postMessage(JSON.stringify({ eventType: "copy_to_clipboard", data: text }));
+                } else {
+                    // Use the browser clipboard API to copy text
+                    await navigator.clipboard.writeText(text);
+                }
             } else {
-                await navigator.clipboard.writeText(text);
+                console.warn("Clipboard API is not available in this environment.");
             }
+
             return true;
         } catch (e) {
-            console.log("error copyText", e);
+            console.error("Error copying text: ", e);
             return false;
         }
     }

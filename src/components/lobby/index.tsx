@@ -35,6 +35,8 @@ const Lobby: React.FC = () => {
     };
 
     const handleEvent = async ({ data }: { data: MicroSiteGameParams }) => {
+        console.log("Message received: ", data);
+
         if (data?.copyToClipboard) {
             handleCopyToClipboard(data?.copyToClipboard);
             return;
@@ -47,12 +49,16 @@ const Lobby: React.FC = () => {
     };
 
     const postMessageToMicroSite = (data: any) => {
-        console.log("postMessageToMicroSite", data, iframeSrc);
+        console.log("postMessageToMicroSite----", data, iframeSrc);
         wrapperIframeRef?.current?.contentWindow?.postMessage(data, iframeSrc);
     };
 
     useEffect(() => {
         window.addEventListener("message", handleEvent);
+
+        return () => {
+            window.removeEventListener("message", handleEvent);
+        };
     }, []);
 
     return (

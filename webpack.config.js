@@ -63,7 +63,7 @@ module.exports = {
                       // Minify JS files
                       terserOptions: {
                           compress: {
-                              drop_console: true, // Remove console logs for production
+                              drop_console: false, // Remove console logs for production
                           },
                       },
                   }),

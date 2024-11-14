@@ -8,8 +8,8 @@ export const getBaseGameUrl = (gameId: number) => {
         //baseUrl = `http://localhost:7456`;
         baseUrl = `http://localhost:7456/web-mobile/web-mobile/index.html`;
 
-        if (gameId === 22) {
-            baseUrl = `http://localhost:7458`;
+        if (gameId === 2) {
+            baseUrl = `http://localhost:7456`;
         }
     }
 
