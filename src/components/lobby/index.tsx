@@ -4,20 +4,18 @@ import { useTranslation } from "react-i18next";
 import { gameSettings } from "../game-setting";
 import FunctionUtil from "../utils/function-util";
 import { observeSessionFromGame } from "../utils/session-manager";
+import { observeSoundFromGame } from "../utils/player-setting";
 import { getGameUrl } from "../utils/url-helper";
 import "./lobby.scss";
 
 export type MicroSiteGameParams = {
-    musicEnable?: boolean;
-    sfxEnable?: boolean;
     copyToClipboard?: string;
-    isUserGesture?: boolean;
 };
 
 observeSessionFromGame();
+observeSoundFromGame();
 const Lobby: React.FC = () => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
-
     const getSortedGameSettings = () => {
         return gameSettings.sort((a, b) => a.order - b.order);
     };
