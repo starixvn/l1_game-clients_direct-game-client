@@ -6,14 +6,15 @@ import { getPlayerSetting } from "./player-setting";
 export const getBaseGameUrl = (gameId: number) => {
     let baseUrl = `${appSettings.gameDomain}/direct-client-${gameId}/`;
     if (process.env.NODE_ENV === "development") {
-        baseUrl = `http://localhost:7456`;
-        //baseUrl = `http://localhost:7456/web-mobile/web-mobile/index.html`;
+        //baseUrl = `http://localhost:7456`;
+        baseUrl = `http://localhost:7456/web-mobile/web-mobile/index.html`;
 
         if (gameId === 2) {
-            baseUrl = `http://localhost:7456`;
+            //baseUrl = `http://localhost:7456`;
         }
     }
 
+    console.log("baseUrl", baseUrl);
     return baseUrl;
 };
 

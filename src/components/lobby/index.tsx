@@ -7,6 +7,7 @@ import { observeSessionFromGame } from "../utils/session-manager";
 import { observeSoundFromGame } from "../utils/player-setting";
 import { getGameUrl } from "../utils/url-helper";
 import "./lobby.scss";
+import { getImageUrl } from "../utils/icon-helper";
 
 export type MicroSiteGameParams = {
     copyToClipboard?: string;
@@ -62,8 +63,23 @@ const Lobby: React.FC = () => {
         <div className="lobby">
             <Tabs activeKey={activeKey} onSelect={(k) => k && handleTabSelect(+k)}>
                 {getSortedGameSettings().map((gameSetting, index) => {
+                    const isActive = activeKey === index;
                     return (
-                        <Tab eventKey={index} title={t(`gameNames.${gameSetting.id}`)} key={index} unmountOnExit={true}>
+                        <Tab
+                            eventKey={index}
+                            title={
+                                <div style={{ display: "flex", alignItems: "center", color: isActive ? "#FF9000" : "#737373" }}>
+                                    <img
+                                        src={getImageUrl(gameSetting.id, isActive)}
+                                        alt={t(`gameNames.${gameSetting.id}`)}
+                                        style={{ width: "20px", height: "20px", marginRight: "8px" }}
+                                    />
+                                    {t(`gameNames.${gameSetting.id}`)}
+                                </div>
+                            }
+                            key={index}
+                            unmountOnExit={true}
+                        >
                             <iframe ref={wrapperIframeRef} title={`Game ${gameSetting.id}`} width="100%" height="100%" src={iframeSrc} />
                         </Tab>
                     );
