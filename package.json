@@ -7,7 +7,8 @@
         "dev": "cross-env NODE_ENV=development webpack serve --open",
         "build": "cross-env NODE_ENV=production webpack --mode production",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "generate-tolgee-data": "ts-node ./tolgee-generator/index.ts"
+        "generate-tolgee-data": "ts-node ./tolgee-generator/index.ts",
+        "reg": "npm set registry http://npm.lumigame.com"
     },
     "keywords": [],
     "author": "",
@@ -19,7 +20,9 @@
         "react": "^18.3.1",
         "react-bootstrap": "^2.10.4",
         "react-dom": "^18.3.1",
-        "react-i18next": "^15.0.2"
+        "react-i18next": "^15.0.2",
+        "axios": "^1.6.8",
+        "sc-user-service-client": "1.7.0"
     },
     "devDependencies": {
         "@babel/core": "^7.25.2",

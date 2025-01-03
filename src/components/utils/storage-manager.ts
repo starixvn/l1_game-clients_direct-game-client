@@ -1,3 +1,5 @@
+import { appSettings } from "../game-setting";
+
 function isString(value: any): value is string {
     return typeof value === "string";
 }
@@ -85,8 +87,8 @@ class StorageManager {
         return this._storage;
     }
 
-    static get(name: string) {
-        return this.storage.get(name);
+    static get<T>(name: string) {
+        return this.storage.get(name) as T;
     }
 
     static set(name: string, value: any) {
@@ -96,6 +98,19 @@ class StorageManager {
     static remove(name: string) {
         this.storage.remove(name);
     }
+}
+
+export const localStorageKeys = {
+    session: buildLocalStorageKey("auth-data"),
+};
+
+export function buildLocalStorageKey(key: string) {
+    if (typeof window !== "undefined" && window.location && window.location.hostname) {
+        // TODO: Need to update appSettings.appType
+        return `${window.location.hostname}.${key}.${appSettings.appType}`;
+    }
+
+    return key;
 }
 
 export { StorageManager };

@@ -53,3 +53,8 @@ export const getParamCurrentUrl = (param: string): string | null => {
     const parsedUrl = new URL(window.location.href);
     return parsedUrl.searchParams.get(param);
 };
+
+export const buildUrlWithPath = (path: string) => {
+    const { gameDomain } = appSettings;
+    return `${gameDomain}${path}`;
+};

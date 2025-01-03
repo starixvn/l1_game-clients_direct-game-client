@@ -80,7 +80,9 @@ const Lobby: React.FC = () => {
                             key={index}
                             unmountOnExit={true}
                         >
-                            <iframe ref={wrapperIframeRef} title={`Game ${gameSetting.id}`} width="100%" height="100%" src={iframeSrc} />
+                            {/* TODO: Remove this iframe */}
+                            {/* <iframe ref={wrapperIframeRef} title={`Game ${gameSetting.id}`} width="100%" height="100%" src={iframeSrc} /> */}
+                            <div>DIRECT GAME CLIENT</div>
                         </Tab>
                     );
                 })}

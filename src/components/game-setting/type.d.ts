@@ -10,9 +10,10 @@ interface SentryOptions {
 
 export interface IAppSettings {
     sentry: SentryOptions;
-    systemType: string;
+    system: string;
     ssl: boolean;
     gameDomain: string;
     env: string;
     subDirectory?: string;
+    appType: number;
 }

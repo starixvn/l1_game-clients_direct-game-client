@@ -3,5 +3,10 @@
         "id": 2,
         "name": "SeDie",
         "order": 1
+    },
+    {
+        "id": 4,
+        "name": "FishPrawnCrab",
+        "order": 2
     }
 ]
