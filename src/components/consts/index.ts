@@ -8,4 +8,13 @@ export const languageMapping = {
     "zh-TW": "zh_tw",
 };
 
+export const Themes = {
+    light: "light",
+    numberGame: "number-game",
+};
+
+export const AppType = {
+    directGame: 7,
+};
+
 export type LanguageKey = keyof typeof languageMapping;

@@ -22,7 +22,8 @@
         "react-dom": "^18.3.1",
         "react-i18next": "^15.0.2",
         "axios": "^1.6.8",
-        "sc-user-service-client": "1.7.0"
+        "sc-user-service-client": "1.7.0",
+        "unique-names-generator": "^4.7.1"
     },
     "devDependencies": {
         "@babel/core": "^7.25.2",

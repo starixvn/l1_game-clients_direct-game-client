@@ -5538,11 +5538,6 @@ sass@^1.78.0:
   optionalDependencies:
     "@parcel/watcher" "^2.4.1"
 
-sc-scoreboards@1.0.6:
-  version "1.0.6"
-  resolved "http://npm.lumigame.com/sc-scoreboards/-/sc-scoreboards-1.0.6.tgz#16ca7911e023d8048c9d6dc759fded675184d264"
-  integrity sha512-T7PmqNI03oK4RHm1y9xi59f79NAoSYOOYRfaCNfSJv6f6aPB9v8SG5xtG05fxLCwosyhhDrBtjvZW44EkTY40Q==
-
 sc-user-service-client@1.7.0:
   version "1.7.0"
   resolved "http://npm.lumigame.com/sc-user-service-client/-/sc-user-service-client-1.7.0.tgz#d928f18b614b8e0cda7945eba6499eaeb563622d"
@@ -6196,6 +6191,11 @@ unicode-property-aliases-ecmascript@^2.0.0:
   version "2.1.0"
   resolved "http://npm.lumigame.com/unicode-property-aliases-ecmascript/-/unicode-property-aliases-ecmascript-2.1.0.tgz#43d41e3be698bd493ef911077c9b131f827e8ccd"
   integrity sha512-6t3foTQI9qne+OZoVQB/8x8rk2k1eVy1gRXhV3oFQ5T6R1dqQ1xtin3XqSlx3+ATBkliTaR/hHyJBm+LVPNM8w==
+
+unique-names-generator@^4.7.1:
+  version "4.7.1"
+  resolved "http://npm.lumigame.com/unique-names-generator/-/unique-names-generator-4.7.1.tgz#966407b12ba97f618928f77322cfac8c80df5597"
+  integrity sha512-lMx9dX+KRmG8sq6gulYYpKWZc9RlGsgBR6aoO8Qsm3qvkSJ+3rAymr+TnV8EDMrIrwuFJ4kruzMWM/OpYzPoow==
 
 unpipe@1.0.0, unpipe@~1.0.0:
   version "1.0.0"
