@@ -17,4 +17,6 @@ export const AppType = {
     directGame: 7,
 };
 
+export const MAX_AVATAR_ID = 40;
+
 export type LanguageKey = keyof typeof languageMapping;

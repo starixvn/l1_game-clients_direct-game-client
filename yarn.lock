@@ -5538,10 +5538,10 @@ sass@^1.78.0:
   optionalDependencies:
     "@parcel/watcher" "^2.4.1"
 
-sc-user-service-client@1.7.0:
-  version "1.7.0"
-  resolved "http://npm.lumigame.com/sc-user-service-client/-/sc-user-service-client-1.7.0.tgz#d928f18b614b8e0cda7945eba6499eaeb563622d"
-  integrity sha512-yOVCfe3jnjPi8cuH66ujFvsCQmFD/fhVLDaQTSpvWMV6EQ29nPMIMhScLO/2ZJtnmCNNbZvlpSdtNeThp3zZTg==
+sc-user-service-client@1.8.3-beta.0:
+  version "1.8.3-beta.0"
+  resolved "https://npm.lumigame.com/sc-user-service-client/-/sc-user-service-client-1.8.3-beta.0.tgz#894f5fefa7ce2283f71e7141923c0ae2ef1a63d6"
+  integrity sha512-lvQsGQ5EU03gVji3bAu+6DQw/+4KwWpS6OkJTjG+hSx4pk2LDJn0WGbs4nBbQz+IzgCam9fNxg9Olp0hXt7nTw==
   dependencies:
     axios "^0.28.1"
 

@@ -1,10 +1,12 @@
 import { SSOResponse } from "sc-user-service-client/dist/auth";
 
 import { localStorageKeys, StorageManager } from "../components/utils/storage-manager";
-import { UserClientCommunication } from "./user-client-communication";
+import { appSettings } from "../components/game-setting";
+import UserClientCommunication from "sc-user-service-client/dist/user-client-communication";
 
-const authService = UserClientCommunication?.getUserClientInstance()?.auth;
-const lobbyService = UserClientCommunication?.getUserClientInstance()?.lobby;
+const gameDomain = appSettings.gameDomain;
+
+const authService = UserClientCommunication?.getUserClientInstance(gameDomain)?.auth;
 
 export const sso = async (token: string, appType: number): Promise<SSOResponse> => {
     const userSession = await authService?.sso(token, appType);
@@ -53,8 +55,4 @@ export const authorize = async (userSession: SSOResponse) => {
 
 export const getBalance = async (userSession: SSOResponse) => {
     return authService?.getBalance(userSession.ss, userSession.username);
-};
-
-export const getLobbyConfigs = async (userSession: SSOResponse) => {
-    return lobbyService?.getLobbyConfigs(userSession.ss, userSession.username);
 };

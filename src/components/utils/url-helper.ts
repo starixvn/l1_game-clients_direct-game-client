@@ -3,6 +3,19 @@ import Base64Util from "./base64-util";
 import { getSession } from "./session-manager";
 import { getPlayerSetting } from "./player-setting";
 
+export type URLContextModel = {
+    token?: string;
+    language?: string;
+    gameId?: number;
+    isDirectMode?: boolean;
+    redirectUrl?: string;
+    isThirdParty?: boolean;
+    backToLobby?: boolean;
+    backToRedirectUrl?: Function;
+    firstSSOToLobby?: boolean;
+    appType?: number;
+};
+
 export const getBaseGameUrl = (gameId: number) => {
     let baseUrl = `${appSettings.gameDomain}/direct-client-${gameId}/`;
     if (process.env.NODE_ENV === "development") {
@@ -14,7 +27,6 @@ export const getBaseGameUrl = (gameId: number) => {
         }
     }
 
-    console.log("baseUrl", baseUrl);
     return baseUrl;
 };
 
@@ -58,3 +70,20 @@ export const buildUrlWithPath = (path: string) => {
     const { gameDomain } = appSettings;
     return `${gameDomain}${path}`;
 };
+
+export function parseContextFromURL(): URLContextModel | undefined {
+    const params = new URLSearchParams(window.location?.search);
+    // Reload page
+    if (Array.from(params.values()).length === 0) {
+        return;
+    }
+
+    const token = params.get("token") || "";
+    const language = params.get("lang");
+    const gameId = Number(params.get("gameId") || 0);
+    const appType = Number(params.get("appType") || 0);
+    const isDirectMode = !!params.get("ref");
+    const redirectUrl = isDirectMode ? params.get("rurl") : "";
+    const isThirdParty = isDirectMode && !!redirectUrl;
+    return { token, language, gameId, appType, isDirectMode, redirectUrl, isThirdParty, firstSSOToLobby: true };
+}
