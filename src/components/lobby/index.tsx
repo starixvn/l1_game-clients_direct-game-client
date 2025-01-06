@@ -12,14 +12,14 @@ import NameGenerator from "../utils/name-generator";
 import { randomInteger } from "../utils/number-helper";
 import { AppType, MAX_AVATAR_ID } from "../consts";
 import { getAndHandleGameOfferIds } from "../utils/lobby-helper";
-import { parseContextFromURL } from "../utils";
+import { loadURLContext } from "../utils";
 import { getLobbyConfigs } from "../../services/lobby-service";
 
 observeSessionFromGame();
 observeSoundFromGame();
 
 const Lobby: React.FC = () => {
-    const context = parseContextFromURL();
+    const context = loadURLContext();
     const token = context?.token ?? "";
     const appType = context?.appType ?? appSettings.appType;
 

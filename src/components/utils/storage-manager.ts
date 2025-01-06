@@ -102,6 +102,7 @@ class StorageManager {
 
 export const localStorageKeys = {
     session: buildLocalStorageKey("auth-data"),
+    url: buildLocalStorageKey("url"),
 };
 
 export function buildLocalStorageKey(key: string) {

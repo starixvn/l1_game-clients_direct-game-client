@@ -2,6 +2,7 @@ import { appSettings } from "../game-setting";
 import Base64Util from "./base64-util";
 import { getSession } from "./session-manager";
 import { getPlayerSetting } from "./player-setting";
+import { localStorageKeys, StorageManager } from "./storage-manager";
 
 export type URLContextModel = {
     token?: string;
@@ -86,4 +87,18 @@ export function parseContextFromURL(): URLContextModel | undefined {
     const redirectUrl = isDirectMode ? params.get("rurl") : "";
     const isThirdParty = isDirectMode && !!redirectUrl;
     return { token, language, gameId, appType, isDirectMode, redirectUrl, isThirdParty, firstSSOToLobby: true };
+}
+
+export function loadURLContext(): URLContextModel {
+    const contextFromURL = parseContextFromURL();
+    const contextFromLocalStorage = StorageManager?.get(localStorageKeys.url) || null;
+
+    if (!!contextFromURL) {
+        const contextString = { ...contextFromURL, token: undefined };
+
+        globalThis.history.pushState(null, "", globalThis.location?.href.split("?")[0]);
+        StorageManager?.set(localStorageKeys.url, contextString);
+    }
+
+    return contextFromURL || contextFromLocalStorage;
 }
