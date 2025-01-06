@@ -11,9 +11,8 @@ import { AuthorizeResponse, SSOResponse } from "sc-user-service-client/dist/auth
 import NameGenerator from "../utils/name-generator";
 import { randomInteger } from "../utils/number-helper";
 import { AppType, MAX_AVATAR_ID } from "../consts";
-import { getAndHandleGameOfferIds } from "../utils/lobby-helper";
 import { loadURLContext } from "../utils";
-import { getLobbyConfigs } from "../../services/lobby-service";
+import { getAndHandleGameOfferIds } from "../utils/game-setting";
 
 observeSessionFromGame();
 observeSoundFromGame();
@@ -67,18 +66,11 @@ const Lobby: React.FC = () => {
             if (appType === AppType.directGame) {
                 const authorizeResponse = await autoCreateNickname(session);
                 setAuthorizeResponse(authorizeResponse);
-                await loadLobbyConfigs(session, authorizeResponse);
+                getAndHandleGameOfferIds(authorizeResponse, setGameOfferIds);
             }
         } else {
             setAuthorizeResponse(authorizeInfo);
-            await loadLobbyConfigs(session, authorizeInfo);
-        }
-    };
-
-    const loadLobbyConfigs = async (session: SSOResponse, authorizeInfo: any) => {
-        const lobby = await getLobbyConfigs(session);
-        if (lobby?.lobbyConfigs) {
-            getAndHandleGameOfferIds(authorizeInfo, lobby.lobbyConfigs, setGameOfferIds);
+            getAndHandleGameOfferIds(authorizeInfo, setGameOfferIds);
         }
     };
 
