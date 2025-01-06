@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { appSettings } from "../game-setting";
@@ -11,13 +11,20 @@ import { AuthorizeResponse, SSOResponse } from "sc-user-service-client/dist/auth
 import NameGenerator from "../utils/name-generator";
 import { randomInteger } from "../utils/number-helper";
 import { AppType, MAX_AVATAR_ID } from "../consts";
-import { loadURLContext } from "../utils";
-import { getAndHandleGameOfferIds } from "../utils/game-setting";
+import { getGameUrl, loadURLContext } from "../utils";
+import { getAndHandleGameOfferIds, getSortedGameSettings } from "../utils/game-setting";
+import FunctionUtil from "../utils/function-util";
+
+export type MicroSiteGameParams = {
+    copyToClipboard?: string;
+};
 
 observeSessionFromGame();
 observeSoundFromGame();
 
 const Lobby: React.FC = () => {
+    const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
+
     const context = loadURLContext();
     const token = context?.token ?? "";
     const appType = context?.appType ?? appSettings.appType;
@@ -28,6 +35,31 @@ const Lobby: React.FC = () => {
     const [authorizeResponse, setAuthorizeResponse] = useState<AuthorizeResponse>(null);
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
     const [isRenderRegister, setIsRenderRegister] = useState(false);
+    const [iframeSrc, setIframeSrc] = useState(getGameUrl(gameOfferIds[0])); // Set initial iframe src
+
+    const handleTabSelect = (index: number) => {
+        setActiveKey(index);
+        const gameId = getSortedGameSettings(authorizeResponse)[index].id;
+        setIframeSrc(getGameUrl(gameId)); // Update iframe src when switching tabs
+    };
+
+    const handleEvent = async ({ data }: { data: MicroSiteGameParams }) => {
+        console.log("Post Message received: ", data);
+
+        if (data?.copyToClipboard) {
+            handleCopyToClipboard(data?.copyToClipboard);
+            return;
+        }
+    };
+
+    const handleCopyToClipboard = async (text: string) => {
+        const copySuccessfully = await FunctionUtil.copyText(text);
+        postMessageToMicroSite({ copySuccessfully });
+    };
+
+    const postMessageToMicroSite = (data: any) => {
+        wrapperIframeRef?.current?.contentWindow?.postMessage(data, iframeSrc);
+    };
 
     const loadSession = async (token: string) => {
         return token ? sso(token, appType) : verifySession();
@@ -84,8 +116,12 @@ const Lobby: React.FC = () => {
                 setIsLoading(false);
             }
         };
+        window.addEventListener("message", handleEvent);
 
         initialize();
+        return () => {
+            window.removeEventListener("message", handleEvent);
+        };
     }, []);
 
     if (isLoading) {
@@ -99,10 +135,7 @@ const Lobby: React.FC = () => {
     return (
         <div>
             <div className="lobby">
-                <Tabs
-                    activeKey={activeKey}
-                    // onSelect={(k) => k && handleTabSelect(+k)}
-                >
+                <Tabs activeKey={activeKey} onSelect={(k) => k && handleTabSelect(+k)}>
                     {gameOfferIds.map((gameOfferId, index) => {
                         const isActive = activeKey === index;
                         return (
@@ -120,7 +153,9 @@ const Lobby: React.FC = () => {
                                 }
                                 key={gameOfferId}
                                 unmountOnExit={true}
-                            ></Tab>
+                            >
+                                <iframe ref={wrapperIframeRef} title={`Game ${gameOfferId}`} width="100%" height="100%" src={iframeSrc} />
+                            </Tab>
                         );
                     })}
                 </Tabs>
