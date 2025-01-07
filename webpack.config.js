@@ -2,6 +2,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin"); // For JS minification
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin"); // For CSS minification
+const CopyPlugin = require("copy-webpack-plugin");
 
 // Determine if the environment is production or development
 const isProduction = process.env.NODE_ENV === "production";
@@ -34,7 +35,16 @@ module.exports = {
             },
             {
                 test: /\.scss$/,
-                use: ["style-loader", "css-loader", "sass-loader"],
+                use: [
+                    "style-loader",
+                    {
+                        loader: "css-loader",
+                        options: {
+                            modules: false, // Disable CSS modules for global styles
+                        },
+                    },
+                    "sass-loader",
+                ],
             },
             {
                 test: /\.css$/,
@@ -87,6 +97,14 @@ module.exports = {
                       removeRedundantAttributes: true, // Remove redundant attributes
                   }
                 : false,
+        }),
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: "public/images",
+                    to: "images",
+                },
+            ],
         }),
     ],
 };

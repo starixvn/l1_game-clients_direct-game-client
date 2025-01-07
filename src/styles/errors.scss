@@ -1,10 +1,8 @@
-[data-theme="light"] .error-page {
+.error-page {
     --error-page-background: #fff;
     --error-page-text-color: #2aa2d2;
     --error-page-text-highlight-color: #ff8800;
-}
 
-.error-page {
     position: fixed;
     left: 0;
     top: 0;
