@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import "../errors.scss";
-import errorSessionLight from "../../../assets/error-session-light.svg";
-import errorSessionDark from "../../../assets/error-session-dark.svg";
+import errorSessionLight from "../../../../public/images/error-session-light.svg";
+import errorSessionDark from "../../../../public/images/error-session-dark.svg";
 import { Themes } from "../../consts";
 
 interface TimeOutProps {

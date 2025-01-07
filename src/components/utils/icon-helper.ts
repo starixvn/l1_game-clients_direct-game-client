@@ -1,4 +1,4 @@
-require.context("../../assets", false, /\.(png|jpe?g|svg)$/);
+require.context("../../../public", false, /\.(png|jpe?g|svg)$/);
 
 export const getImageUrl = (id: number, isActive: boolean) => {
     const active = isActive ? "active" : "inactive";

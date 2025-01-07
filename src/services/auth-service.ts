@@ -59,14 +59,10 @@ export const getBalance = async (userSession: SSOResponse) => {
     return authService?.getBalance(userSession.ss, userSession.username);
 };
 
-export const autoCreateNickname = async (session: SSOResponse, setIsRenderRegister: (value: boolean) => void) => {
+export const autoCreateNickname = async (session: SSOResponse) => {
     const nickname = NameGenerator.generateName();
     const selectedAvatarId = randomInteger(1, MAX_AVATAR_ID);
     const authorizeResponse = (await createNickname(session, nickname, selectedAvatarId)) as AuthorizeResponse;
-
-    if (!authorizeResponse?.authorized) {
-        setIsRenderRegister(true);
-    }
 
     return authorizeResponse;
 };

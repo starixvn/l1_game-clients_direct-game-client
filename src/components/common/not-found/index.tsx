@@ -1,6 +1,5 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import "../errors.scss";
 import errorLight from "../../../assets/error-light.svg";
 
 const NotFound: React.FC = () => {

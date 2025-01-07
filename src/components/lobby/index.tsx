@@ -84,7 +84,10 @@ const Lobby: React.FC<{ theme: string }> = ({ theme }) => {
     const handleAuthorization = async (session: SSOResponse, authorizeInfo: any) => {
         if (!authorizeInfo?.authorized) {
             if (appType === AppType.directGame) {
-                const authorizeResponse = await autoCreateNickname(session, setIsRenderRegister);
+                const authorizeResponse = await autoCreateNickname(session);
+                if (!authorizeResponse?.authorized) {
+                    setIsRenderRegister(true);
+                }
                 setAuthorizeResponse(authorizeResponse);
                 getAndHandleGameOfferIds(authorizeResponse, setGameOfferIds);
             }
