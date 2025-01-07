@@ -6,7 +6,7 @@ import { localStorageKeys, StorageManager } from "./storage-manager";
 
 export type URLContextModel = {
     token?: string;
-    language?: string;
+    lang?: string;
     gameId?: number;
     isDirectMode?: boolean;
     redirectUrl?: string;
@@ -32,14 +32,14 @@ export const getBaseGameUrl = (gameId: number) => {
 };
 
 export const getGameUrl = (gameId: number) => {
-    const token = getParamCurrentUrl("token");
-    const lang = getParamCurrentUrl("lang");
-    const appType = getParamCurrentUrl("appType");
-    let baseUrl = getBaseGameUrl(gameId);
+    const { token, lang, appType } = loadURLContext();
 
-    return token
+    let baseUrl = getBaseGameUrl(gameId);
+    const gameUrl = token
         ? `${baseUrl}?token=${token}&lang=${lang}&purl=${Base64Util.base64Encode(window.location.href)}&appType=${appType}`
         : `${baseUrl}?${buildSessionParams()}`;
+
+    return gameUrl;
 };
 
 const buildSessionParams = () => {
@@ -80,13 +80,14 @@ export function parseContextFromURL(): URLContextModel | undefined {
     }
 
     const token = params.get("token") || "";
-    const language = params.get("lang");
+    const lang = params.get("lang");
     const gameId = Number(params.get("gameId") || 0);
     const appType = Number(params.get("appType") || 0);
     const isDirectMode = !!params.get("ref");
     const redirectUrl = isDirectMode ? params.get("rurl") : "";
     const isThirdParty = isDirectMode && !!redirectUrl;
-    return { token, language, gameId, appType, isDirectMode, redirectUrl, isThirdParty, firstSSOToLobby: true };
+
+    return { token, lang, gameId, appType, isDirectMode, redirectUrl, isThirdParty, firstSSOToLobby: true };
 }
 
 export function loadURLContext(): URLContextModel {
@@ -94,7 +95,7 @@ export function loadURLContext(): URLContextModel {
     const contextFromLocalStorage = StorageManager?.get(localStorageKeys.url) || null;
 
     if (!!contextFromURL) {
-        const contextString = { ...contextFromURL, token: undefined };
+        const contextString = { ...contextFromURL, token: contextFromURL.token };
 
         globalThis.history.pushState(null, "", globalThis.location?.href.split("?")[0]);
         StorageManager?.set(localStorageKeys.url, contextString);

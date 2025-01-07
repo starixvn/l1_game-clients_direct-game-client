@@ -10,7 +10,7 @@ export const languageMapping = {
 
 export const Themes = {
     light: "light",
-    numberGame: "number-game",
+    dark: "dark",
 };
 
 export const AppType = {

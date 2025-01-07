@@ -6,14 +6,13 @@ import { observeSessionFromGame } from "../utils/session-manager";
 import { observeSoundFromGame } from "../utils/player-setting";
 import "./lobby.scss";
 import { getImageUrl } from "../utils/icon-helper";
-import { authorize, createNickname, sso, verifySession } from "../../services/auth-service";
+import { authorize, autoCreateNickname, sso, verifySession } from "../../services/auth-service";
 import { AuthorizeResponse, SSOResponse } from "sc-user-service-client/dist/auth";
-import NameGenerator from "../utils/name-generator";
-import { randomInteger } from "../utils/number-helper";
-import { AppType, MAX_AVATAR_ID } from "../consts";
-import { getGameUrl, loadURLContext } from "../utils";
+import { AppType } from "../consts";
+import { getGameUrl, loadURLContext, parseContextFromURL } from "../utils";
 import { getAndHandleGameOfferIds, getSortedGameSettings } from "../utils/game-setting";
 import FunctionUtil from "../utils/function-util";
+import Loading from "../common/loading";
 
 export type MicroSiteGameParams = {
     copyToClipboard?: string;
@@ -24,9 +23,9 @@ observeSoundFromGame();
 
 const Lobby: React.FC = () => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
+    const token = parseContextFromURL()?.token ?? "";
 
     const context = loadURLContext();
-    const token = context?.token ?? "";
     const appType = context?.appType ?? appSettings.appType;
 
     const { t } = useTranslation();
@@ -35,7 +34,7 @@ const Lobby: React.FC = () => {
     const [authorizeResponse, setAuthorizeResponse] = useState<AuthorizeResponse>(null);
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
     const [isRenderRegister, setIsRenderRegister] = useState(false);
-    const [iframeSrc, setIframeSrc] = useState(getGameUrl(gameOfferIds[0])); // Set initial iframe src
+    const [iframeSrc, setIframeSrc] = useState<string>(getGameUrl(0)); // Set initial iframe src
 
     const handleTabSelect = (index: number) => {
         setActiveKey(index);
@@ -69,18 +68,6 @@ const Lobby: React.FC = () => {
         return !session || (!session?.isUM && !session?.isAuthenticated);
     };
 
-    const autoCreateNickname = async (session: SSOResponse) => {
-        const nickname = NameGenerator.generateName();
-        const selectedAvatarId = randomInteger(1, MAX_AVATAR_ID);
-        const authorizeResponse = (await createNickname(session, nickname, selectedAvatarId)) as AuthorizeResponse;
-
-        if (!authorizeResponse?.authorized) {
-            setIsRenderRegister(true);
-        }
-
-        return authorizeResponse;
-    };
-
     const handleInitialization = async () => {
         let authorizeInfo;
         const session = await loadSession(token);
@@ -96,7 +83,7 @@ const Lobby: React.FC = () => {
     const handleAuthorization = async (session: SSOResponse, authorizeInfo: any) => {
         if (!authorizeInfo?.authorized) {
             if (appType === AppType.directGame) {
-                const authorizeResponse = await autoCreateNickname(session);
+                const authorizeResponse = await autoCreateNickname(session, setIsRenderRegister);
                 setAuthorizeResponse(authorizeResponse);
                 getAndHandleGameOfferIds(authorizeResponse, setGameOfferIds);
             }
@@ -124,8 +111,13 @@ const Lobby: React.FC = () => {
         };
     }, []);
 
+    useEffect(() => {
+        // Set init iframe into first game offer id
+        setIframeSrc(getGameUrl(gameOfferIds[0]));
+    }, [gameOfferIds]);
+
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     if (isRenderRegister) {
@@ -142,11 +134,11 @@ const Lobby: React.FC = () => {
                             <Tab
                                 eventKey={index}
                                 title={
-                                    <div style={{ display: "flex", alignItems: "center", color: isActive ? "#FF9000" : "#737373" }}>
+                                    <div className={`tab-title ${isActive ? "active" : ""}`}>
                                         <img
                                             src={getImageUrl(gameOfferId, isActive)}
                                             alt={t(`gameNames.${gameOfferId}`)}
-                                            style={{ width: "20px", height: "20px", marginRight: "8px" }}
+                                            className="tab-icon"
                                         />
                                         {t(`gameNames.${gameOfferId}`)}
                                     </div>
@@ -159,10 +151,6 @@ const Lobby: React.FC = () => {
                         );
                     })}
                 </Tabs>
-            </div>
-            <div>
-                <div>{`DIRECT GAME CLIENT`}</div>
-                {authorizeResponse?.user?.name && <div>{`Player Name: ${authorizeResponse?.user?.name}`}</div>}
             </div>
         </div>
     );

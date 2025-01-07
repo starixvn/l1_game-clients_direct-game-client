@@ -1,5 +1,5 @@
 .lobby {
-    height: calc(100% - 30px);
+    height: calc(100vh - 30px);
 
     .nav-tabs {
         flex-wrap: nowrap;
@@ -18,4 +18,20 @@
     .tab-pane {
         height: 100%;
     }
+}
+
+.tab-title {
+    display: flex;
+    align-items: center;
+    color: #737373;
+}
+
+.tab-title.active {
+    color: #ff9000;
+}
+
+.tab-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
 }

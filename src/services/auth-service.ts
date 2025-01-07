@@ -1,8 +1,11 @@
-import { SSOResponse } from "sc-user-service-client/dist/auth";
+import { AuthorizeResponse, SSOResponse } from "sc-user-service-client/dist/auth";
 
 import { localStorageKeys, StorageManager } from "../components/utils/storage-manager";
 import { appSettings } from "../components/game-setting";
 import UserClientCommunication from "sc-user-service-client/dist/user-client-communication";
+import NameGenerator from "../components/utils/name-generator";
+import { randomInteger } from "../components/utils/number-helper";
+import { MAX_AVATAR_ID } from "../components/consts";
 
 const gameDomain = appSettings.gameDomain;
 
@@ -35,7 +38,6 @@ export const verifySession = async (): Promise<SSOResponse> => {
             StorageManager.set(localStorageKeys.session, userSession);
         }
     }
-
     return verifySessionResponse.isSuccessful || userSession.isUM ? userSession : null;
 };
 
@@ -55,4 +57,16 @@ export const authorize = async (userSession: SSOResponse) => {
 
 export const getBalance = async (userSession: SSOResponse) => {
     return authService?.getBalance(userSession.ss, userSession.username);
+};
+
+export const autoCreateNickname = async (session: SSOResponse, setIsRenderRegister: (value: boolean) => void) => {
+    const nickname = NameGenerator.generateName();
+    const selectedAvatarId = randomInteger(1, MAX_AVATAR_ID);
+    const authorizeResponse = (await createNickname(session, nickname, selectedAvatarId)) as AuthorizeResponse;
+
+    if (!authorizeResponse?.authorized) {
+        setIsRenderRegister(true);
+    }
+
+    return authorizeResponse;
 };
