@@ -15,20 +15,18 @@ function writeFile(fileName: string, content: string, extension = "json") {
     });
 }
 
-const namespace = "gameNames";
+const namespace = ["gameNames", "Common"];
 const languageFolder = `./src/i18n/`;
 const languageCodes = ["en", "id", "th", "vi", "zh_cn", "zh_tw"];
-const tg = Tolgee()
-    .use(DevTools())
-    .init({
-        defaultLanguage: "en",
-        availableLanguages: languageCodes,
-        apiKey: "tgpak_gvpw45brha2xg3btoztxeytunvudc5dbn5twqodtonztc",
-        apiUrl: "https://tolgee.sabagame.com/",
-        projectId: "5",
-        defaultNs: namespace,
-        ns: [namespace],
-    });
+const tg = Tolgee().use(DevTools()).init({
+    defaultLanguage: "en",
+    availableLanguages: languageCodes,
+    apiKey: "tgpak_gvpw45brha2xg3btoztxeytunvudc5dbn5twqodtonztc",
+    apiUrl: "https://tolgee.sabagame.com/",
+    projectId: "5",
+    defaultNs: "gameNames",
+    ns: namespace,
+});
 
 tg.run();
 
@@ -47,11 +45,13 @@ tg.on("initialLoad", async () => {
         await tg.changeLanguage(languageId);
         languages[languageId] = {};
         tg.getAllRecords().forEach((record) => {
-            if (record.namespace == namespace) {
-                languages[languageId][namespace] = {};
-                record.data.forEach((value, key) => {
-                    languages[languageId][namespace][key] = value as string;
-                });
+            for (let i = 0; i < namespace.length; i++) {
+                if (record.namespace == namespace[i]) {
+                    languages[languageId][namespace[i]] = {};
+                    record.data.forEach((value, key) => {
+                        languages[languageId][namespace[i]][key] = value as string;
+                    });
+                }
             }
         });
 

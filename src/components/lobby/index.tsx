@@ -13,6 +13,7 @@ import { getGameUrl, loadURLContext, parseContextFromURL } from "../utils";
 import { getAndHandleGameOfferIds, getSortedGameSettings } from "../utils/game-setting";
 import FunctionUtil from "../utils/function-util";
 import Loading from "../common/loading";
+import TimeOut from "../common/timeout";
 
 export type MicroSiteGameParams = {
     copyToClipboard?: string;
@@ -21,7 +22,7 @@ export type MicroSiteGameParams = {
 observeSessionFromGame();
 observeSoundFromGame();
 
-const Lobby: React.FC = () => {
+const Lobby: React.FC<{ theme: string }> = ({ theme }) => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
     const token = parseContextFromURL()?.token ?? "";
 
@@ -121,7 +122,7 @@ const Lobby: React.FC = () => {
     }
 
     if (isRenderRegister) {
-        return <div>Unauthorized</div>;
+        return <TimeOut theme={theme} />;
     }
 
     return (
