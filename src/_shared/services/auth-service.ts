@@ -25,7 +25,7 @@ export const verifySession = async (): Promise<SSOResponse> => {
     const userSession = getSession();
 
     if (!userSession?.ss) {
-        return null;
+        return userSession;
     }
 
     const verifySessionResponse = await authService?.verifySession(userSession?.ss, userSession?.username);

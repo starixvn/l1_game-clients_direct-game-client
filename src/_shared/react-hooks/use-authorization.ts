@@ -9,7 +9,7 @@ export const useAuthorization = (token: string, appType: number) => {
     const [isSessionTimeout, setIsSessionTimeout] = useState(false);
     const [umInfo, setUMInfo] = useState<UMInfo | null>(null);
 
-    const loadSession = async (token: string) => {
+    const loadSession = async (token: string | undefined) => {
         return token ? sso(token, appType) : verifySession();
     };
 
@@ -18,7 +18,8 @@ export const useAuthorization = (token: string, appType: number) => {
     };
 
     const isTimeoutSession = (session: SSOResponse) => {
-        return !session || (!session?.isUM && !session?.isAuthenticated);
+        const isTimeout = !session || (!session?.isUM && !session?.isAuthenticated);
+        return isTimeout;
     };
 
     const handleAuthorization = async (session: SSOResponse, authorizeInfo: any) => {
@@ -43,7 +44,6 @@ export const useAuthorization = (token: string, appType: number) => {
 
             if (isUM(session)) {
                 setUMInfo(session.umInfo);
-                return;
             }
 
             storeSessionData(session);
