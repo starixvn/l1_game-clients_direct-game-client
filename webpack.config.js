@@ -103,6 +103,14 @@ module.exports = {
                     from: "public/images",
                     to: "images",
                 },
+                {
+                    from: "public/i18n",
+                    to: "i18n",
+                },
+                {
+                    from: "public/c.js",
+                    to: "c.js",
+                },
             ],
         }),
     ],
