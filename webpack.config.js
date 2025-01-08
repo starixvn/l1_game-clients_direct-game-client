@@ -52,13 +52,12 @@ module.exports = {
             },
             {
                 test: /\.(png|jpe?g|gif|svg)$/i,
+                dependency: { not: ["url"] },
                 use: [
                     {
-                        loader: "file-loader",
+                        loader: "url-loader",
                         options: {
-                            name: "[name].[ext]",
-                            outputPath: "images/",
-                            publicPath: "/images/",
+                            limit: 8192,
                         },
                     },
                 ],
