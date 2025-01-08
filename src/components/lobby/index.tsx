@@ -18,7 +18,10 @@ const Lobby: React.FC = () => {
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
     const [iframeSrc, setIframeSrc] = useState<string>();
     const [isTimeout, setTimeout] = useState(false);
-    const { isLoading, umInfo, authorizeResponse, isSessionTimeout, initialize } = useAuthorization(token, appType ?? appSettings.appType);
+    const { isLoading, umInfo, setUMInfo, authorizeResponse, isSessionTimeout, initialize } = useAuthorization(
+        token,
+        appType ?? appSettings.appType
+    );
 
     const handleTabSelect = (index: number) => {
         setActiveKey(index);
@@ -38,11 +41,16 @@ const Lobby: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        GameEventManager.getInstance().subscribe(GameEvents.sessionTimeout, (data) => {
-            setTimeout(true);
-        });
+        const gameEventManager = GameEventManager.getInstance();
+        const events = [
+            { event: GameEvents.sessionTimeout, handler: () => setTimeout(true) },
+            { event: GameEvents.isUnderMaintain, handler: (data) => setUMInfo(data?.umInfo) },
+        ];
+
+        const subscriptions = events.map(({ event, handler }) => gameEventManager.subscribe(event, handler));
+
         return () => {
-            GameEventManager.getInstance().unsubscribe(GameEvents.sessionTimeout);
+            subscriptions.forEach((id) => gameEventManager.unsubscribe(id));
         };
     }, []);
 

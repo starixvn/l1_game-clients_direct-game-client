@@ -62,6 +62,7 @@ export const useAuthorization = (token: string, appType: number) => {
     return {
         isLoading,
         umInfo,
+        setUMInfo,
         authorizeResponse,
         isSessionTimeout,
         initialize,
