@@ -7,8 +7,8 @@ import { getQueryParameters, getGameUrl } from "../../_shared/utils/url-helper";
 import { getAndHandleGameOfferIds, getSortedGameSettings } from "../../_shared/utils/game-setting";
 import Loading from "../common/loading";
 import TimeOut from "../common/timeout";
-import { useAuthorization } from "../../_shared/react-hooks/useAuthorization";
-import { GameTabs } from "./GameTabs";
+import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
+import { GameTabs } from "./game-tabs";
 import FunctionUtil from "../../_shared/utils/function-util";
 
 observeSessionFromGame();
