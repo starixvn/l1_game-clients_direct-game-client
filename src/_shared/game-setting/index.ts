@@ -3,12 +3,12 @@ import { IAppSettings, IGameSetting } from "./type";
 
 declare global {
     interface Window {
-        envConfigs: IAppSettings;
+        envConfig: IAppSettings;
     }
 }
 
 const getAppSettings = (): IAppSettings => {
-    return window?.envConfigs;
+    return window?.envConfig;
 };
 export const appSettings: IAppSettings = getAppSettings();
 export const gameSettings: IGameSetting[] = gameSettingsConfig;
