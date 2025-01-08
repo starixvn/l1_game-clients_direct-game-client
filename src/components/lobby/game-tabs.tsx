@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect } from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import { useTranslation } from "react-i18next";
 import { getImageUrl } from "../../_shared/utils/icon-helper";
 import { storePlayerSetting } from "../../_shared/utils/player-setting";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import FunctionUtil from "../../_shared/utils/function-util";
+import { useTranslator } from "../../_shared/react-hooks/use-translator";
 
 interface GameTabsProps {
     activeKey: number;
@@ -15,7 +15,7 @@ interface GameTabsProps {
 }
 
 export const GameTabs: React.FC<GameTabsProps> = ({ activeKey, gameOfferIds, onTabSelect, iframeSrc, wrapperIframeRef }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslator();
 
     const postMessageToMicroSite = useCallback(
         (data: any) => {

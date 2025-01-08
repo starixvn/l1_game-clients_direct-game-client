@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { appSettings } from "../../_shared/game-setting";
 import "./lobby.scss";
 import { getQueryParameters, getGameUrl } from "../../_shared/utils/url-helper";
@@ -16,8 +16,8 @@ const Lobby: React.FC = () => {
     const [activeKey, setActiveKey] = useState(0);
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
     const [iframeSrc, setIframeSrc] = useState<string>();
-    const { isLoading, authorizeResponse, isSessionTimeout, initialize } = useAuthorization(token, appType ?? appSettings.appType);
     const [isTimeout, setTimeout] = useState(false);
+    const { isLoading, authorizeResponse, isSessionTimeout, initialize } = useAuthorization(token, appType ?? appSettings.appType);
 
     const handleTabSelect = (index: number) => {
         setActiveKey(index);
@@ -37,7 +37,7 @@ const Lobby: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        GameEventManager.getInstance().subscribe(GameEvents.sessionTimeout, () => {
+        GameEventManager.getInstance().subscribe(GameEvents.sessionTimeout, (data) => {
             setTimeout(true);
         });
         return () => {

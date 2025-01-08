@@ -22,6 +22,7 @@ export const ResourceTypes = {
     COMMON: "Common",
     GAME_NAMES: "gameNames",
     MESSAGES: "messages",
+    INSTANT_GAME: "InstantGame",
 };
 
 export const buildVersion = 111;

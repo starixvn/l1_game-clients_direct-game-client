@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { ResourceTypes } from "../../../_shared/consts";
 import { useTranslator } from "../../../_shared/react-hooks/use-translator";
 
