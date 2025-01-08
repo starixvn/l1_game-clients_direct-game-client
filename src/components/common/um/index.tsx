@@ -3,22 +3,13 @@ import dayjs from "dayjs";
 import "./um.scss";
 import { useTranslator } from "../../../_shared/react-hooks/use-translator";
 import { ResourceTypes } from "../../../_shared/consts";
+import { UMInfo } from "sc-user-service-client/dist/auth";
 
-const UM = () => {
-    type UMInfo = {
-        start: Date;
-        end: Date;
-        finish: boolean;
-        operatorId: string;
-    };
+interface UMProps {
+    umInfo: UMInfo;
+}
 
-    const umInfoDummy: UMInfo = {
-        start: new Date(),
-        end: new Date(),
-        finish: false,
-        operatorId: "ONEworks1",
-    };
-
+const UM: React.FC<UMProps> = ({ umInfo }) => {
     const { t } = useTranslator([ResourceTypes.COMMON]);
     const convertToGMT8 = (date: Date): string => {
         return dayjs(
@@ -30,24 +21,26 @@ const UM = () => {
 
     return (
         <div className="um">
-            <div>
-                <img className="image" src={`/images/um/maintence-icon.png`} alt="Image" />
+            {umInfo && (
+                <div>
+                    <img className="image" src={`/images/um/maintence-icon.png`} alt="Image" />
 
-                <div className="title">{t("maintenance_time")}</div>
-                <div>{`(GMT + 8)`}</div>
-                <div className="time">
-                    {umInfoDummy?.start && (
-                        <div>
-                            {t("from")} <span>{convertToGMT8(umInfoDummy.start)}</span>
-                        </div>
-                    )}
-                    {umInfoDummy?.end && (
-                        <div>
-                            {t("to")} <span>{convertToGMT8(umInfoDummy.end)}</span>
-                        </div>
-                    )}
+                    <div className="title">{t("maintenance_time")}</div>
+                    <div>{`(GMT + 8)`}</div>
+                    <div className="time">
+                        {umInfo?.startTime && (
+                            <div>
+                                {t("from")} <span>{convertToGMT8(umInfo.startTime)}</span>
+                            </div>
+                        )}
+                        {umInfo?.endTime && (
+                            <div>
+                                {t("to")} <span>{convertToGMT8(umInfo.endTime)}</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

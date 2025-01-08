@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { authorize, autoCreateNickname, sso, verifySession } from "../services/auth-service";
-import { AuthorizeResponse, SSOResponse } from "sc-user-service-client/dist/auth";
+import { AuthorizeResponse, SSOResponse, UMInfo } from "sc-user-service-client/dist/auth";
 import { storeSessionData } from "../utils";
 
 export const useAuthorization = (token: string, appType: number) => {
     const [isLoading, setIsLoading] = useState(true);
     const [authorizeResponse, setAuthorizeResponse] = useState<AuthorizeResponse | null>(null);
     const [isSessionTimeout, setIsSessionTimeout] = useState(false);
+    const [umInfo, setUMInfo] = useState<UMInfo | null>(null);
 
     const loadSession = async (token: string) => {
         return token ? sso(token, appType) : verifySession();
+    };
+
+    const isUM = (session: SSOResponse) => {
+        return session?.isUM;
     };
 
     const isTimeoutSession = (session: SSOResponse) => {
@@ -36,6 +41,11 @@ export const useAuthorization = (token: string, appType: number) => {
                 return null;
             }
 
+            if (isUM(session)) {
+                setUMInfo(session.umInfo);
+                return;
+            }
+
             storeSessionData(session);
             const authorizeInfo = await authorize(session);
             return await handleAuthorization(session, authorizeInfo);
@@ -49,6 +59,7 @@ export const useAuthorization = (token: string, appType: number) => {
 
     return {
         isLoading,
+        umInfo,
         authorizeResponse,
         isSessionTimeout,
         initialize,

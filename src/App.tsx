@@ -6,7 +6,6 @@ import { tolgee } from "../tolgee/tolgee";
 import { GameEventManager } from "./_shared/utils/game-event-manager";
 
 const App: React.FC = () => {
-    const isUM = false;
     useEffect(() => {
         GameEventManager.getInstance();
 
@@ -14,7 +13,11 @@ const App: React.FC = () => {
             GameEventManager.destroy();
         };
     }, []);
-    return <TolgeeProvider tolgee={tolgee}>{isUM ? <UM /> : <Lobby />}</TolgeeProvider>;
+    return (
+        <TolgeeProvider tolgee={tolgee}>
+            <Lobby />
+        </TolgeeProvider>
+    );
 };
 
 export default App;

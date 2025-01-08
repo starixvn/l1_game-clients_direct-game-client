@@ -8,6 +8,7 @@ import TimeOut from "../common/timeout";
 import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
 import { GameTabs } from "./game-tabs";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
+import UM from "../common/um";
 
 const Lobby: React.FC = () => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
@@ -17,7 +18,7 @@ const Lobby: React.FC = () => {
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
     const [iframeSrc, setIframeSrc] = useState<string>();
     const [isTimeout, setTimeout] = useState(false);
-    const { isLoading, authorizeResponse, isSessionTimeout, initialize } = useAuthorization(token, appType ?? appSettings.appType);
+    const { isLoading, umInfo, authorizeResponse, isSessionTimeout, initialize } = useAuthorization(token, appType ?? appSettings.appType);
 
     const handleTabSelect = (index: number) => {
         setActiveKey(index);
@@ -53,6 +54,7 @@ const Lobby: React.FC = () => {
 
     if (isLoading) return <Loading />;
     if (isSessionTimeout || isTimeout) return <TimeOut />;
+    if (umInfo) return <UM umInfo={umInfo} />;
 
     return (
         <div>
