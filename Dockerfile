@@ -15,9 +15,10 @@ RUN --mount=type=cache,target=$YARN_CACHE_FOLDER \
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY package.json yarn.lock tsconfig.json configs.json game-settings.json .babelrc webpack.config.js ./
+COPY package.json yarn.lock tsconfig.json game-settings.json .babelrc webpack.config.js ./
 COPY configs ./configs
 COPY public ./public
+COPY missing-config.js public/c.js
 COPY src ./src
 
 RUN yarn build
