@@ -16,5 +16,4 @@ export interface IAppSettings {
     env: string;
     subDirectory?: string;
     appType: number;
-    defaultOperatorId: string;
 }

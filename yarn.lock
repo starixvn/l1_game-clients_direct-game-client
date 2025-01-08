@@ -1295,9 +1295,21 @@
   resolved "http://npm.lumigame.com/@tolgee/core/-/core-5.33.2.tgz#2c16130ef4ac06dec00f1349ebeb7238b7eabacb"
   integrity sha512-iuqbvFB9En8rfnKLIoEDdX3H2ubVuDHEZZ4OSOnixSzkbMukVMqIzt6SjDTzfpMeTn3O0b5M8hNPYN+RyRLrPA==
 
-"@tolgee/web@^5.28.6":
+"@tolgee/format-icu@^5.28.6":
   version "5.33.2"
-  resolved "http://npm.lumigame.com/@tolgee/web/-/web-5.33.2.tgz#1e6b58ef242628212f70bded072de66cde9b8f97"
+  resolved "https://npm.lumigame.com/@tolgee/format-icu/-/format-icu-5.33.2.tgz#bd0e67bd7d4a6e49bee40ed84622c2cb4d65d7ff"
+  integrity sha512-3RyoAaiLHhaHZ3HpG7XbF3RwWiHM5X+c3PZSD2Y+k9BgbYVd73DEm38T0EjUOb+px8cRIMZJIqd/XFZPZ9o4ew==
+
+"@tolgee/react@^5.28.6":
+  version "5.33.2"
+  resolved "https://npm.lumigame.com/@tolgee/react/-/react-5.33.2.tgz#d6e850eec1595da9f72c0195d1997dc7fc42d2fe"
+  integrity sha512-CFIL7j24sXmQcpAXcvJK53Qu2MfgPRu/4U0wLNo0b9F2gtT1LPZp6Bn/lF28RR7KjJi7qBVjB41TiaIQF2mSAg==
+  dependencies:
+    "@tolgee/web" "5.33.2"
+
+"@tolgee/web@5.33.2", "@tolgee/web@^5.28.6":
+  version "5.33.2"
+  resolved "https://npm.lumigame.com/@tolgee/web/-/web-5.33.2.tgz#1e6b58ef242628212f70bded072de66cde9b8f97"
   integrity sha512-pmiLbw0seAONwOEhuOYj3ckfg97GGqaQSi2upJkj1a8A7/vZNGt4X2bEpBn6hXR9c/HNkLbEVJK+HWQVWWmXIg==
   dependencies:
     "@tolgee/core" "5.33.2"

@@ -1,6 +1,8 @@
 import React from "react";
 import dayjs from "dayjs";
-import { appSettings } from "../../../_shared/game-setting";
+import "./um.scss";
+import { useTranslator } from "../../../_shared/react-hooks/use-translator";
+import { ResourceTypes } from "../../../_shared/consts";
 
 const UM = () => {
     type UMInfo = {
@@ -14,9 +16,10 @@ const UM = () => {
         start: new Date(),
         end: new Date(),
         finish: false,
-        operatorId: appSettings.defaultOperatorId,
+        operatorId: "ONEworks1",
     };
 
+    const { t } = useTranslator([ResourceTypes.COMMON]);
     const convertToGMT8 = (date: Date): string => {
         return dayjs(
             new Date(date).toLocaleString("en-US", {
@@ -28,23 +31,19 @@ const UM = () => {
     return (
         <div className="um">
             <div>
-                <div>
-                    <img className="logo" src="/images/um/logo.png" alt="Image" decoding="async" />
-                </div>
-                {/* <img className="image" src={`/images/um/icon-um_${i18n.language}.png`} alt="Image" /> */}
                 <img className="image" src={`/images/um/maintence-icon.png`} alt="Image" />
 
-                <div className="title">MAINTENANCE TIME</div>
+                <div className="title">{t("maintenance_time")}</div>
                 <div>{`(GMT + 8)`}</div>
                 <div className="time">
                     {umInfoDummy?.start && (
                         <div>
-                            From <span>{convertToGMT8(umInfoDummy.start)}</span>
+                            {t("from")} <span>{convertToGMT8(umInfoDummy.start)}</span>
                         </div>
                     )}
                     {umInfoDummy?.end && (
                         <div>
-                            To <span>{convertToGMT8(umInfoDummy.end)}</span>
+                            {t("to")} <span>{convertToGMT8(umInfoDummy.end)}</span>
                         </div>
                     )}
                 </div>

@@ -1,6 +1,7 @@
 import { DevTools, Tolgee } from "@tolgee/web";
 import * as fs from "fs";
 import * as path from "path";
+import { languageCodes } from "../src/_shared/consts";
 
 function writeFile(fileName: string, content: string, extension = "json") {
     const dirname = path.dirname(fileName);
@@ -15,7 +16,6 @@ function writeFile(fileName: string, content: string, extension = "json") {
 }
 
 const namespaces = ["gameNames", "Common"];
-const languageCodes = ["en", "id", "th", "vi", "zh_cn", "zh_tw"];
 const tg = Tolgee().use(DevTools()).init({
     defaultLanguage: "en",
     availableLanguages: languageCodes,
@@ -47,10 +47,10 @@ tg.on("initialLoad", async () => {
                     record.data.forEach((value, key) => {
                         languages[languageId][namespace][key] = value as string;
                     });
+                    writeFile(`./public/i18n/${namespace}/` + languageId, JSON.stringify(languages[languageId][namespace], null, 4));
                 }
             });
         });
-        writeFile(`./public/i18n/${languageId}`, JSON.stringify(languages[languageId], null, 2));
     });
 
     console.log("Generated done!");
