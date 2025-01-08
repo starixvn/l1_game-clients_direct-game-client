@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import "./styles.scss";
 
 interface TimeOutProps {
     theme: string;

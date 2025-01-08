@@ -1,5 +1,5 @@
 html {
-    // font-size: 10px !important;
+    font-size: 10px !important;
     overscroll-behavior: none;
     -ms-overscroll-behavior: none;
     -webkit-tap-highlight-color: transparent;
@@ -38,7 +38,7 @@ body {
     padding: 0;
     margin: 0;
     background-color: var(--page-background-color);
-    font: 1.4rem/1.5 var(--font-family);
+    font: 500 1.4rem/1.5 var(--font-family);
     color: var(--text-color);
     overscroll-behavior: contain;
     touch-action: pan-y;
@@ -46,4 +46,148 @@ body {
 
 .root-div {
     height: 100%;
+}
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+.w-100 {
+    width: 100% !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.d-flex {
+    display: flex !important;
+}
+
+.justify-content-center {
+    justify-content: center !important;
+}
+
+.align-items-center {
+    align-items: center !important;
+}
+
+img,
+svg {
+    vertical-align: middle;
+}
+
+img {
+    border-style: none;
+}
+
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+.font-weight-medium {
+    font-weight: 600;
+}
+
+.font-weight-bold {
+    font-weight: 700 !important;
+}
+
+.font-number {
+    font-family: var(--font-number);
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.text-left {
+    text-align: left !important;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.margin-top-10 {
+    margin-top: 1rem;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.overlay-mask-no-bg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--overlay-index);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay-mask {
+    @extend .overlay-mask-no-bg;
+    background: var(--opacity-background);
+}
+
+.overlay-mask-white {
+    @extend .overlay-mask-no-bg;
+    background: var(--opacity-background-grey);
+    opacity: 0.9;
+}
+
+.icon-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 3rem;
+    width: 3rem;
+    border-radius: 50%;
+    background: var(--icon-close-background);
+
+    &:before {
+        font-size: 1.2rem;
+        color: var(--icon-close-color);
+    }
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+    background-color: var(--scrollbar-background);
+}
+
+::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.6rem;
+    background-color: var(--scrollbar-background);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-background);
 }

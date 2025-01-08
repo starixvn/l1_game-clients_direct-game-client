@@ -6,7 +6,7 @@ import UM from "./components/common/um";
 
 initLanguage();
 const App: React.FC = () => {
-    const isUM = true;
+    const isUM = false;
     const theme = Themes.light;
     return isUM ? <UM /> : <Lobby theme={theme} />;
 };
