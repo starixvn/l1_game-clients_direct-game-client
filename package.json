@@ -8,6 +8,7 @@
         "build": "cross-env NODE_ENV=production webpack --mode production",
         "test": "echo \"Error: no test specified\" && exit 1",
         "generate-tolgee-data": "ts-node ./tolgee/tolgee-generator.ts",
+        "obfuscator-config-file": "ts-node ./configs/config-obfuscator.ts",
         "reg": "npm set registry http://npm.lumigame.com"
     },
     "keywords": [],
@@ -46,6 +47,7 @@
         "eslint-plugin-react-hooks": "^4.6.2",
         "file-loader": "^6.2.0",
         "html-webpack-plugin": "^5.6.0",
+        "javascript-obfuscator": "^4.1.1",
         "sass": "^1.83.1",
         "sass-loader": "^16.0.1",
         "style-loader": "^4.0.0",

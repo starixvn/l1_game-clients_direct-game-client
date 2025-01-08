@@ -1,0 +1,10 @@
+window.envConfig = {
+    sentry: {
+        dsn: "https://b015ef787273452c8fce4af733e62d59@sentry.lumigame.com/29",
+        environment: "LOCAL1",
+    },
+    system: "VG",
+    ssl: true,
+    gameDomain: "https://l2-proxy1.lumigame.com",
+    env: "LOCAL1",
+};

@@ -1,6 +1,14 @@
 import gameSettingsConfig from "../../../game-settings.json";
-import appSettingConfig from "../../../configs.json";
 import { IAppSettings, IGameSetting } from "./type";
 
-export const appSettings: IAppSettings = appSettingConfig;
+declare global {
+    interface Window {
+        envConfigs: IAppSettings;
+    }
+}
+
+const getAppSettings = (): IAppSettings => {
+    return window?.envConfigs;
+};
+export const appSettings: IAppSettings = getAppSettings();
 export const gameSettings: IGameSetting[] = gameSettingsConfig;

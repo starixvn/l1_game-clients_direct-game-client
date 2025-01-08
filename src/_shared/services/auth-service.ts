@@ -1,6 +1,5 @@
 import { AuthorizeResponse, SSOResponse } from "sc-user-service-client/dist/auth";
 
-import { localStorageKeys, StorageManager } from "..//utils/storage-manager";
 import { appSettings } from "../game-setting";
 import UserClientCommunication from "sc-user-service-client/dist/user-client-communication";
 import NameGenerator from "..//utils/name-generator";
