@@ -1,17 +1,13 @@
+import { SSOResponse } from "sc-user-service-client/dist/auth";
 import { appSettings } from "../game-setting";
 import { StorageManager } from "./storage-manager";
 
 const sessionIdStorageName = "scss";
 const micrositeGameIdKey = "microsite_game_id";
 
-export interface Session {
-    username: string;
-    language: string;
-    session: string;
+export type Session = {
     time: Date;
-    isAuthenticated: boolean;
-    system: number;
-}
+} & SSOResponse;
 
 export function getSessionKey() {
     if (window.location && window.location.hostname) {
@@ -22,11 +18,15 @@ export function getSessionKey() {
 }
 
 export function getSession(): Session {
-    return StorageManager.get(getSessionKey()) ?? {};
+    return StorageManager.get<Session>(getSessionKey()) ?? ({} as Session);
 }
 
 export function storeSessionData(data: any) {
     StorageManager.set(getSessionKey(), data);
+}
+
+export function clearSessionData() {
+    StorageManager.remove(getSessionKey());
 }
 
 export function getMicrositeGameId() {

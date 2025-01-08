@@ -21,7 +21,7 @@ export const observeSoundFromGame = () => {
 };
 
 export function getPlayerSetting(): PlayerSetting {
-    return StorageManager.get(playerSettingKey) ?? {};
+    return StorageManager.get<PlayerSetting>(playerSettingKey) ?? ({} as PlayerSetting);
 }
 
 export function storePlayerSetting(playerSettings: any) {

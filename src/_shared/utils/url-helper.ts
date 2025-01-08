@@ -2,7 +2,6 @@ import { appSettings } from "../game-setting";
 import Base64Util from "./base64-util";
 import { getSession } from "./session-manager";
 import { getPlayerSetting } from "./player-setting";
-import { localStorageKeys, StorageManager } from "./storage-manager";
 
 export type URLContextModel = {
     token?: string;
@@ -32,21 +31,15 @@ export const getBaseGameUrl = (gameId: number) => {
 };
 
 export const getGameUrl = (gameId: number) => {
-    const { token, lang, appType } = loadURLContext();
-
     let baseUrl = getBaseGameUrl(gameId);
-    const gameUrl = token
-        ? `${baseUrl}?token=${token}&lang=${lang}&purl=${Base64Util.base64Encode(window.location.href)}&appType=${appType}`
-        : `${baseUrl}?${buildSessionParams()}`;
-
-    return gameUrl;
+    return `${baseUrl}?${buildSessionParams()}`;
 };
 
 const buildSessionParams = () => {
     const sessionInfo = getSession();
     const playerSetting = getPlayerSetting();
     const params: any = {
-        ss: sessionInfo.session,
+        ss: sessionInfo.ss,
         uname: sessionInfo.username,
         lang: sessionInfo.language,
         appType: sessionInfo.system,
@@ -72,11 +65,11 @@ export const buildUrlWithPath = (path: string) => {
     return `${gameDomain}${path}`;
 };
 
-export function parseContextFromURL(): URLContextModel | undefined {
+export function getQueryParameters(): URLContextModel | undefined {
     const params = new URLSearchParams(window.location?.search);
     // Reload page
     if (Array.from(params.values()).length === 0) {
-        return;
+        return {};
     }
 
     const token = params.get("token") || "";
@@ -87,19 +80,7 @@ export function parseContextFromURL(): URLContextModel | undefined {
     const redirectUrl = isDirectMode ? params.get("rurl") : "";
     const isThirdParty = isDirectMode && !!redirectUrl;
 
+    globalThis.history.pushState(null, "", globalThis.location?.href.split("?")[0]);
+
     return { token, lang, gameId, appType, isDirectMode, redirectUrl, isThirdParty, firstSSOToLobby: true };
-}
-
-export function loadURLContext(): URLContextModel {
-    const contextFromURL = parseContextFromURL();
-    const contextFromLocalStorage = StorageManager?.get(localStorageKeys.url) || null;
-
-    if (!!contextFromURL) {
-        const contextString = { ...contextFromURL, token: contextFromURL.token };
-
-        globalThis.history.pushState(null, "", globalThis.location?.href.split("?")[0]);
-        StorageManager?.set(localStorageKeys.url, contextString);
-    }
-
-    return contextFromURL || contextFromLocalStorage;
 }

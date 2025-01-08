@@ -34,23 +34,17 @@ module.exports = {
                 exclude: /node_modules/,
             },
             {
-                test: /\.module\.scss$/, // For .module.scss files
+                test: /\.scss$/,
                 use: [
                     "style-loader",
                     {
                         loader: "css-loader",
                         options: {
-                            modules: true,
-                            importLoaders: 1,
+                            modules: false, // Disable CSS modules for global styles
                         },
                     },
                     "sass-loader",
                 ],
-            },
-            {
-                test: /\.scss$/, // For regular .scss files
-                exclude: /\.module\.scss$/,
-                use: ["style-loader", "css-loader", "sass-loader"],
             },
             {
                 test: /\.css$/,

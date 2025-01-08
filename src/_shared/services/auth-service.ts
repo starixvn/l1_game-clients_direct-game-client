@@ -6,6 +6,7 @@ import UserClientCommunication from "sc-user-service-client/dist/user-client-com
 import NameGenerator from "..//utils/name-generator";
 import { randomInteger } from "..//utils/number-helper";
 import { MAX_AVATAR_ID } from "../consts";
+import { getSession, storeSessionData } from "../utils";
 
 const gameDomain = appSettings.gameDomain;
 
@@ -15,16 +16,16 @@ export const sso = async (token: string, appType: number): Promise<SSOResponse> 
     const userSession = await authService?.sso(token, appType);
 
     if (userSession?.isAuthenticated) {
-        StorageManager.set(localStorageKeys.session, userSession);
+        storeSessionData(userSession);
     }
 
     return userSession;
 };
 
 export const verifySession = async (): Promise<SSOResponse> => {
-    const userSession = StorageManager.get<SSOResponse>(localStorageKeys.session);
+    const userSession = getSession();
 
-    if (!userSession) {
+    if (!userSession?.ss) {
         return null;
     }
 
@@ -35,13 +36,11 @@ export const verifySession = async (): Promise<SSOResponse> => {
         userSession.umInfo = verifySessionResponse.umInfo;
 
         if (verifySessionResponse.isSuccessful) {
-            StorageManager.set(localStorageKeys.session, userSession);
+            storeSessionData(userSession);
         }
     }
     return verifySessionResponse.isSuccessful || userSession.isUM ? userSession : null;
 };
-
-export const clearSession = () => StorageManager.remove(localStorageKeys.session);
 
 export const reCheckIn = async (userSession: SSOResponse) => {
     return authService?.reCheckIn(userSession?.ss, userSession?.username);
