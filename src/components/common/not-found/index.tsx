@@ -1,16 +1,14 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import errorLight from "../../../assets/error-light.svg";
+import { ResourceTypes } from "../../../_shared/consts";
+import { useTranslator } from "../../../_shared/react-hooks/use-translator";
 
 const NotFound: React.FC = () => {
-    const { t } = useTranslation("messages");
+    const { t } = useTranslator([ResourceTypes.MESSAGES]);
     return (
         <div className="error-page">
-            <img className="error-background small" src={errorLight} alt="error" />
-            <p className="info">
-                {/* <Trans t={t}>{t("errorOccurred", { errorCode: 404 })}</Trans> */}
-                An error has occurred, please contact CSD for details.(404)
-            </p>
+            <img className="error-background small" src="/images/error-light.svg" alt="error" />
+            <p className="info">{t("errorOccurred", { errorCode: 404 })}</p>
         </div>
     );
 };

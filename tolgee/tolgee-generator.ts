@@ -15,7 +15,7 @@ function writeFile(fileName: string, content: string, extension = "json") {
     });
 }
 
-const namespaces = ["gameNames", "Common"];
+const namespaces = ["gameNames", "Common", "messages"];
 const tg = Tolgee().use(DevTools()).init({
     defaultLanguage: "en",
     availableLanguages: languageCodes,
