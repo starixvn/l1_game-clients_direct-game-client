@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { appSettings } from "../game-setting";
-import { observeSessionFromGame } from "../utils/session-manager";
-import { observeSoundFromGame } from "../utils/player-setting";
+import { appSettings } from "../../_shared/game-setting";
+import { observeSessionFromGame } from "../../_shared/utils/session-manager";
+import { observeSoundFromGame } from "../../_shared/utils/player-setting";
 import "./lobby.scss";
-import { getImageUrl } from "../utils/icon-helper";
-import { authorize, autoCreateNickname, sso, verifySession } from "../../services/auth-service";
+import { getImageUrl } from "../../_shared/utils/icon-helper";
+import { authorize, autoCreateNickname, sso, verifySession } from "../../_shared/services/auth-service";
 import { AuthorizeResponse, SSOResponse } from "sc-user-service-client/dist/auth";
-import { AppType } from "../consts";
-import { getGameUrl, loadURLContext, parseContextFromURL } from "../utils";
-import { getAndHandleGameOfferIds, getSortedGameSettings } from "../utils/game-setting";
-import FunctionUtil from "../utils/function-util";
+import { AppType } from "../../_shared/consts";
+import { getGameUrl, loadURLContext, parseContextFromURL } from "../../_shared/utils/url-helper";
+import { getAndHandleGameOfferIds, getSortedGameSettings } from "../../_shared/utils/game-setting";
+import FunctionUtil from "../../_shared/utils/function-util";
 import Loading from "../common/loading";
 import TimeOut from "../common/timeout";
 
@@ -35,7 +35,7 @@ const Lobby: React.FC<{ theme: string }> = ({ theme }) => {
     const [authorizeResponse, setAuthorizeResponse] = useState<AuthorizeResponse>(null);
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
     const [isRenderRegister, setIsRenderRegister] = useState(false);
-    const [iframeSrc, setIframeSrc] = useState<string>(getGameUrl(0)); // Set initial iframe src
+    const [iframeSrc, setIframeSrc] = useState<string>(); // Set initial iframe src
 
     const handleTabSelect = (index: number) => {
         setActiveKey(index);
@@ -117,7 +117,7 @@ const Lobby: React.FC<{ theme: string }> = ({ theme }) => {
 
     useEffect(() => {
         // Set init iframe into first game offer id
-        setIframeSrc(getGameUrl(gameOfferIds[0]));
+        gameOfferIds.length > 0 && setIframeSrc(getGameUrl(gameOfferIds[0]));
     }, [gameOfferIds]);
 
     if (isLoading) {

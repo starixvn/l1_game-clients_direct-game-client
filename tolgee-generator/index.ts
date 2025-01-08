@@ -8,15 +8,13 @@ function writeFile(fileName: string, content: string, extension = "json") {
     if (!fs.existsSync(dirname)) {
         fs.mkdirSync(dirname, { recursive: true });
     }
-
-    fs.writeFileSync(`${fileName}.${extension}`, content, {
+    fs.appendFileSync(`${fileName}.${extension}`, content, {
         encoding: "utf8",
         flag: "w",
     });
 }
 
-const namespace = ["gameNames", "Common"];
-const languageFolder = `./src/i18n/`;
+const namespaces = ["gameNames", "Common"];
 const languageCodes = ["en", "id", "th", "vi", "zh_cn", "zh_tw"];
 const tg = Tolgee().use(DevTools()).init({
     defaultLanguage: "en",
@@ -24,8 +22,8 @@ const tg = Tolgee().use(DevTools()).init({
     apiKey: "tgpak_gvpw45brha2xg3btoztxeytunvudc5dbn5twqodtonztc",
     apiUrl: "https://tolgee.sabagame.com/",
     projectId: "5",
-    defaultNs: "gameNames",
-    ns: namespace,
+    defaultNs: "Common",
+    ns: namespaces,
 });
 
 tg.run();
@@ -39,25 +37,21 @@ tg.on("initialLoad", async () => {
         };
     } = {};
 
-    for (let index = 0; index < languageCodes.length; index++) {
-        const languageId = languageCodes[index];
-
+    languageCodes.forEach(async (languageId) => {
         await tg.changeLanguage(languageId);
         languages[languageId] = {};
         tg.getAllRecords().forEach((record) => {
-            for (let i = 0; i < namespace.length; i++) {
-                if (record.namespace == namespace[i]) {
-                    languages[languageId][namespace[i]] = {};
+            namespaces.forEach((namespace) => {
+                if (record.namespace === namespace) {
+                    languages[languageId][namespace] = {};
                     record.data.forEach((value, key) => {
-                        languages[languageId][namespace[i]][key] = value as string;
+                        languages[languageId][namespace][key] = value as string;
                     });
                 }
-            }
+            });
         });
-
-        console.log("languages[languageId]", languages[languageId]);
-        writeFile(languageFolder + languageId, JSON.stringify(languages[languageId], null, 4));
-    }
+        writeFile(`./public/i18n/${languageId}`, JSON.stringify(languages[languageId], null, 2));
+    });
 
     console.log("Generated done!");
 });

@@ -1,6 +1,6 @@
 import React from "react";
 import dayjs from "dayjs";
-import { appSettings } from "../../game-setting";
+import { appSettings } from "../../../_shared/game-setting";
 
 const UM = () => {
     type UMInfo = {

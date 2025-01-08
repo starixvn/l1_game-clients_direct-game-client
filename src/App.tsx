@@ -1,7 +1,7 @@
 import React from "react";
 import Lobby from "./components/lobby";
-import { initLanguage } from "./i18n";
-import { Themes } from "./components/consts";
+import { initLanguage } from "./_shared/i18n";
+import { Themes } from "./_shared/consts";
 import UM from "./components/common/um";
 
 initLanguage();

@@ -1,5 +1,5 @@
 import { SSOResponse } from "sc-user-service-client/dist/auth";
-import { appSettings } from "../components/game-setting";
+import { appSettings } from "../game-setting";
 import UserClientCommunication from "sc-user-service-client/dist/user-client-communication";
 
 const gameDomain = appSettings.gameDomain;

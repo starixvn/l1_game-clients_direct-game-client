@@ -3,15 +3,5 @@
         "id": 2,
         "name": "SeDie",
         "order": 1
-    },
-    {
-        "id": 1,
-        "name": "BigSmall",
-        "order": 3
-    },
-    {
-        "id": 4,
-        "name": "TurboBigSmall",
-        "order": 2
     }
 ]
