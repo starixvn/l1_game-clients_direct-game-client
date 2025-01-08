@@ -3,11 +3,7 @@ import "./styles.scss";
 import { ResourceTypes } from "../../../_shared/consts";
 import { useTranslator } from "../../../_shared/react-hooks/use-translator";
 
-interface TimeOutProps {
-    theme: string;
-}
-
-const TimeOut: React.FC<TimeOutProps> = ({ theme }) => {
+const TimeOut: React.FC = () => {
     const { t } = useTranslator([ResourceTypes.COMMON]);
     return (
         <div className="error-page">

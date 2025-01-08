@@ -10,11 +10,6 @@ export const languageMapping = {
 
 export const languageCodes = ["en", "id", "th", "vi", "zh_cn", "zh_tw"];
 
-export const Themes = {
-    light: "light",
-    dark: "dark",
-};
-
 export const AppType = {
     directGame: 7,
 };

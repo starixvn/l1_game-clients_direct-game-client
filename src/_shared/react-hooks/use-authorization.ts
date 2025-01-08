@@ -5,7 +5,7 @@ import { storeSessionData } from "../utils";
 
 export const useAuthorization = (token: string, appType: number) => {
     const [isLoading, setIsLoading] = useState(true);
-    const [authorizeResponse, setAuthorizeResponse] = useState<AuthorizeResponse>(null);
+    const [authorizeResponse, setAuthorizeResponse] = useState<AuthorizeResponse | null>(null);
     const [isSessionTimeout, setIsSessionTimeout] = useState(false);
 
     const loadSession = async (token: string) => {

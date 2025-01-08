@@ -10,7 +10,7 @@ export type Session = {
 } & SSOResponse;
 
 export function getSessionKey() {
-    if (window.location && window.location.hostname) {
+    if (window?.location?.hostname) {
         return `${window.location.hostname}.${sessionIdStorageName}`;
     }
 
@@ -40,15 +40,3 @@ export function storeMicrositeGameId(gameId: number) {
 export function removeMicrositeGameId() {
     StorageManager.remove(micrositeGameIdKey);
 }
-
-export const observeSessionFromGame = () => {
-    window.addEventListener("message", (event) => {
-        if (appSettings.gameDomain === event.origin || event.origin === "http://localhost:7456") {
-            const receivedMessage = event.data;
-            if (receivedMessage.sessionInfo) {
-                storeSessionData(receivedMessage.sessionInfo);
-                window.history.replaceState(null, "", window.location.pathname);
-            }
-        }
-    });
-};

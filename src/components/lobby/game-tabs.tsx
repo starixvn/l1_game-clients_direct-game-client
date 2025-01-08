@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { getImageUrl } from "../../_shared/utils/icon-helper";
+import { storePlayerSetting } from "../../_shared/utils/player-setting";
+import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
+import FunctionUtil from "../../_shared/utils/function-util";
 
 interface GameTabsProps {
     activeKey: number;
@@ -13,6 +16,35 @@ interface GameTabsProps {
 
 export const GameTabs: React.FC<GameTabsProps> = ({ activeKey, gameOfferIds, onTabSelect, iframeSrc, wrapperIframeRef }) => {
     const { t } = useTranslation();
+
+    const postMessageToMicroSite = useCallback(
+        (data: any) => {
+            wrapperIframeRef?.current?.contentWindow?.postMessage(data, wrapperIframeRef.current.src);
+        },
+        [wrapperIframeRef]
+    );
+
+    const handleCopyToClipboard = useCallback(
+        async (data: any) => {
+            const copySuccessfully = await FunctionUtil.copyText(data.copyToClipboard);
+            postMessageToMicroSite({ copySuccessfully });
+        },
+        [postMessageToMicroSite]
+    );
+
+    useEffect(() => {
+        const musicListener = GameEventManager.getInstance().subscribe(GameEvents.musicEnable, storePlayerSetting);
+        const sfxListener = GameEventManager.getInstance().subscribe(GameEvents.sfxEnable, storePlayerSetting);
+        const isUserGestureListener = GameEventManager.getInstance().subscribe(GameEvents.isUserGesture, storePlayerSetting);
+        const copyTextListener = GameEventManager.getInstance().subscribe(GameEvents.copyToClipboard, handleCopyToClipboard);
+
+        return () => {
+            GameEventManager.getInstance().unsubscribe(musicListener);
+            GameEventManager.getInstance().unsubscribe(sfxListener);
+            GameEventManager.getInstance().unsubscribe(isUserGestureListener);
+            GameEventManager.getInstance().unsubscribe(copyTextListener);
+        };
+    }, []);
 
     return (
         <Tabs activeKey={activeKey} onSelect={(k) => k && onTabSelect(+k)}>
