@@ -42,11 +42,13 @@ export const useAuthorization = (token: string, appType: number) => {
                 return null;
             }
 
+            storeSessionData(session);
+
             if (isUM(session)) {
                 setUMInfo(session.umInfo);
+                return;
             }
 
-            storeSessionData(session);
             const authorizeInfo = await authorize(session);
             return await handleAuthorization(session, authorizeInfo);
         } catch (error) {
