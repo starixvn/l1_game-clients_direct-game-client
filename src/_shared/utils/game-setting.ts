@@ -11,10 +11,7 @@ export const getOfferGamesIds = (authorizeInfo: AuthorizeResponse): number[] => 
     return authorizeInfo?.user?.offerGames?.map((game: any) => +game?.gameId) || [];
 };
 
-export const getAndHandleGameOfferIds = (authorizeInfo: AuthorizeResponse, callbackFn: Function) => {
+export const getAndHandleGameOfferIds = (authorizeInfo: AuthorizeResponse) => {
     const gameOfferIds = getSortedGameSettings(authorizeInfo).map((game) => game.id);
-    if (gameOfferIds.length > 0) {
-        callbackFn(gameOfferIds);
-    }
     return gameOfferIds;
 };

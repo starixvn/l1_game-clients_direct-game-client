@@ -82,18 +82,25 @@ const Lobby: React.FC<{ theme: string }> = ({ theme }) => {
     };
 
     const handleAuthorization = async (session: SSOResponse, authorizeInfo: any) => {
-        if (!authorizeInfo?.authorized) {
-            if (appType === AppType.directGame) {
-                const authorizeResponse = await autoCreateNickname(session);
-                if (!authorizeResponse?.authorized) {
-                    setIsRenderRegister(true);
-                }
-                setAuthorizeResponse(authorizeResponse);
-                getAndHandleGameOfferIds(authorizeResponse, setGameOfferIds);
+        let response = authorizeInfo;
+
+        if (!response?.authorized) {
+            if (appType !== AppType.directGame) {
+                return;
             }
-        } else {
-            setAuthorizeResponse(authorizeInfo);
-            getAndHandleGameOfferIds(authorizeInfo, setGameOfferIds);
+
+            response = await autoCreateNickname(session);
+
+            if (!response?.authorized) {
+                setIsRenderRegister(true);
+                return;
+            }
+        }
+
+        setAuthorizeResponse(response);
+        const gameOfferIds = getAndHandleGameOfferIds(response);
+        if (gameOfferIds.length > 0) {
+            setGameOfferIds(gameOfferIds);
         }
     };
 
