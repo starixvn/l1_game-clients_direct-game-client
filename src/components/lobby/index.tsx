@@ -68,7 +68,7 @@ const Lobby: React.FC = () => {
     if (umInfo) return <UMPage umInfo={umInfo} />;
 
     return (
-        <div>
+        <div className="lobby-container">
             <LandscapeMode />
             <div className="lobby">
                 <GameTabs
