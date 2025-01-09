@@ -73,14 +73,16 @@ export function getQueryParameters(): URLContextModel | undefined {
     }
 
     const token = params.get("token") || "";
-    const lang = params.get("lang");
-    const gameId = Number(params.get("gameId") || 0);
-    const appType = Number(params.get("appType") || 0);
-    const isDirectMode = !!params.get("ref");
-    const redirectUrl = isDirectMode ? params.get("rurl") : "";
-    const isThirdParty = isDirectMode && !!redirectUrl;
+    if (token) {
+        const lang = params.get("lang");
+        const gameId = Number(params.get("gameId") || 0);
+        const appType = Number(params.get("appType") || 0);
+        const isDirectMode = !!params.get("ref");
+        const redirectUrl = isDirectMode ? params.get("rurl") : "";
+        const isThirdParty = isDirectMode && !!redirectUrl;
+        globalThis.history.pushState(null, "", globalThis.location?.href.split("?")[0]);
+        return { token, lang, gameId, appType, isDirectMode, redirectUrl, isThirdParty, firstSSOToLobby: true };
+    }
 
-    globalThis.history.pushState(null, "", globalThis.location?.href.split("?")[0]);
-
-    return { token, lang, gameId, appType, isDirectMode, redirectUrl, isThirdParty, firstSSOToLobby: true };
+    return {};
 }
