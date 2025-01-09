@@ -106,8 +106,7 @@ export const localStorageKeys = {
 
 export function buildLocalStorageKey(key: string) {
     if (typeof window !== "undefined" && window.location?.hostname) {
-        // TODO: Need to update appSettings.appType
-        return `${window.location.hostname}.${key}.${appSettings.appType}`;
+        return `${window.location.hostname}.${key}`;
     }
 
     return key;

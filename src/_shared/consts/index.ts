@@ -10,10 +10,6 @@ export const languageMapping = {
 
 export const languageCodes = ["en", "id", "th", "vi", "zh_cn", "zh_tw"];
 
-export const AppType = {
-    directGame: 7,
-};
-
 export const MAX_AVATAR_ID = 40;
 
 export type LanguageKey = keyof typeof languageMapping;

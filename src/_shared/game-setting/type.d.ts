@@ -15,5 +15,4 @@ export interface IAppSettings {
     gameDomain: string;
     env: string;
     subDirectory?: string;
-    appType: number;
 }

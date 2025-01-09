@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { appSettings } from "../../_shared/game-setting";
 import "./lobby.scss";
 import { getQueryParameters, getGameUrl } from "../../_shared/utils/url-helper";
 import { getAndHandleGameOfferIds, getSortedGameSettings } from "../../_shared/utils/game-setting";
@@ -17,11 +16,8 @@ const Lobby: React.FC = () => {
     const [activeKey, setActiveKey] = useState(0);
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
     const [iframeSrc, setIframeSrc] = useState<string>();
-    const [isTimeout, setTimeout] = useState(false);
-    const { isLoading, umInfo, setUMInfo, authorizeResponse, isSessionTimeout, initialize } = useAuthorization(
-        token,
-        appType ?? appSettings.appType
-    );
+    const [isTimeout, setIsTimeout] = useState(false);
+    const { isLoading, umInfo, setUMInfo, authorizeResponse, isSessionTimeout, initialize } = useAuthorization(token, appType ?? 1);
 
     const handleTabSelect = (index: number) => {
         setActiveKey(index);
@@ -43,7 +39,7 @@ const Lobby: React.FC = () => {
     useEffect(() => {
         const gameEventManager = GameEventManager.getInstance();
         const events = [
-            { event: GameEvents.sessionTimeout, handler: () => setTimeout(true) },
+            { event: GameEvents.sessionTimeout, handler: () => setIsTimeout(true) },
             { event: GameEvents.isUnderMaintain, handler: (data) => setUMInfo(data?.umInfo) },
         ];
 

@@ -18,10 +18,11 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY package.json yarn.lock tsconfig.json game-settings.json .babelrc webpack.config.js ./
 COPY configs ./configs
 COPY public ./public
-COPY missing-config.js public/c.js
 COPY src ./src
 
 RUN yarn build
+
+COPY missing-config.js /app/dist/c.js
 
 FROM hub.lumigame.com/base/nginx:brotli-1.20.2-zlib AS publish
 COPY ./src/.nginx/game.conf /etc/nginx/conf.d/default.conf
