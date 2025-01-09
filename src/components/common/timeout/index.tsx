@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./styles.scss";
 import { useTranslator } from "../../../_shared/react-hooks";
 import { ResourceTypes } from "../../../_shared/consts";
+import { clearSessionData } from "../../../_shared/utils";
 
 const TimeOut: React.FC = () => {
     const { t } = useTranslator([ResourceTypes.INSTANT_GAME]);
+    useEffect(() => {
+        clearSessionData();
+    }, []);
+
     return (
         <div className="error-page">
             <img alt="SessionTimeout" className="error-background" src="/images/error-session.svg" />
