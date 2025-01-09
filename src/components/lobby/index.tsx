@@ -68,7 +68,7 @@ const Lobby: React.FC = () => {
     if (umInfo) return <UMPage umInfo={umInfo} />;
 
     return (
-        <div className="lobby-container">
+        <>
             <LandscapeMode />
             <div className="lobby">
                 <GameTabs
@@ -79,7 +79,7 @@ const Lobby: React.FC = () => {
                     wrapperIframeRef={wrapperIframeRef}
                 />
             </div>
-        </div>
+        </>
     );
 };
 
