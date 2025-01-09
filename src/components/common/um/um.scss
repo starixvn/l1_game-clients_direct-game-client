@@ -47,4 +47,19 @@
             }
         }
     }
+
+    @media only screen and (orientation: landscape) {
+        font-size: 1.4rem;
+
+        > div {
+            top: 40%;
+            .title {
+                font-size: 1.8rem;
+            }
+            .image {
+                margin-top: 1rem;
+                max-width: 35vh;
+            }
+        }
+    }
 }
