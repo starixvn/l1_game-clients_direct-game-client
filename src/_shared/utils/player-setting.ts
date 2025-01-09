@@ -1,5 +1,3 @@
-import { appSettings } from "../game-setting";
-import { GameEventManager, GameEvents } from "./game-event-manager";
 import { StorageManager } from "./storage-manager";
 
 const playerSettingKey = "player_settings";

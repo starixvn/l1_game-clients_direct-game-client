@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect } from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import { getImageUrl } from "../../_shared/utils/icon-helper";
 import { storePlayerSetting } from "../../_shared/utils/player-setting";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import FunctionUtil from "../../_shared/utils/function-util";
@@ -55,7 +54,11 @@ export const GameTabs: React.FC<GameTabsProps> = ({ activeKey, gameOfferIds, onT
                         eventKey={index}
                         title={
                             <div className={`tab-title ${isActive ? "active" : ""}`}>
-                                <img src={getImageUrl(gameOfferId, isActive)} alt={t(`gameNames.${gameOfferId}`)} className="tab-icon" />
+                                <img
+                                    src={`/images/icon-${gameOfferId}.png`}
+                                    alt={t(`gameNames.${gameOfferId}`)}
+                                    className={`tab-icon ${!isActive ? "inactive" : ""}`}
+                                />
                                 {t(`gameNames.${gameOfferId}`)}
                             </div>
                         }

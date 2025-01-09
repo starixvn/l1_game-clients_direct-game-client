@@ -1,5 +1,3 @@
-import { appSettings } from "../game-setting";
-
 function isString(value: any): value is string {
     return typeof value === "string";
 }
@@ -102,6 +100,7 @@ class StorageManager {
 
 export const localStorageKeys = {
     url: buildLocalStorageKey("url"),
+    language: buildLocalStorageKey("language"),
 };
 
 export function buildLocalStorageKey(key: string) {

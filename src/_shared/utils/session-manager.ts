@@ -1,5 +1,4 @@
 import { SSOResponse } from "sc-user-service-client/dist/auth";
-import { appSettings } from "../game-setting";
 import { StorageManager } from "./storage-manager";
 
 const sessionIdStorageName = "scss";
