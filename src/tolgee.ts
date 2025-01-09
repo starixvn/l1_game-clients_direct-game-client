@@ -1,8 +1,8 @@
 import { FormatIcu } from "@tolgee/format-icu";
 import { BackendFetch, GetPath, Tolgee } from "@tolgee/react";
-import { buildVersion, languageCodes } from "../src/_shared/consts";
+import { buildVersion, languageCodes, locales, ResourceTypes } from "../src/_shared/consts";
 
-const namespaces = ["gameNames", "Common"];
+const namespaces = [ResourceTypes.GAME_NAMES, ResourceTypes.COMMON];
 
 const trimSlashes = (path: string): string => {
     if (path.endsWith("/")) {
@@ -17,10 +17,10 @@ const getPath: GetPath = ({ namespace, language, prefix }: { namespace?: string;
 };
 
 export const tolgee = Tolgee().use(FormatIcu()).use(BackendFetch({ getPath })).init({
-    fallbackLanguage: "en",
-    defaultLanguage: "en",
+    fallbackLanguage: locales.en,
+    defaultLanguage: locales.en,
     availableLanguages: languageCodes,
     projectId: "5",
     ns: namespaces,
-    defaultNs: "Common",
+    defaultNs: ResourceTypes.COMMON,
 });

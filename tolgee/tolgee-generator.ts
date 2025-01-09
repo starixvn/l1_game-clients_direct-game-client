@@ -1,7 +1,7 @@
 import { DevTools, Tolgee } from "@tolgee/web";
 import * as fs from "fs";
 import * as path from "path";
-import { languageCodes } from "../src/_shared/consts";
+import { languageCodes, locales, ResourceTypes } from "../src/_shared/consts";
 
 function writeFile(fileName: string, content: string, extension = "json") {
     const dirname = path.dirname(fileName);
@@ -15,14 +15,14 @@ function writeFile(fileName: string, content: string, extension = "json") {
     });
 }
 
-const namespaces = ["gameNames", "Common", "messages", "InstantGame"];
+const namespaces = [ResourceTypes.GAME_NAMES, ResourceTypes.COMMON, ResourceTypes.MESSAGES, ResourceTypes.INSTANT_GAME];
 const tg = Tolgee().use(DevTools()).init({
-    defaultLanguage: "en",
+    defaultLanguage: locales.en,
     availableLanguages: languageCodes,
     apiKey: "tgpak_gvpw45brha2xg3btoztxeytunvudc5dbn5twqodtonztc",
     apiUrl: "https://tolgee.sabagame.com/",
     projectId: "5",
-    defaultNs: "Common",
+    defaultNs: ResourceTypes.COMMON,
     ns: namespaces,
 });
 

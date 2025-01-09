@@ -5,6 +5,8 @@ import { ResourceTypes } from "../../../_shared/consts";
 import { isMobile } from "../../../_shared/utils/device-helper";
 
 const orientationType = { portrait: "portrait", landscape: "landscape" };
+const orientationChange = "orientationchange";
+
 const LandscapeMode = () => {
     const { t } = useTranslator([ResourceTypes.COMMON]);
     const [orientation, setOrientation] = useState("");
@@ -17,10 +19,10 @@ const LandscapeMode = () => {
 
     useEffect(() => {
         if (isMobile()) {
-            window.addEventListener("orientationchange", handleOrientation);
+            window.addEventListener(orientationChange, handleOrientation);
         }
         return () => {
-            window.removeEventListener("orientationchange", handleOrientation);
+            window.removeEventListener(orientationChange, handleOrientation);
         };
     }, []);
 
