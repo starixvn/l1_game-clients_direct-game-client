@@ -3,11 +3,13 @@ import "./lobby.scss";
 import { getQueryParameters, getGameUrl } from "../../_shared/utils/url-helper";
 import { getAndHandleGameOfferIds, getSortedGameSettings } from "../../_shared/utils/game-setting";
 import Loading from "../common/loading";
-import TimeOut from "../common/timeout";
 import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
 import { GameTabs } from "./game-tabs";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
-import UM from "../common/um";
+import LandscapeMode from "../common/landscape-mode";
+
+const SessionTimeoutPage = React.lazy(() => import("../common/timeout"));
+const UMPage = React.lazy(() => import("../common/um"));
 
 const Lobby: React.FC = () => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
@@ -57,11 +59,12 @@ const Lobby: React.FC = () => {
     }, [gameOfferIds]);
 
     if (isLoading) return <Loading />;
-    if (isSessionTimeout || isTimeout) return <TimeOut />;
-    if (umInfo) return <UM umInfo={umInfo} />;
+    if (isSessionTimeout || isTimeout) return <SessionTimeoutPage />;
+    if (umInfo) return <UMPage umInfo={umInfo} />;
 
     return (
         <div>
+            <LandscapeMode />
             <div className="lobby">
                 <GameTabs
                     activeKey={activeKey}
