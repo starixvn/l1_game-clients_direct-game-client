@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import "./landscape-mode.module.scss";
+import "./landscape-mode.scss";
 import { useTranslator } from "../../../_shared/react-hooks/use-translator";
 import { ResourceTypes } from "../../../_shared/consts";
 import { isMobile } from "../../../_shared/utils/device-helper";

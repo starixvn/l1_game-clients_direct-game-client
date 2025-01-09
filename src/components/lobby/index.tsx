@@ -8,6 +8,7 @@ import { GameTabs } from "./game-tabs";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import LandscapeMode from "../common/landscape-mode";
 import { locales } from "../../_shared/consts";
+import NoGamesOffer from "../common/no-games-offer";
 
 const SessionTimeoutPage = React.lazy(() => import("../common/timeout"));
 const UMPage = React.lazy(() => import("../common/um"));
@@ -66,6 +67,7 @@ const Lobby: React.FC = () => {
     if (isLoading) return <Loading />;
     if (isSessionTimeout || isTimeout) return <SessionTimeoutPage />;
     if (umInfo) return <UMPage umInfo={umInfo} />;
+    if (gameOfferIds.length === 0) return <NoGamesOffer />;
 
     return (
         <>
