@@ -1,8 +1,6 @@
 import { FormatIcu } from "@tolgee/format-icu";
 import { BackendFetch, GetPath, Tolgee } from "@tolgee/react";
-import { buildVersion } from "../src/_shared/consts";
-
-const languageCodes = ["en", "id", "th", "vi", "zh_cn", "zh_tw"];
+import { buildVersion, languageCodes } from "../src/_shared/consts";
 
 const namespaces = ["gameNames", "Common"];
 

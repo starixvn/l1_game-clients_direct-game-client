@@ -2,8 +2,10 @@ import { useState } from "react";
 import { authorize, autoCreateNickname, sso, verifySession } from "../services/auth-service";
 import { AuthorizeResponse, SSOResponse, UMInfo } from "sc-user-service-client/dist/auth";
 import { storeSessionData } from "../utils";
+import { languageMapping, locales } from "../consts";
+import { tolgee } from "../../tolgee";
 
-export const useAuthorization = (token: string, appType: number) => {
+export const useAuthorization = (token: string, appType: number, language: string) => {
     const [isLoading, setIsLoading] = useState(true);
     const [authorizeResponse, setAuthorizeResponse] = useState<AuthorizeResponse | null>(null);
     const [isSessionTimeout, setIsSessionTimeout] = useState(false);
@@ -11,6 +13,12 @@ export const useAuthorization = (token: string, appType: number) => {
 
     const loadSession = async (token: string | undefined) => {
         return token ? sso(token, appType) : verifySession();
+    };
+
+    const loadLanguage = async (session: SSOResponse) => {
+        const lang = languageMapping[language] || languageMapping[session?.language] || locales.en;
+        await tolgee.changeLanguage(lang);
+        return lang;
     };
 
     const isUM = (session: SSOResponse) => {
@@ -37,6 +45,7 @@ export const useAuthorization = (token: string, appType: number) => {
     const initialize = async () => {
         try {
             const session = await loadSession(token);
+            await loadLanguage(session);
             if (!session || isTimeoutSession(session)) {
                 setIsSessionTimeout(true);
                 return null;

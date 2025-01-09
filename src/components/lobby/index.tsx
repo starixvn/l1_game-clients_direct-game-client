@@ -10,16 +10,21 @@ import LandscapeMode from "../common/landscape-mode";
 
 const SessionTimeoutPage = React.lazy(() => import("../common/timeout"));
 const UMPage = React.lazy(() => import("../common/um"));
+import { locales } from "../../_shared/consts";
 
 const Lobby: React.FC = () => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
     const queryParameters = getQueryParameters();
-    const { token, appType } = queryParameters;
+    const { token, appType, lang } = queryParameters;
     const [activeKey, setActiveKey] = useState(0);
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
     const [iframeSrc, setIframeSrc] = useState<string>();
     const [isTimeout, setIsTimeout] = useState(false);
-    const { isLoading, umInfo, setUMInfo, authorizeResponse, isSessionTimeout, initialize } = useAuthorization(token, appType ?? 1);
+    const { isLoading, umInfo, setUMInfo, authorizeResponse, isSessionTimeout, initialize } = useAuthorization(
+        token,
+        appType ?? 1,
+        lang ?? locales.en
+    );
 
     const handleTabSelect = (index: number) => {
         setActiveKey(index);
