@@ -13,13 +13,12 @@ const trimSlashes = (path: string): string => {
     return path;
 };
 
-// TODO: Need to add build version to the path
-// const getPath: GetPath = ({ namespace, language, prefix }: { namespace?: string; language: string; prefix: string }): string => {
-//     const basePath = trimSlashes(prefix);
-//     return namespace ? `${basePath}/${namespace}/${language}.json?v=${buildVersion}` : `${basePath}/${language}.json?v=${buildVersion}`;
-// };
+const getPath: GetPath = ({ namespace, language, prefix }: { namespace?: string; language: string; prefix: string }): string => {
+    const basePath = trimSlashes(prefix);
+    return namespace ? `${basePath}/${namespace}/${language}.json?v=${buildVersion}` : `${basePath}/${language}.json?v=${buildVersion}`;
+};
 
-export const tolgee = Tolgee().use(FormatIcu()).use(BackendFetch()).init({
+export const tolgee = Tolgee().use(FormatIcu()).use(BackendFetch({ getPath })).init({
     fallbackLanguage: "en",
     defaultLanguage: "en",
     availableLanguages: languageCodes,

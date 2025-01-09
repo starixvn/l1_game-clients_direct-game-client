@@ -21,4 +21,4 @@ export const ResourceTypes = {
     INSTANT_GAME: "InstantGame",
 };
 
-export const buildVersion = 111;
+export const buildVersion = process.env.BUILD_VERSION || 111;

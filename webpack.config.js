@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin"); // For JS minification
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin"); // For CSS minification
 const CopyPlugin = require("copy-webpack-plugin");
+const webpack = require("webpack");
 
 // Determine if the environment is production or development
 const isProduction = process.env.NODE_ENV === "production";
@@ -112,6 +113,9 @@ module.exports = {
                     to: "c.js",
                 },
             ],
+        }),
+        new webpack.DefinePlugin({
+            "process.env.BUILD_VERSION": JSON.stringify(new Date().getTime()),
         }),
     ],
 };
