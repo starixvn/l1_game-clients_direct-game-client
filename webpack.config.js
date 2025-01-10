@@ -112,6 +112,10 @@ module.exports = {
                     from: "public/c.js",
                     to: "c.js",
                 },
+                {
+                    from: "public/favicon.ico",
+                    to: "favicon.ico",
+                },
             ],
         }),
         new webpack.DefinePlugin({
