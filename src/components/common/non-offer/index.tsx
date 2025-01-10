@@ -6,9 +6,12 @@ import "./styles.scss";
 const NonOffer = () => {
     const { t } = useTranslator([ResourceTypes.COMMON]);
     return (
-        <div className="error-page">
-            <img alt="NoGamesOffer" className="error-background" src="/images/error-session.svg" />
-            <p className="no-games-offer-title">{t("message_no_game_offer")}</p>
+        <div className="non-offer-page">
+            <img alt="NoGamesOffer" className="non-offer-icon" src="/images/icon-warning.png" />
+            <div className="non-offer-title-container">
+                <div className="non-offer-icon-wrapper"></div>
+                <p className="non-offer-title">{t("message_no_game_offer")}</p>
+            </div>
         </div>
     );
 };
