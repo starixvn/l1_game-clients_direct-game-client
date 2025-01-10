@@ -1,24 +1,24 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import { storePlayerSetting } from "../../_shared/utils/player-setting";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import FunctionUtil from "../../_shared/utils/function-util";
 import { useTranslator } from "../../_shared/react-hooks/use-translator";
+import { getGameUrl } from "../../_shared/utils";
 
 interface GameTabsProps {
-    activeKey: number;
     gameOfferIds: number[];
-    onTabSelect: (index: number) => void;
-    iframeSrc: string;
-    wrapperIframeRef: React.RefObject<HTMLIFrameElement>;
 }
 
-export const GameTabs: React.FC<GameTabsProps> = ({ activeKey, gameOfferIds, onTabSelect, iframeSrc, wrapperIframeRef }) => {
+export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
+    const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
     const { t } = useTranslator();
+    const [activeKey, setActiveKey] = useState(0);
+    const [iframeSrc, setIframeSrc] = useState<string>();
 
     const postMessageToMicroSite = useCallback(
         (data: any) => {
-            wrapperIframeRef?.current?.contentWindow?.postMessage(data, wrapperIframeRef.current.src);
+            wrapperIframeRef?.current?.contentWindow?.postMessage(data, wrapperIframeRef?.current?.src);
         },
         [wrapperIframeRef]
     );
@@ -43,11 +43,23 @@ export const GameTabs: React.FC<GameTabsProps> = ({ activeKey, gameOfferIds, onT
             GameEventManager.getInstance().unsubscribe(isUserGestureListener);
             GameEventManager.getInstance().unsubscribe(copyTextListener);
         };
-    }, []);
+    }, [handleCopyToClipboard]);
+
+    useEffect(() => {
+        if (gameOfferIds.length > 0) {
+            setIframeSrc(getGameUrl(gameOfferIds[0]));
+        }
+    }, [gameOfferIds]);
+
+    const handleTabSelect = (index: number) => {
+        setActiveKey(index);
+        const gameId = gameOfferIds[index];
+        setIframeSrc(getGameUrl(gameId));
+    };
 
     return (
-        <Tabs activeKey={activeKey} onSelect={(k) => k && onTabSelect(+k)}>
-            {gameOfferIds.map((gameOfferId, index) => {
+        <Tabs activeKey={activeKey} onSelect={(k) => k && handleTabSelect(+k)}>
+            {gameOfferIds.map((gameId, index) => {
                 const isActive = activeKey === index;
                 return (
                     <Tab
@@ -55,17 +67,29 @@ export const GameTabs: React.FC<GameTabsProps> = ({ activeKey, gameOfferIds, onT
                         title={
                             <div className={`tab-title ${isActive ? "active" : ""}`}>
                                 <img
-                                    src={`/images/icon-${gameOfferId}.png`}
-                                    alt={t(`gameNames.${gameOfferId}`)}
+                                    src={`/images/icon-${gameId}.png`}
+                                    alt={t(`gameNames.${gameId}`)}
                                     className={`tab-icon ${!isActive ? "inactive" : ""}`}
                                 />
-                                {t(`gameNames.${gameOfferId}`)}
+                                {t(`gameNames.${gameId}`)}
                             </div>
                         }
-                        key={gameOfferId}
+                        key={gameId}
                         unmountOnExit={true}
                     >
-                        <iframe ref={wrapperIframeRef} title={`Game ${gameOfferId}`} width="100%" height="100%" src={iframeSrc} />
+                        {isActive && (
+                            <iframe
+                                ref={(el) => {
+                                    if (el) {
+                                        wrapperIframeRef.current = el;
+                                    }
+                                }}
+                                title={`Game ${gameId}`}
+                                width="100%"
+                                height="100%"
+                                src={iframeSrc}
+                            />
+                        )}
                     </Tab>
                 );
             })}

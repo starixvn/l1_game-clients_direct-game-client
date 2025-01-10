@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { authorize, autoCreateNickname, sso, verifySession } from "../services/auth-service";
-import { AuthorizeResponse, SSOResponse, UMInfo } from "sc-user-service-client/dist/auth";
+import { SSOResponse, UMInfo } from "sc-user-service-client/dist/auth";
 import { localStorageKeys, StorageManager, storeSessionData } from "../utils";
 import { languageMapping, locales } from "../consts";
 import { tolgee } from "../../tolgee";
 
 export const useAuthorization = (token: string, appType: number, language: string) => {
     const [isLoading, setIsLoading] = useState(true);
-    const [authorizeResponse, setAuthorizeResponse] = useState<AuthorizeResponse | null>(null);
     const [isSessionTimeout, setIsSessionTimeout] = useState(false);
     const [umInfo, setUMInfo] = useState<UMInfo | null>(null);
 
@@ -40,7 +39,6 @@ export const useAuthorization = (token: string, appType: number, language: strin
                 setIsSessionTimeout(true);
             }
         }
-        setAuthorizeResponse(response);
         return response;
     };
 
@@ -74,7 +72,6 @@ export const useAuthorization = (token: string, appType: number, language: strin
         isLoading,
         umInfo,
         setUMInfo,
-        authorizeResponse,
         isSessionTimeout,
         initialize,
     };

@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./lobby.scss";
-import { getQueryParameters, getGameUrl } from "../../_shared/utils/url-helper";
-import { getAndHandleGameOfferIds, getSortedGameSettings } from "../../_shared/utils/game-setting";
+import { getQueryParameters } from "../../_shared/utils";
+import { getOfferedGameIds } from "../../_shared/utils/game-setting";
 import Loading from "../common/loading";
 import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
 import { GameTabs } from "./game-tabs";
@@ -14,30 +14,17 @@ const SessionTimeoutPage = React.lazy(() => import("../common/timeout"));
 const UMPage = React.lazy(() => import("../common/um"));
 
 const Lobby: React.FC = () => {
-    const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
     const queryParameters = getQueryParameters();
     const { token, appType, lang } = queryParameters;
-    const [activeKey, setActiveKey] = useState(0);
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
-    const [iframeSrc, setIframeSrc] = useState<string>();
     const [isTimeout, setIsTimeout] = useState(false);
-    const { isLoading, umInfo, setUMInfo, authorizeResponse, isSessionTimeout, initialize } = useAuthorization(
-        token,
-        appType ?? 1,
-        lang ?? locales.en
-    );
-
-    const handleTabSelect = (index: number) => {
-        setActiveKey(index);
-        const gameId = getSortedGameSettings(authorizeResponse)[index].id;
-        setIframeSrc(getGameUrl(gameId));
-    };
+    const { isLoading, umInfo, setUMInfo, isSessionTimeout, initialize } = useAuthorization(token, appType ?? 1, lang ?? locales.en);
 
     useEffect(() => {
         const authenticate = async () => {
             const response = await initialize();
             if (response) {
-                setGameOfferIds(getAndHandleGameOfferIds(response));
+                setGameOfferIds(getOfferedGameIds(response));
             }
         };
 
@@ -58,12 +45,6 @@ const Lobby: React.FC = () => {
         };
     }, []);
 
-    useEffect(() => {
-        if (gameOfferIds.length > 0) {
-            setIframeSrc(getGameUrl(gameOfferIds[0]));
-        }
-    }, [gameOfferIds]);
-
     if (isLoading) return <Loading />;
     if (isSessionTimeout || isTimeout) return <SessionTimeoutPage />;
     if (umInfo) return <UMPage umInfo={umInfo} />;
@@ -73,13 +54,7 @@ const Lobby: React.FC = () => {
         <>
             <LandscapeMode />
             <div className="lobby">
-                <GameTabs
-                    activeKey={activeKey}
-                    gameOfferIds={gameOfferIds}
-                    onTabSelect={handleTabSelect}
-                    iframeSrc={iframeSrc}
-                    wrapperIframeRef={wrapperIframeRef}
-                />
+                <GameTabs gameOfferIds={gameOfferIds} />
             </div>
         </>
     );
