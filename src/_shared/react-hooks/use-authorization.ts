@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { authorize, autoCreateNickname, sso, verifySession } from "../services/auth-service";
-import { SSOResponse, UMInfo } from "sc-user-service-client/dist/auth";
+import { SSOResponse, AuthorizeResponse, UMInfo } from "sc-user-service-client/dist/auth";
 import { localStorageKeys, StorageManager, storeSessionData } from "../utils";
 import { languageMapping, locales } from "../consts";
 import { tolgee } from "../../tolgee";
@@ -31,7 +31,7 @@ export const useAuthorization = (token: string, appType: number, language: strin
         return isTimeout;
     };
 
-    const handleAuthorization = async (session: SSOResponse, authorizeInfo: any) => {
+    const handleAuthorization = async (session: SSOResponse, authorizeInfo: AuthorizeResponse) => {
         let response = authorizeInfo;
         if (!authorizeInfo?.authorized) {
             response = await autoCreateNickname(session);
@@ -42,7 +42,7 @@ export const useAuthorization = (token: string, appType: number, language: strin
         return response;
     };
 
-    const initialize = async () => {
+    const initialize = async (): Promise<AuthorizeResponse | null> => {
         try {
             const session = await loadSession(token);
             await loadLanguage(session);
@@ -55,10 +55,10 @@ export const useAuthorization = (token: string, appType: number, language: strin
 
             if (isUM(session)) {
                 setUMInfo(session.umInfo);
-                return;
+                return null;
             }
 
-            const authorizeInfo = await authorize(session);
+            const authorizeInfo = (await authorize(session)) as AuthorizeResponse;
             return await handleAuthorization(session, authorizeInfo);
         } catch (error) {
             console.log("Authorization error: ", error);

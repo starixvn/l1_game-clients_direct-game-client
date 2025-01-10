@@ -1,9 +1,9 @@
 import React from "react";
 import { useTranslator } from "../../../_shared/react-hooks";
 import { ResourceTypes } from "../../../_shared/consts";
-import "./no-games-offer.scss";
+import "./styles.scss";
 
-const NoGamesOffer = () => {
+const NonOffer = () => {
     const { t } = useTranslator([ResourceTypes.COMMON]);
     return (
         <div className="error-page">
@@ -13,4 +13,4 @@ const NoGamesOffer = () => {
     );
 };
 
-export default NoGamesOffer;
+export default NonOffer;

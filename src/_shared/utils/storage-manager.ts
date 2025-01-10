@@ -101,6 +101,7 @@ class StorageManager {
 export const localStorageKeys = {
     url: buildLocalStorageKey("url"),
     language: buildLocalStorageKey("language"),
+    operator: buildLocalStorageKey("operator"),
 };
 
 export function buildLocalStorageKey(key: string) {

@@ -2,6 +2,7 @@ import { appSettings } from "../game-setting";
 import Base64Util from "./base64-util";
 import { getSession } from "./session-manager";
 import { getPlayerSetting } from "./player-setting";
+import { localStorageKeys, StorageManager } from "./storage-manager";
 
 export type URLContextModel = {
     token?: string;
@@ -14,6 +15,7 @@ export type URLContextModel = {
     backToRedirectUrl?: Function;
     firstSSOToLobby?: boolean;
     appType?: number;
+    operator?: string;
 };
 
 export const getBaseGameUrl = (gameId: number) => {
@@ -37,6 +39,7 @@ export const getGameUrl = (gameId: number) => {
 
 const buildSessionParams = () => {
     const sessionInfo = getSession();
+    const operator = StorageManager.get(localStorageKeys.operator);
     const playerSetting = getPlayerSetting();
     const params: any = {
         ss: sessionInfo.ss,
@@ -47,6 +50,7 @@ const buildSessionParams = () => {
         musicEnable: playerSetting.musicEnable,
         sfxEnable: playerSetting.sfxEnable,
         isUserGesture: playerSetting.isUserGesture,
+        op: operator,
     };
     const searchParams = new URLSearchParams();
     Object.keys(params).forEach((key) => params[key] !== undefined && searchParams.append(key, params[key]));
@@ -78,10 +82,11 @@ export function getQueryParameters(): URLContextModel | undefined {
         const gameId = Number(params.get("gameId") || 0);
         const appType = Number(params.get("appType") || 0);
         const isDirectMode = !!params.get("ref");
+        const operator = params.get("op");
         const redirectUrl = isDirectMode ? params.get("rurl") : "";
         const isThirdParty = isDirectMode && !!redirectUrl;
         globalThis.history.pushState(null, "", globalThis.location?.href.split("?")[0]);
-        return { token, lang, gameId, appType, isDirectMode, redirectUrl, isThirdParty, firstSSOToLobby: true };
+        return { token, lang, gameId, appType, isDirectMode, redirectUrl, isThirdParty, operator, firstSSOToLobby: true };
     }
 
     return {};

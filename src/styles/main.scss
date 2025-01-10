@@ -3,15 +3,8 @@ html {
     overscroll-behavior: none;
     -ms-overscroll-behavior: none;
     -webkit-tap-highlight-color: transparent;
-
     --font-family: "Roboto", sans-serif;
-    --font-money: "BebasNeue", Arial, sans-serif;
-    --font-number: "Montserrat", Arial, sans-serif;
-
-    //background
     --black-background: #000;
-
-    // z-index
 
     // spacing size
     --spacing-size-1: 0.4rem;
@@ -104,10 +97,6 @@ img {
 
 .font-weight-bold {
     font-weight: 700 !important;
-}
-
-.font-number {
-    font-family: var(--font-number);
 }
 
 .text-center {
