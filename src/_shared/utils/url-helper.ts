@@ -49,7 +49,7 @@ const buildSessionParams = () => {
         purl: Base64Util.base64Encode(window.location.href),
         musicEnable: playerSetting.musicEnable,
         sfxEnable: playerSetting.sfxEnable,
-        isUserGesture: playerSetting.isUserGesture,
+        isUserGesture: false,
         op: operator,
     };
     const searchParams = new URLSearchParams();
