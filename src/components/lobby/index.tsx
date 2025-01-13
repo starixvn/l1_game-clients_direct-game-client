@@ -20,26 +20,33 @@ const Lobby: React.FC = () => {
     const [isTimeout, setIsTimeout] = useState(false);
     const { isLoading, umInfo, setUMInfo, isSessionTimeout, initialize } = useAuthorization(token, appType ?? 1, lang ?? locales.en);
 
-    useEffect(() => {
-        const authenticate = async () => {
-            const response = await initialize();
-            if (response?.authorized) {
-                setGameOfferIds(getOfferedGameIds(response));
-                operator && StorageManager.set(localStorageKeys.operator, operator);
-            }
-        };
+    const authenticate = async () => {
+        const response = await initialize();
+        if (response?.authorized) {
+            setGameOfferIds(getOfferedGameIds(response));
+            operator && StorageManager.set(localStorageKeys.operator, operator);
+        }
+    };
 
+    useEffect(() => {
         authenticate();
     }, []);
 
     useEffect(() => {
+        const handleIsNotPermittedToPlay = async (data: any) => {
+            console.log('Is Not Permitted To Play:', data);
+            authenticate()
+        };
+
         const gameEventManager = GameEventManager.getInstance();
         const events = [
             { event: GameEvents.sessionTimeout, handler: () => setIsTimeout(true) },
             { event: GameEvents.isUnderMaintain, handler: (data) => setUMInfo(data?.umInfo) },
+            { event: GameEvents.isNotPermittedToPlay, handler: (data) => handleIsNotPermittedToPlay(data) },
         ];
 
         const subscriptions = events.map(({ event, handler }) => gameEventManager.subscribe(event, handler));
+
 
         return () => {
             subscriptions.forEach((id) => gameEventManager.unsubscribe(id));

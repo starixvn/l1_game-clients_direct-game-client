@@ -31,6 +31,8 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
         [postMessageToMicroSite]
     );
 
+
+
     useEffect(() => {
         const musicListener = GameEventManager.getInstance().subscribe(GameEvents.musicEnable, storePlayerSetting);
         const sfxListener = GameEventManager.getInstance().subscribe(GameEvents.sfxEnable, storePlayerSetting);
