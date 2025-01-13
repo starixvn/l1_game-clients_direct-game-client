@@ -7,6 +7,8 @@
         "dev": "cross-env NODE_ENV=development webpack serve --open",
         "build": "cross-env NODE_ENV=production webpack --mode production",
         "test": "jest",
+        "test:watch": "jest --watch",
+        "test-coverage": "jest --coverage",
         "generate-tolgee-data": "ts-node ./tolgee/tolgee-generator.ts",
         "obfuscator-config-file": "ts-node ./configs/config-obfuscator.ts",
         "reg": "npm set registry http://npm.lumigame.com"
