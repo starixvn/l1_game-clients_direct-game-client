@@ -5,6 +5,6 @@ window.envConfig = {
     },
     system: "SG",
     ssl: true,
-    gameDomain: "https://l1-proxy1.lumigame.com",
+    gameDomain: "https://l1-proxy2.lumigame.com",
     env: "LOCAL1",
 };

@@ -20,14 +20,14 @@ export type URLContextModel = {
 
 export const getBaseGameUrl = (gameId: number) => {
     let baseUrl = `${appSettings.gameDomain}/direct-client-${gameId}/`;
-    // if (process.env.NODE_ENV === "development") {
-    //     //baseUrl = `http://localhost:7456`;
-    //     baseUrl = `http://localhost:7456/web-mobile/web-mobile/index.html`;
+    if (process.env.NODE_ENV === "development") {
+        //baseUrl = `http://localhost:7456`;
+        baseUrl = `http://localhost:7456/web-mobile/web-mobile/index.html`;
 
-    //     if (gameId === 2) {
-    //         //baseUrl = `http://localhost:7456`;
-    //     }
-    // }
+        if (gameId === 2) {
+            baseUrl = `http://localhost:7456`;
+        }
+    }
 
     return baseUrl;
 };
