@@ -34,8 +34,7 @@ const Lobby: React.FC = () => {
 
     useEffect(() => {
         const handleIsNotPermittedToPlay = async (data: any) => {
-            console.log('Is Not Permitted To Play:', data);
-            authenticate()
+            data.isNotPermittedToPlay && authenticate()
         };
 
         const gameEventManager = GameEventManager.getInstance();
