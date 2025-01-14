@@ -1,16 +1,15 @@
 .lobby {
-    height: calc(100% - 34px);
-
+    height: calc(100% - 48px);
     .nav-tabs {
         flex-wrap: nowrap;
         overflow-x: auto;
         overflow-y: hidden;
         white-space: nowrap;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: bold;
 
         button {
-            padding: 6px;
+            padding: 10px;
         }
     }
 
@@ -35,8 +34,8 @@
 }
 
 .tab-icon {
-    width: 20px;
-    height: 20px;
+    width: 26px;
+    height: 26px;
     margin-right: 8px;
 
     &.inactive {
