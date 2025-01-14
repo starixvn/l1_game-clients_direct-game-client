@@ -155,8 +155,12 @@ describe('FunctionUtil', () => {
         });
 
         it('should handle errors gracefully', async () => {
+            const mockUserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0.4472.124 Safari/537.36';
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+
             // @ts-ignore
             global.navigator = {
+                userAgent: mockUserAgent,
                 clipboard: {
                     writeText: jest.fn().mockRejectedValue(new Error('Clipboard error')),
                     read: jest.fn(),
@@ -168,10 +172,15 @@ describe('FunctionUtil', () => {
                 }
             };
             // @ts-ignore
-            global.window = {};
+            global.window = {
+                opera: undefined
+            };
 
             const result = await FunctionUtil.copyText('test text');
             expect(result).toBe(false);
+            expect(consoleSpy).toHaveBeenCalledWith('Error copying text: ', expect.any(Error));
+
+            consoleSpy.mockRestore();
         });
 
         it('should handle undefined window gracefully', async () => {
