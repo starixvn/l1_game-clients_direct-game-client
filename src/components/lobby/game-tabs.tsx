@@ -10,11 +10,42 @@ interface GameTabsProps {
     gameOfferIds: number[];
 }
 
+const ASPECT_RATIO = 828 / 1078;
+const TAB_HEIGHT = 34; // Estimated height of the tab bar
+
 export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
     const { t } = useTranslator();
     const [activeKey, setActiveKey] = useState(0);
     const [iframeSrc, setIframeSrc] = useState<string>();
+    const [dimensions, setDimensions] = useState({ width: 828, height: 1078 });
+
+    const calculateDimensions = useCallback(() => {
+        const availableHeight = window.innerHeight - TAB_HEIGHT;
+        const availableWidth = window.innerWidth;
+
+        let width = 828;
+        let height = 1078;
+
+        // Calculate dimensions based on available height
+        const heightBasedWidth = Math.floor(availableHeight * ASPECT_RATIO);
+        if (heightBasedWidth <= availableWidth) {
+            height = availableHeight;
+            width = heightBasedWidth;
+        } else {
+            // If width is too large, calculate based on available width
+            width = availableWidth;
+            height = Math.floor(width / ASPECT_RATIO);
+        }
+
+        setDimensions({ width, height });
+    }, []);
+
+    useEffect(() => {
+        calculateDimensions();
+        window.addEventListener('resize', calculateDimensions);
+        return () => window.removeEventListener('resize', calculateDimensions);
+    }, [calculateDimensions]);
 
     const postMessageToMicroSite = useCallback(
         (data: any) => {
@@ -78,17 +109,30 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
                         unmountOnExit={true}
                     >
                         {isActive && (
-                            <iframe
-                                ref={(el) => {
-                                    if (el) {
-                                        wrapperIframeRef.current = el;
-                                    }
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    backgroundImage: `url(/images/bg-full-${gameId}.webp)`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    width: '100%',
+                                    height: `${dimensions.height}px`
                                 }}
-                                title={`Game ${gameId}`}
-                                width="100%"
-                                height="100%"
-                                src={iframeSrc}
-                            />
+                            >
+                                <iframe
+                                    ref={(el) => {
+                                        if (el) {
+                                            wrapperIframeRef.current = el;
+                                        }
+                                    }}
+                                    title={`Game ${gameId}`}
+                                    width={dimensions.width}
+                                    height={dimensions.height}
+                                    src={iframeSrc}
+                                />
+                            </div>
                         )}
                     </Tab>
                 );
