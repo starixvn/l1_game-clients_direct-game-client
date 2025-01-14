@@ -52,13 +52,15 @@
         font-size: 1.4rem;
 
         > div {
-            top: 40%;
             .title {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
             }
             .image {
                 margin-top: 1rem;
                 max-width: 35vh;
+            }
+            .time {
+                margin-top: 1rem;
             }
         }
     }
