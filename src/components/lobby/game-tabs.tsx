@@ -11,10 +11,11 @@ interface GameTabsProps {
 }
 
 const ASPECT_RATIO = 828 / 1078;
-const TAB_HEIGHT = 34; // Estimated height of the tab bar
+const TAB_HEIGHT = 48; // Estimated height of the tab bar
 
 export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const { t } = useTranslator();
     const [activeKey, setActiveKey] = useState(0);
     const [iframeSrc, setIframeSrc] = useState<string>();
@@ -23,6 +24,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
     const calculateDimensions = useCallback(() => {
         const availableHeight = window.innerHeight - TAB_HEIGHT;
         const availableWidth = window.innerWidth;
+        const parentHeight = containerRef.current?.parentElement?.clientHeight || availableHeight;
 
         let width = 828;
         let height = 1078;
@@ -110,15 +112,16 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
                     >
                         {isActive && (
                             <div
+                                ref={containerRef}
                                 style={{
                                     display: 'flex',
                                     justifyContent: 'center',
-                                    alignItems: 'center',
+                                    alignItems: 'top',
                                     backgroundImage: `url(/images/bg-full-${gameId}.webp)`,
                                     backgroundSize: 'cover',
                                     backgroundPosition: 'center',
                                     width: '100%',
-                                    height: `${dimensions.height}px`
+                                    height: `${Math.max(dimensions.height, containerRef.current?.parentElement?.clientHeight || dimensions.height)}px`
                                 }}
                             >
                                 <iframe
