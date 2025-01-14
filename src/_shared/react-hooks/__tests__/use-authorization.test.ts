@@ -1,4 +1,4 @@
-import { renderHook, act } from "@testing-library/react-hooks";
+import { renderHook, act } from "@testing-library/react";
 import { useAuthorization } from "../use-authorization";
 import * as authService from "../../services/auth-service";
 import { StorageManager } from "../../utils";

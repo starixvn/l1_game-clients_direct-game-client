@@ -219,12 +219,21 @@ describe('Lobby Component', () => {
 
         // Simulate event subscriptions
         const subscriptionCalls = mockSubscribe.mock.calls;
-        expect(subscriptionCalls).toHaveLength(3);
+        // In React 18 Strict Mode, effects run twice, so we expect 6 subscriptions (3 events × 2)
+        expect(subscriptionCalls).toHaveLength(6);
 
-        // Test session timeout event
+        // Get the first instance of each handler (we could use either instance as they're identical)
         const sessionTimeoutHandler = subscriptionCalls.find(
             call => call[0] === 'sessionTimeout'
         )[1];
+        const umHandler = subscriptionCalls.find(
+            call => call[0] === 'isUnderMaintain'
+        )[1];
+        const notPermittedHandler = subscriptionCalls.find(
+            call => call[0] === 'isNotPermittedToPlay'
+        )[1];
+
+        // Test session timeout event
         act(() => {
             sessionTimeoutHandler();
         });
@@ -233,9 +242,6 @@ describe('Lobby Component', () => {
         });
 
         // Test under maintenance event
-        const umHandler = subscriptionCalls.find(
-            call => call[0] === 'isUnderMaintain'
-        )[1];
         act(() => {
             umHandler({
                 umInfo: {
@@ -256,9 +262,6 @@ describe('Lobby Component', () => {
         });
 
         // Test not permitted to play event
-        const notPermittedHandler = subscriptionCalls.find(
-            call => call[0] === 'isNotPermittedToPlay'
-        )[1];
         act(() => {
             notPermittedHandler({ isNotPermittedToPlay: true });
         });
@@ -285,6 +288,7 @@ describe('Lobby Component', () => {
     it('should cleanup event subscriptions on unmount', () => {
         const { unmount } = render(<Lobby />);
         unmount();
-        expect(mockUnsubscribe).toHaveBeenCalledTimes(3);
+        // In React 18 Strict Mode, cleanup runs twice, so we expect 6 unsubscribe calls (3 events × 2)
+        expect(mockUnsubscribe).toHaveBeenCalledTimes(6);
     });
 }); 

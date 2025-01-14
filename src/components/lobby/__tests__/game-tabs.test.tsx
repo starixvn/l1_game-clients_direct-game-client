@@ -109,6 +109,7 @@ describe('GameTabs Component', () => {
     it('should subscribe to game events on mount and unsubscribe on unmount', () => {
         const { unmount } = render(<GameTabs gameOfferIds={mockGameOfferIds} />);
 
+        // In React 18 Strict Mode, effects run twice, so we expect 4 subscriptions
         expect(mockSubscribe).toHaveBeenCalledWith(GameEvents.musicEnable, PlayerSetting.storePlayerSetting);
         expect(mockSubscribe).toHaveBeenCalledWith(GameEvents.sfxEnable, PlayerSetting.storePlayerSetting);
         expect(mockSubscribe).toHaveBeenCalledWith(GameEvents.isUserGesture, PlayerSetting.storePlayerSetting);
@@ -116,7 +117,8 @@ describe('GameTabs Component', () => {
 
         unmount();
 
-        expect(mockUnsubscribe).toHaveBeenCalledTimes(4);
+        // In React 18 Strict Mode, cleanup runs twice, so we expect 8 unsubscribe calls
+        expect(mockUnsubscribe).toHaveBeenCalledTimes(8);
     });
 
     it('should set initial iframe source on mount', () => {

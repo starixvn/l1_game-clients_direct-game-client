@@ -1,4 +1,4 @@
-import { renderHook } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react";
 import { useTranslate } from "@tolgee/react";
 import { ResourceTypes } from "../../consts";
 import { parseTranslationKey, useTranslator } from "../use-translator";
