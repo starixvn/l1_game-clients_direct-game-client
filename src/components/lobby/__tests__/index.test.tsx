@@ -1,105 +1,101 @@
-import React from 'react';
-import { render, screen, act, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import Lobby from '../index';
-import * as urlHelper from '../../../_shared/utils';
-import * as gameSettings from '../../../_shared/utils/game-setting';
-import { GameEventManager } from '../../../_shared/utils/game-event-manager';
-import * as useAuthHook from '../../../_shared/react-hooks/use-authorization';
-import { localStorageKeys } from '../../../_shared/utils';
+import React from "react";
+import { render, screen, act, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import Lobby from "../index";
+import * as urlHelper from "../../../_shared/utils";
+import * as gameSettings from "../../../_shared/utils/game-setting";
+import * as useAuthHook from "../../../_shared/react-hooks/use-authorization";
 
 // Mock appSettings
-jest.mock('../../../_shared/game-setting', () => ({
+jest.mock("../../../_shared/game-setting", () => ({
     appSettings: {
-        gameDomain: 'https://test-domain.com',
-        system: 'test-system',
+        gameDomain: "https://test-domain.com",
+        system: "test-system",
         ssl: true,
-        env: 'test',
+        env: "test",
         sentry: {
-            dsn: 'test-dsn',
-            environment: 'test'
-        }
-    }
+            dsn: "test-dsn",
+            environment: "test",
+        },
+    },
 }));
 
 // Mock all lazy-loaded components
-jest.mock('../../common/timeout', () => ({
+jest.mock("../../timeout", () => ({
     __esModule: true,
-    default: () => <div data-testid="session-timeout">Session Timeout</div>
+    default: () => <div data-testid="session-timeout">Session Timeout</div>,
 }));
 
-jest.mock('../../common/um', () => ({
+jest.mock("../../um", () => ({
     __esModule: true,
-    default: ({ umInfo }: { umInfo: any }) => <div data-testid="um-page">{umInfo?.message}</div>
+    default: ({ umInfo }: { umInfo: any }) => <div data-testid="um-page">{umInfo?.message}</div>,
 }));
 
-jest.mock('../../common/non-offer', () => ({
+jest.mock("../../non-offer", () => ({
     __esModule: true,
-    default: () => <div data-testid="non-offer">Non Offer Page</div>
+    default: () => <div data-testid="non-offer">Non Offer Page</div>,
 }));
 
-jest.mock('../game-tabs', () => ({
-    GameTabs: ({ gameOfferIds }: { gameOfferIds: number[] }) => (
-        <div data-testid="game-tabs">Game Tabs: {gameOfferIds.join(',')}</div>
-    )
+jest.mock("../game-tabs", () => ({
+    GameTabs: ({ gameOfferIds }: { gameOfferIds: number[] }) => <div data-testid="game-tabs">Game Tabs: {gameOfferIds.join(",")}</div>,
 }));
 
-jest.mock('../../common/loading', () => ({
+jest.mock("../../common/loading", () => ({
     __esModule: true,
-    default: () => <div data-testid="loading">Loading...</div>
+    default: () => <div data-testid="loading">Loading...</div>,
 }));
 
-jest.mock('../../common/landscape-mode', () => ({
+jest.mock("../../landscape-mode", () => ({
     __esModule: true,
-    default: () => <div data-testid="landscape-mode">Landscape Mode</div>
+    default: () => <div data-testid="landscape-mode">Landscape Mode</div>,
 }));
 
 // Mock the storage manager and utils
 const mockStorageSet = jest.fn();
-jest.mock('../../../_shared/utils', () => {
-    const actual = jest.requireActual('../../../_shared/utils');
+jest.mock("../../../_shared/utils", () => {
+    const actual = jest.requireActual("../../../_shared/utils");
     return {
         ...actual,
         StorageManager: {
-            set: (...args: any[]) => mockStorageSet(...args)
+            set: (...args: any[]) => mockStorageSet(...args),
         },
         getQueryParameters: jest.fn(),
         localStorageKeys: {
             ...actual.localStorageKeys,
-            operator: 'operator'
-        }
+            operator: "operator",
+        },
     };
 });
 
 // Mock GameEventManager
 const mockSubscribe = jest.fn();
 const mockUnsubscribe = jest.fn();
-jest.mock('../../../_shared/utils/game-event-manager', () => ({
+jest.mock("../../../_shared/utils/game-event-manager", () => ({
     GameEventManager: {
         getInstance: () => ({
             subscribe: mockSubscribe,
-            unsubscribe: mockUnsubscribe
-        })
+            unsubscribe: mockUnsubscribe,
+        }),
     },
     GameEvents: {
-        sessionTimeout: 'sessionTimeout',
-        isUnderMaintain: 'isUnderMaintain',
-        isNotPermittedToPlay: 'isNotPermittedToPlay'
-    }
+        sessionTimeout: "sessionTimeout",
+        isUnderMaintain: "isUnderMaintain",
+        isNotPermittedToPlay: "isNotPermittedToPlay",
+    },
 }));
 
-describe('Lobby Component', () => {
+describe("Lobby Component", () => {
     const mockGetQueryParameters = urlHelper.getQueryParameters as jest.Mock;
-    const mockGetOfferedGameIds = jest.spyOn(gameSettings, 'getOfferedGameIds');
-    const mockUseAuthorization = jest.spyOn(useAuthHook, 'useAuthorization');
+    const mockGetOfferedGameIds = jest.spyOn(gameSettings, "getOfferedGameIds");
+    const mockUseAuthorization = jest.spyOn(useAuthHook, "useAuthorization");
 
     beforeEach(() => {
         jest.clearAllMocks();
         mockGetQueryParameters.mockReturnValue({
-            token: 'test-token',
-            appType: '1',
-            lang: 'en',
-            operator: 'test-operator'
+            token: "test-token",
+            appType: "1",
+            lang: "en",
+            operator: "test-operator",
         });
 
         // Initialize default mock implementations
@@ -108,7 +104,7 @@ describe('Lobby Component', () => {
             umInfo: null,
             setUMInfo: jest.fn(),
             isSessionTimeout: false,
-            initialize: jest.fn().mockResolvedValue({ authorized: true })
+            initialize: jest.fn().mockResolvedValue({ authorized: true }),
         }));
 
         mockGetOfferedGameIds.mockReturnValue([]);
@@ -118,93 +114,93 @@ describe('Lobby Component', () => {
         jest.resetAllMocks();
     });
 
-    it('should render loading state initially', () => {
+    it("should render loading state initially", () => {
         mockUseAuthorization.mockReturnValue({
             isLoading: true,
             umInfo: null,
             setUMInfo: jest.fn(),
             isSessionTimeout: false,
-            initialize: jest.fn()
+            initialize: jest.fn(),
         });
 
         render(<Lobby />);
-        expect(screen.getByTestId('loading')).toBeInTheDocument();
+        expect(screen.getByTestId("loading")).toBeInTheDocument();
     });
 
-    it('should render session timeout page when session times out', async () => {
+    it("should render session timeout page when session times out", async () => {
         mockUseAuthorization.mockReturnValue({
             isLoading: false,
             umInfo: null,
             setUMInfo: jest.fn(),
             isSessionTimeout: true,
-            initialize: jest.fn().mockResolvedValue(null)
+            initialize: jest.fn().mockResolvedValue(null),
         });
 
         render(<Lobby />);
         await waitFor(() => {
-            expect(screen.getByTestId('session-timeout')).toBeInTheDocument();
+            expect(screen.getByTestId("session-timeout")).toBeInTheDocument();
         });
     });
 
-    it('should render UM page when under maintenance', async () => {
+    it("should render UM page when under maintenance", async () => {
         const umInfo = {
-            message: 'Under Maintenance',
+            message: "Under Maintenance",
             startTime: new Date(),
             endTime: new Date(),
-            operatorId: 'test-operator',
-            severity: 1
+            operatorId: "test-operator",
+            severity: 1,
         };
         mockUseAuthorization.mockReturnValue({
             isLoading: false,
             umInfo,
             setUMInfo: jest.fn(),
             isSessionTimeout: false,
-            initialize: jest.fn().mockResolvedValue(null)
+            initialize: jest.fn().mockResolvedValue(null),
         });
 
         render(<Lobby />);
         await waitFor(() => {
-            expect(screen.getByTestId('um-page')).toBeInTheDocument();
-            expect(screen.getByText('Under Maintenance')).toBeInTheDocument();
+            expect(screen.getByTestId("um-page")).toBeInTheDocument();
+            expect(screen.getByText("Under Maintenance")).toBeInTheDocument();
         });
     });
 
-    it('should render non-offer page when no game offers available', async () => {
+    it("should render non-offer page when no game offers available", async () => {
         mockUseAuthorization.mockReturnValue({
             isLoading: false,
             umInfo: null,
             setUMInfo: jest.fn(),
             isSessionTimeout: false,
-            initialize: jest.fn().mockResolvedValue({ authorized: true })
+            initialize: jest.fn().mockResolvedValue({ authorized: true }),
         });
         mockGetOfferedGameIds.mockReturnValue([]);
 
         render(<Lobby />);
         await waitFor(() => {
-            expect(screen.getByTestId('non-offer')).toBeInTheDocument();
+            expect(screen.getByTestId("non-offer")).toBeInTheDocument();
         });
     });
 
-    it('should render game tabs with offered games', async () => {
+    it("should render game tabs with offered games", async () => {
         const mockInitialize = jest.fn().mockResolvedValue({ authorized: true });
         mockUseAuthorization.mockReturnValue({
             isLoading: false,
             umInfo: null,
             setUMInfo: jest.fn(),
             isSessionTimeout: false,
-            initialize: mockInitialize
+            initialize: mockInitialize,
         });
         mockGetOfferedGameIds.mockReturnValue([1, 2, 3]);
 
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(screen.getByTestId('game-tabs')).toBeInTheDocument();
-            expect(screen.getByText('Game Tabs: 1,2,3')).toBeInTheDocument();
+            expect(screen.getByTestId("game-tabs")).toBeInTheDocument();
+            expect(screen.getByText("Game Tabs: 1,2,3")).toBeInTheDocument();
         });
     });
 
-    it('should handle game events correctly', async () => {
+    it("should handle game events correctly", async () => {
         const setUMInfo = jest.fn();
         const mockInitialize = jest.fn().mockResolvedValue({ authorized: true });
         mockUseAuthorization.mockReturnValue({
@@ -212,7 +208,7 @@ describe('Lobby Component', () => {
             umInfo: null,
             setUMInfo,
             isSessionTimeout: false,
-            initialize: mockInitialize
+            initialize: mockInitialize,
         });
 
         render(<Lobby />);
@@ -223,42 +219,36 @@ describe('Lobby Component', () => {
         expect(subscriptionCalls).toHaveLength(6);
 
         // Get the first instance of each handler (we could use either instance as they're identical)
-        const sessionTimeoutHandler = subscriptionCalls.find(
-            call => call[0] === 'sessionTimeout'
-        )[1];
-        const umHandler = subscriptionCalls.find(
-            call => call[0] === 'isUnderMaintain'
-        )[1];
-        const notPermittedHandler = subscriptionCalls.find(
-            call => call[0] === 'isNotPermittedToPlay'
-        )[1];
+        const sessionTimeoutHandler = subscriptionCalls.find((call) => call[0] === "sessionTimeout")[1];
+        const umHandler = subscriptionCalls.find((call) => call[0] === "isUnderMaintain")[1];
+        const notPermittedHandler = subscriptionCalls.find((call) => call[0] === "isNotPermittedToPlay")[1];
 
         // Test session timeout event
         act(() => {
             sessionTimeoutHandler();
         });
         await waitFor(() => {
-            expect(screen.getByTestId('session-timeout')).toBeInTheDocument();
+            expect(screen.getByTestId("session-timeout")).toBeInTheDocument();
         });
 
         // Test under maintenance event
         act(() => {
             umHandler({
                 umInfo: {
-                    message: 'Test UM',
+                    message: "Test UM",
                     startTime: new Date(),
                     endTime: new Date(),
-                    operatorId: 'test-operator',
-                    severity: 1
-                }
+                    operatorId: "test-operator",
+                    severity: 1,
+                },
             });
         });
         expect(setUMInfo).toHaveBeenCalledWith({
-            message: 'Test UM',
+            message: "Test UM",
             startTime: expect.any(Date),
             endTime: expect.any(Date),
-            operatorId: 'test-operator',
-            severity: 1
+            operatorId: "test-operator",
+            severity: 1,
         });
 
         // Test not permitted to play event
@@ -268,27 +258,27 @@ describe('Lobby Component', () => {
         expect(mockInitialize).toHaveBeenCalled();
     });
 
-    it('should store operator in localStorage when provided', async () => {
+    it("should store operator in localStorage when provided", async () => {
         const mockInitialize = jest.fn().mockResolvedValue({ authorized: true });
         mockUseAuthorization.mockReturnValue({
             isLoading: false,
             umInfo: null,
             setUMInfo: jest.fn(),
             isSessionTimeout: false,
-            initialize: mockInitialize
+            initialize: mockInitialize,
         });
 
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockStorageSet).toHaveBeenCalledWith('operator', 'test-operator');
+            expect(mockStorageSet).toHaveBeenCalledWith("operator", "test-operator");
         });
     });
 
-    it('should cleanup event subscriptions on unmount', () => {
+    it("should cleanup event subscriptions on unmount", () => {
         const { unmount } = render(<Lobby />);
         unmount();
         // In React 18 Strict Mode, cleanup runs twice, so we expect 6 unsubscribe calls (3 events × 2)
         expect(mockUnsubscribe).toHaveBeenCalledTimes(6);
     });
-}); 
+});

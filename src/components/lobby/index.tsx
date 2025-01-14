@@ -6,12 +6,12 @@ import Loading from "../common/loading";
 import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
 import { GameTabs } from "./game-tabs";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
-import LandscapeMode from "../common/landscape-mode";
 import { locales } from "../../_shared/consts";
+import LandscapeMode from "../landscape-mode";
 
-const SessionTimeoutPage = React.lazy(() => import("../common/timeout"));
-const UMPage = React.lazy(() => import("../common/um"));
-const NonOfferPage = React.lazy(() => import("../common/non-offer"));
+const SessionTimeoutPage = React.lazy(() => import("../timeout"));
+const UMPage = React.lazy(() => import("../um"));
+const NonOfferPage = React.lazy(() => import("../non-offer"));
 
 const Lobby: React.FC = () => {
     const queryParameters = getQueryParameters();
@@ -34,7 +34,7 @@ const Lobby: React.FC = () => {
 
     useEffect(() => {
         const handleIsNotPermittedToPlay = async (data: any) => {
-            data.isNotPermittedToPlay && authenticate()
+            data.isNotPermittedToPlay && authenticate();
         };
 
         const gameEventManager = GameEventManager.getInstance();
@@ -45,7 +45,6 @@ const Lobby: React.FC = () => {
         ];
 
         const subscriptions = events.map(({ event, handler }) => gameEventManager.subscribe(event, handler));
-
 
         return () => {
             subscriptions.forEach((id) => gameEventManager.unsubscribe(id));

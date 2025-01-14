@@ -1,7 +1,7 @@
 import React from "react";
-import { useTranslator } from "../../../_shared/react-hooks";
-import { ResourceTypes } from "../../../_shared/consts";
 import "./styles.scss";
+import { ResourceTypes } from "../../_shared/consts";
+import { useTranslator } from "../../_shared/react-hooks";
 
 const NonOffer = () => {
     const { t } = useTranslator([ResourceTypes.COMMON]);

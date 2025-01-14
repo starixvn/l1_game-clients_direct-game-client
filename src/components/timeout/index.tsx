@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import "./styles.scss";
-import { useTranslator } from "../../../_shared/react-hooks";
-import { ResourceTypes } from "../../../_shared/consts";
-import { clearSessionData } from "../../../_shared/utils";
+import { clearSessionData } from "../../_shared/utils";
+import { useTranslator } from "../../_shared/react-hooks";
+import { ResourceTypes } from "../../_shared/consts";
 
 const TimeOut: React.FC = () => {
     const { t } = useTranslator([ResourceTypes.INSTANT_GAME]);

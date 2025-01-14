@@ -1,8 +1,8 @@
 import React from "react";
 import dayjs from "dayjs";
 import "./um.scss";
-import { useTranslator } from "../../../_shared/react-hooks/use-translator";
-import { ResourceTypes } from "../../../_shared/consts";
+import { useTranslator } from "../../_shared/react-hooks/use-translator";
+import { ResourceTypes } from "../../_shared/consts";
 import { UMInfo } from "sc-user-service-client/dist/auth";
 
 interface UMProps {

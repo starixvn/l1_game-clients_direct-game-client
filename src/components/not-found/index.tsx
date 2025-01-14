@@ -1,6 +1,6 @@
 import React from "react";
-import { ResourceTypes } from "../../../_shared/consts";
-import { useTranslator } from "../../../_shared/react-hooks/use-translator";
+import { ResourceTypes } from "../../_shared/consts";
+import { useTranslator } from "../../_shared/react-hooks";
 
 const NotFound: React.FC = () => {
     const { t } = useTranslator([ResourceTypes.MESSAGES]);

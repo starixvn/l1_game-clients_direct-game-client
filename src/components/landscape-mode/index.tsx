@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./landscape-mode.scss";
-import { useTranslator } from "../../../_shared/react-hooks/use-translator";
-import { ResourceTypes } from "../../../_shared/consts";
-import { isMobile } from "../../../_shared/utils/device-helper";
+import { ResourceTypes } from "../../_shared/consts";
+import { isMobile } from "../../_shared/utils";
+import { useTranslator } from "../../_shared/react-hooks";
 
 const orientationType = { portrait: "portrait", landscape: "landscape" };
 const orientationChange = "orientationchange";
