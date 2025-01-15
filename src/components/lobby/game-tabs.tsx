@@ -12,7 +12,7 @@ interface GameTabsProps {
 }
 
 const ASPECT_RATIO = 828 / 1078;
-const TAB_HEIGHT = 48; // Estimated height of the tab bar
+const TAB_HEIGHT = 34; // Estimated height of the tab bar
 
 export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
