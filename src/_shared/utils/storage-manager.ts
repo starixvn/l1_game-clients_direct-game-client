@@ -102,6 +102,7 @@ export const localStorageKeys = {
     url: buildLocalStorageKey("url"),
     language: buildLocalStorageKey("language"),
     operator: buildLocalStorageKey("operator"),
+    selectedGameId: buildLocalStorageKey("selectedGameId"),
 };
 
 export function buildLocalStorageKey(key: string) {

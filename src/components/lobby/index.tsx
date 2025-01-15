@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./lobby.scss";
-import { getOfferedGameIds } from "../../_shared/utils/game-setting";
+import { getAvailableGameId, getOfferedGameIds } from "../../_shared/utils/game-setting";
 import Loading from "../common/loading";
 import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
 import { GameTabs } from "./game-tabs";
@@ -13,13 +13,16 @@ const NonOfferPage = React.lazy(() => import("../non-offer"));
 
 const Lobby: React.FC = () => {
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
+    const [availableGameId, setAvailableGameId] = useState<number | undefined>(undefined);
     const [isTimeout, setIsTimeout] = useState(false);
     const { isLoading, umInfo, setUMInfo, isSessionTimeout, initialize } = useAuthorization();
 
     const authenticate = async () => {
         const response = await initialize();
         if (response?.authorized) {
-            setGameOfferIds(getOfferedGameIds(response));
+            const offeredGameIds = getOfferedGameIds(response);
+            setGameOfferIds(offeredGameIds);
+            setAvailableGameId(getAvailableGameId(offeredGameIds, response));
         }
     };
 
@@ -55,7 +58,7 @@ const Lobby: React.FC = () => {
         <>
             <LandscapeMode />
             <div className="lobby">
-                <GameTabs gameOfferIds={gameOfferIds} />
+                <GameTabs gameOfferIds={gameOfferIds} availableGameId={availableGameId} />
             </div>
         </>
     );

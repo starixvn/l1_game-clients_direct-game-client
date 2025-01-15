@@ -88,7 +88,7 @@ export function getQueryParameters(): URLContextModel | undefined {
         const redirectUrl = isDirectMode ? params.get("rurl") : "";
         const isThirdParty = isDirectMode && !!redirectUrl;
         globalThis.history.pushState(null, "", globalThis.location?.href.split("?")[0]);
-        return { token, lang, gameId, appType, isDirectMode, redirectUrl, isThirdParty, operator, firstSSOToLobby: true };
+        return { token, lang, gameId, appType, isDirectMode, redirectUrl, isThirdParty, operator };
     }
 
     return {};

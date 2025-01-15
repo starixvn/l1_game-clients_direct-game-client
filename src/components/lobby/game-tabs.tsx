@@ -2,13 +2,14 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 
 import { useTranslator } from "../../_shared/react-hooks/use-translator";
-import { getGameUrl } from "../../_shared/utils";
+import { getGameUrl, localStorageKeys, StorageManager } from "../../_shared/utils";
 import FunctionUtil from "../../_shared/utils/function-util";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import { storePlayerSetting } from "../../_shared/utils/player-setting";
 
 interface GameTabsProps {
     gameOfferIds: number[];
+    availableGameId: number | undefined;
 }
 
 // Default game window configuration
@@ -19,7 +20,7 @@ const GAME_CONFIG = {
     tabHeight: 34, // Height of the tab navigation bar in pixels
 };
 
-export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
+export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameId }) => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const { t } = useTranslator();
@@ -73,16 +74,24 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
         };
     }, [handleCopyToClipboard]);
 
+    const setSelectedGameId = (gameId: number) => {
+        setActiveKey(gameOfferIds.indexOf(gameId));
+        StorageManager.set(localStorageKeys.selectedGameId, gameId);
+        setIframeSrc(getGameUrl(gameId));
+    };
+
     useEffect(() => {
         if (gameOfferIds.length > 0) {
-            setIframeSrc(getGameUrl(gameOfferIds[0]));
+            const oldGameId = StorageManager.get<number | undefined>(localStorageKeys.selectedGameId);
+            const gameId = oldGameId && gameOfferIds.includes(oldGameId) ? oldGameId : availableGameId || gameOfferIds[0];
+            setSelectedGameId(gameId);
         }
-    }, [gameOfferIds]);
+    }, [gameOfferIds, availableGameId]);
 
     const handleTabSelect = (index: number) => {
         setActiveKey(index);
         const gameId = gameOfferIds[index];
-        setIframeSrc(getGameUrl(gameId));
+        setSelectedGameId(gameId);
     };
 
     return (

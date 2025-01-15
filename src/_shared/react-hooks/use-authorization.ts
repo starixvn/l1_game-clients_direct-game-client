@@ -60,8 +60,9 @@ export const useAuthorization = () => {
                 return null;
             }
 
-            const authorizeInfo = (await authorize(session)) as AuthorizeResponse;
             operator && StorageManager.set(localStorageKeys.operator, operator);
+            token && StorageManager.remove(localStorageKeys.selectedGameId);
+            const authorizeInfo = (await authorize(session)) as AuthorizeResponse;
             return await handleAuthorization(session, authorizeInfo);
         } catch (error) {
             console.log("Authorization error: ", error);

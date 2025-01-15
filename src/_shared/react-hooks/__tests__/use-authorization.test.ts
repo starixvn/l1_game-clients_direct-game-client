@@ -22,10 +22,12 @@ jest.mock("../../utils", () => ({
     StorageManager: {
         get: jest.fn(),
         set: jest.fn(),
+        remove: jest.fn(),
     },
     localStorageKeys: {
         language: "language",
         operator: "operator",
+        selectedGameId: "selectedGameId",
     },
     storeSessionData: jest.fn(),
     getQueryParameters: jest.fn(),
@@ -237,6 +239,54 @@ describe("useAuthorization", () => {
 
             expect(tolgee.changeLanguage).toHaveBeenCalled();
             expect(StorageManager.set).toHaveBeenCalledWith(localStorageKeys.language, expect.any(String));
+        });
+
+        it("should store operator when provided in query parameters", async () => {
+            // Arrange
+            const mockOperator = "test-operator";
+            const mockSession = {
+                isUM: false,
+                isAuthenticated: true,
+            };
+            const mockAuthorizeResponse = {
+                authorized: true,
+            };
+            (getQueryParameters as jest.Mock).mockReturnValue({
+                operator: mockOperator,
+            });
+            (authService.verifySession as jest.Mock).mockResolvedValue(mockSession);
+            (authService.authorize as jest.Mock).mockResolvedValue(mockAuthorizeResponse);
+
+            // Act
+            const { result } = renderHook(() => useAuthorization());
+            await act(async () => {
+                await result.current.initialize();
+            });
+
+            // Assert
+            expect(StorageManager.set).toHaveBeenCalledWith(localStorageKeys.operator, mockOperator);
+        });
+
+        it("should remove selected game id when token is provided", async () => {
+            const mockSession = {
+                isUM: false,
+                isAuthenticated: true,
+            };
+            (getQueryParameters as jest.Mock).mockReturnValue({
+                token: mockToken,
+            });
+            const mockAuthorizeResponse = {
+                authorized: true,
+            };
+            (authService.verifySession as jest.Mock).mockResolvedValue(mockSession);
+            (authService.authorize as jest.Mock).mockResolvedValue(mockAuthorizeResponse);
+
+            const { result } = renderHook(() => useAuthorization());
+            await act(async () => {
+                await result.current.initialize();
+            });
+
+            expect(StorageManager.remove).toHaveBeenCalledWith(localStorageKeys.selectedGameId);
         });
     });
 

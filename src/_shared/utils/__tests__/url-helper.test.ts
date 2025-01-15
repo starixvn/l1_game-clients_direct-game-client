@@ -161,7 +161,6 @@ describe("url-helper", () => {
                 redirectUrl: "https://redirect.com",
                 isThirdParty: true,
                 operator: "testOp",
-                firstSSOToLobby: true,
             });
         });
 
@@ -197,7 +196,6 @@ describe("url-helper", () => {
                 redirectUrl: "",
                 isThirdParty: false,
                 operator: null,
-                firstSSOToLobby: true,
             });
         });
     });

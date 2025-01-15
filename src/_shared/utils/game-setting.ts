@@ -8,3 +8,8 @@ export const getOfferedGameIds = (authorizeInfo: AuthorizeResponse) => {
         .sort((a, b) => a.order - b.order)
         .map((game) => game.id);
 };
+
+export const getAvailableGameId = (offeredGameIds: number[], authorizeInfo: AuthorizeResponse): number | undefined => {
+    const enabledGameIds = authorizeInfo?.user?.enabledGameIds || [];
+    return offeredGameIds.find((gameId) => enabledGameIds.includes(gameId));
+};
