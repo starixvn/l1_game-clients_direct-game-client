@@ -1,9 +1,9 @@
-import { AuthorizeResponse, SSOResponse } from "sc-user-service-client/dist/auth";
+import { SSOResponse } from "sc-user-service-client/dist/auth";
 
 import { appSettings } from "../game-setting";
 import UserClientCommunication from "sc-user-service-client/dist/user-client-communication";
-import NameGenerator from "..//utils/name-generator";
-import { randomInteger } from "..//utils/number-helper";
+import NameGenerator from "../utils/name-generator";
+import { randomInteger } from "../utils/number-helper";
 import { errorCodes, MAX_AVATAR_ID } from "../consts";
 import { getSession, storeSessionData } from "../utils";
 
