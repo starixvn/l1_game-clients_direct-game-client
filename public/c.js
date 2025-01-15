@@ -5,10 +5,10 @@ window.envConfig = {
     },
     system: "SG",
     ssl: true,
-    gameDomain: "https://l1-proxy2.lumigame.com",
+    gameDomain: "https://l1-proxy1.lumigame.com",
     env: "LOCAL1",
     isDev: true,
-    domainUrlFormat: "https://l1-proxy2.lumigame.com/direct-client-{gameId}/",
+    domainUrlFormat: "https://l1-proxy1.lumigame.com/direct-client-{gameId}/",
     //domainUrlFormat: "https://l1-proxy2.{host}/direct-client-{gameId}/",
-    hideGameTab: true,
+    hideGameTab: false,
 };

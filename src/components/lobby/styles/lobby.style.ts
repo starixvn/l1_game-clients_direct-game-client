@@ -1,0 +1,43 @@
+import styled from "styled-components";
+
+export const LobbyContainer = styled.div`
+    height: calc(100% - 34px);
+
+    .nav-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        font-size: 12px;
+        font-weight: bold;
+
+        button {
+            padding: 6px;
+        }
+    }
+
+    .tab-content,
+    .tab-pane {
+        height: 100%;
+    }
+
+    .tab-title {
+        display: flex;
+        align-items: center;
+        color: #737373;
+    }
+
+    .tab-title.active {
+        color: #ff9000;
+    }
+
+    .tab-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+
+        &.inactive {
+            filter: grayscale(100%);
+        }
+    }
+`;

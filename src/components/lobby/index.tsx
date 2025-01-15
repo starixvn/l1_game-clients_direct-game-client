@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import "./lobby.scss";
-import { getAvailableGameId, getOfferedGameIds } from "../../_shared/utils/game-setting";
-import Loading from "../common/loading";
-import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
-import { GameTabs } from "./game-tabs";
-import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
-import LandscapeMode from "../landscape-mode";
+
 import { appSettings } from "../../_shared/game-setting";
-import { GameFrame } from "./game-frame";
+import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
+import { localStorageKeys, StorageManager } from "../../_shared/utils";
+import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
+import { getAvailableGameId, getOfferedGameIds } from "../../_shared/utils/game-setting";
 import { getGameUrl } from "../../_shared/utils/url-helper";
-import { StorageManager, localStorageKeys } from "../../_shared/utils";
+import Loading from "../common/loading";
+import LandscapeMode from "../landscape-mode";
+import { GameFrame } from "./game-frame";
+import { GameTabs } from "./game-tabs";
+import { LobbyContainer } from "./styles/lobby.style";
 
 const SessionTimeoutPage = React.lazy(() => import("../timeout"));
 const UMPage = React.lazy(() => import("../um"));
@@ -81,7 +82,7 @@ const Lobby: React.FC = () => {
     return (
         <>
             <LandscapeMode />
-            <div className="lobby">
+            <LobbyContainer>
                 {isAuthorized ? (
                     appSettings.hideGameTab && availableGameId > 0 ? (
                         <GameFrame gameId={availableGameId} iframeSrc={getGameUrl(availableGameId)} />
@@ -91,7 +92,7 @@ const Lobby: React.FC = () => {
                 ) : (
                     <div>Loading...</div>
                 )}
-            </div>
+            </LobbyContainer>
         </>
     );
 };

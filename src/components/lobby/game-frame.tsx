@@ -1,7 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { isMobile } from "react-device-detect";
+
+import FunctionUtil from "../../_shared/utils/function-util";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import { storePlayerSetting } from "../../_shared/utils/player-setting";
-import FunctionUtil from "../../_shared/utils/function-util";
+import { GameContainer } from "./styles/game-frame.style";
 
 interface GameFrameProps {
     gameId: number;
@@ -19,18 +22,32 @@ const GAME_CONFIG = {
 export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeight = 0 }) => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const [dimensions, setDimensions] = useState({ width: GAME_CONFIG.width, height: GAME_CONFIG.height });
+    const [dimensions, setDimensions] = useState<{
+        width: number | string;
+        height: number | string;
+    }>({ width: GAME_CONFIG.width, height: GAME_CONFIG.height });
+    const [isDesktopView, setIsDesktopView] = useState(false);
 
     const calculateDimensions = useCallback(() => {
         let height = window.innerHeight - tabHeight;
         let width = Math.floor(height * GAME_CONFIG.aspectRatio);
-        setDimensions({ width, height });
-    }, [tabHeight]);
+        isDesktopView ? setDimensions({ width, height }) : setDimensions({ width: "100%", height: "100%" });
+    }, [tabHeight, isDesktopView]);
+
+    const calculateDesktopView = useCallback(() => {
+        const currentRatio = window.innerWidth / window.innerHeight;
+        setIsDesktopView((currentRatio > GAME_CONFIG.aspectRatio && isMobile) || !isMobile);
+    }, []);
 
     useEffect(() => {
+        calculateDesktopView();
         calculateDimensions();
-        window.addEventListener("resize", calculateDimensions);
-        return () => window.removeEventListener("resize", calculateDimensions);
+        const handleResize = () => {
+            calculateDesktopView();
+            calculateDimensions();
+        };
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
     }, [calculateDimensions]);
 
     const postMessageToMicroSite = useCallback(
@@ -64,19 +81,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
     }, [handleCopyToClipboard]);
 
     return (
-        <div
-            ref={containerRef}
-            style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "top",
-                backgroundImage: `url(/images/bg-full-${gameId}.webp)`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                width: "100%",
-                height: `${Math.max(dimensions.height, containerRef.current?.parentElement?.clientHeight || dimensions.height)}px`,
-            }}
-        >
+        <GameContainer ref={containerRef} $gameId={gameId} $height={dimensions.height}>
             <iframe
                 ref={(el) => {
                     if (el) {
@@ -88,6 +93,6 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
                 height={dimensions.height}
                 src={iframeSrc}
             />
-        </div>
+        </GameContainer>
     );
 };
