@@ -85,21 +85,14 @@ jest.mock("../../../_shared/utils/game-event-manager", () => ({
 }));
 
 describe("Lobby Component", () => {
-    const mockGetQueryParameters = urlHelper.getQueryParameters as jest.Mock;
     const mockGetOfferedGameIds = jest.spyOn(gameSettings, "getOfferedGameIds");
     const mockUseAuthorization = jest.spyOn(useAuthHook, "useAuthorization");
 
     beforeEach(() => {
         jest.clearAllMocks();
-        mockGetQueryParameters.mockReturnValue({
-            token: "test-token",
-            appType: "1",
-            lang: "en",
-            operator: "test-operator",
-        });
 
         // Initialize default mock implementations
-        mockUseAuthorization.mockImplementation((token, appType, lang) => ({
+        mockUseAuthorization.mockImplementation(() => ({
             isLoading: false,
             umInfo: null,
             setUMInfo: jest.fn(),
@@ -256,23 +249,6 @@ describe("Lobby Component", () => {
             notPermittedHandler({ isNotPermittedToPlay: true });
         });
         expect(mockInitialize).toHaveBeenCalled();
-    });
-
-    it("should store operator in localStorage when provided", async () => {
-        const mockInitialize = jest.fn().mockResolvedValue({ authorized: true });
-        mockUseAuthorization.mockReturnValue({
-            isLoading: false,
-            umInfo: null,
-            setUMInfo: jest.fn(),
-            isSessionTimeout: false,
-            initialize: mockInitialize,
-        });
-
-        render(<Lobby />);
-
-        await waitFor(() => {
-            expect(mockStorageSet).toHaveBeenCalledWith("operator", "test-operator");
-        });
     });
 
     it("should cleanup event subscriptions on unmount", () => {

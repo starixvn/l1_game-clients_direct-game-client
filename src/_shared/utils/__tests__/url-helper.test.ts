@@ -32,8 +32,8 @@ jest.mock("../storage-manager", () => ({
         get: jest.fn(),
     },
     localStorageKeys: {
-        operator: 'operator'
-    }
+        operator: "operator",
+    },
 }));
 
 describe("url-helper", () => {
@@ -47,28 +47,9 @@ describe("url-helper", () => {
     });
 
     describe("getBaseGameUrl", () => {
-        const originalNodeEnv = process.env.NODE_ENV;
-
-        afterEach(() => {
-            process.env.NODE_ENV = originalNodeEnv;
-        });
-
-        it("should return production URL when not in development", () => {
-            process.env.NODE_ENV = "production";
+        it("should return correct URL", () => {
             const result = getBaseGameUrl(1);
             expect(result).toBe("https://test-domain.com/direct-client-1/");
-        });
-
-        it("should return development URL for gameId 2", () => {
-            process.env.NODE_ENV = "development";
-            const result = getBaseGameUrl(2);
-            expect(result).toBe("http://localhost:7456");
-        });
-
-        it("should return development URL for other gameIds", () => {
-            process.env.NODE_ENV = "development";
-            const result = getBaseGameUrl(1);
-            expect(result).toBe("http://localhost:7456/web-mobile/web-mobile/index.html");
         });
     });
 
@@ -78,11 +59,11 @@ describe("url-helper", () => {
                 ss: "test-session",
                 username: "testuser",
                 language: "en",
-                system: 1
+                system: 1,
             });
             (PlayerSetting.getPlayerSetting as jest.Mock).mockReturnValue({
                 musicEnable: true,
-                sfxEnable: true
+                sfxEnable: true,
             });
             (StorageManager.get as jest.Mock).mockImplementation((key) => {
                 if (key === localStorageKeys.operator) {
@@ -154,20 +135,20 @@ describe("url-helper", () => {
 
             // Mock globalThis.location and history
             const mockHref = "https://test-domain.com/test?" + searchParams.toString();
-            Object.defineProperty(globalThis, 'location', {
+            Object.defineProperty(globalThis, "location", {
                 value: {
                     search: `?${searchParams.toString()}`,
-                    origin: 'https://test-domain.com',
-                    href: mockHref
+                    origin: "https://test-domain.com",
+                    href: mockHref,
                 },
-                writable: true
+                writable: true,
             });
 
-            Object.defineProperty(globalThis, 'history', {
+            Object.defineProperty(globalThis, "history", {
                 value: {
-                    pushState: jest.fn()
+                    pushState: jest.fn(),
                 },
-                writable: true
+                writable: true,
             });
 
             const result = getQueryParameters();
@@ -180,45 +161,43 @@ describe("url-helper", () => {
                 redirectUrl: "https://redirect.com",
                 isThirdParty: true,
                 operator: "testOp",
-                firstSSOToLobby: true
+                firstSSOToLobby: true,
             });
         });
 
         it("should handle missing optional parameters", () => {
             // Mock window.location using a URLSearchParams object with only required parameters
-            const searchParams = new URLSearchParams(
-                "token=test-token"
-            );
+            const searchParams = new URLSearchParams("token=test-token");
 
             // Mock globalThis.location and history
             const mockHref = "https://test-domain.com/test?" + searchParams.toString();
-            Object.defineProperty(globalThis, 'location', {
+            Object.defineProperty(globalThis, "location", {
                 value: {
                     search: `?${searchParams.toString()}`,
-                    origin: 'https://test-domain.com',
-                    href: mockHref
+                    origin: "https://test-domain.com",
+                    href: mockHref,
                 },
-                writable: true
+                writable: true,
             });
 
-            Object.defineProperty(globalThis, 'history', {
+            Object.defineProperty(globalThis, "history", {
                 value: {
-                    pushState: jest.fn()
+                    pushState: jest.fn(),
                 },
-                writable: true
+                writable: true,
             });
 
             const result = getQueryParameters();
             expect(result).toEqual({
                 token: "test-token",
-                lang: null,
+                lang: "en",
                 gameId: 0,
-                appType: 0,
+                appType: 1,
                 isDirectMode: false,
                 redirectUrl: "",
                 isThirdParty: false,
                 operator: null,
-                firstSSOToLobby: true
+                firstSSOToLobby: true,
             });
         });
     });

@@ -1,9 +1,10 @@
 import { renderHook, act } from "@testing-library/react";
 import { useAuthorization } from "../use-authorization";
 import * as authService from "../../services/auth-service";
-import { StorageManager } from "../../utils";
+import { StorageManager, storeSessionData } from "../../utils";
 import { tolgee } from "../../../tolgee";
 import { localStorageKeys } from "../../utils";
+import { getQueryParameters } from "../../utils";
 
 // Mock appSettings
 jest.mock("../../game-setting", () => ({
@@ -11,8 +12,8 @@ jest.mock("../../game-setting", () => ({
         gameDomain: "https://test-domain.com",
         system: "test-system",
         ssl: true,
-        env: "test"
-    }
+        env: "test",
+    },
 }));
 
 // Mock all external dependencies
@@ -24,8 +25,10 @@ jest.mock("../../utils", () => ({
     },
     localStorageKeys: {
         language: "language",
+        operator: "operator",
     },
     storeSessionData: jest.fn(),
+    getQueryParameters: jest.fn(),
 }));
 jest.mock("../../../tolgee", () => ({
     tolgee: {
@@ -37,9 +40,17 @@ describe("useAuthorization", () => {
     const mockToken = "test-token";
     const mockAppType = 1;
     const mockLanguage = "en";
+    const mockOperator = "test-operator";
 
     beforeEach(() => {
         jest.clearAllMocks();
+        // Add query parameter mock setup
+        (getQueryParameters as jest.Mock).mockReturnValue({
+            token: mockToken,
+            appType: mockAppType,
+            lang: mockLanguage,
+            operator: mockOperator,
+        });
     });
 
     describe("initialize", () => {
@@ -57,9 +68,7 @@ describe("useAuthorization", () => {
             (authService.authorize as jest.Mock).mockResolvedValue(mockAuthorizeResponse);
             (StorageManager.get as jest.Mock).mockReturnValue("en");
 
-            const { result } = renderHook(() =>
-                useAuthorization(mockToken, mockAppType, mockLanguage)
-            );
+            const { result } = renderHook(() => useAuthorization());
 
             await act(async () => {
                 await result.current.initialize();
@@ -78,7 +87,7 @@ describe("useAuthorization", () => {
                 startTime: new Date(),
                 endTime: new Date(),
                 operatorId: "test-operator",
-                severity: 1
+                severity: 1,
             };
             const mockSession = {
                 isUM: true,
@@ -88,9 +97,7 @@ describe("useAuthorization", () => {
 
             (authService.sso as jest.Mock).mockResolvedValue(mockSession);
 
-            const { result } = renderHook(() =>
-                useAuthorization(mockToken, mockAppType, mockLanguage)
-            );
+            const { result } = renderHook(() => useAuthorization());
 
             await act(async () => {
                 await result.current.initialize();
@@ -109,9 +116,7 @@ describe("useAuthorization", () => {
 
             (authService.sso as jest.Mock).mockResolvedValue(mockSession);
 
-            const { result } = renderHook(() =>
-                useAuthorization(mockToken, mockAppType, mockLanguage)
-            );
+            const { result } = renderHook(() => useAuthorization());
 
             await act(async () => {
                 await result.current.initialize();
@@ -137,9 +142,7 @@ describe("useAuthorization", () => {
             (authService.authorize as jest.Mock).mockResolvedValue(mockUnauthorizedResponse);
             (authService.autoCreateNickname as jest.Mock).mockResolvedValue(mockAutoCreateResponse);
 
-            const { result } = renderHook(() =>
-                useAuthorization(mockToken, mockAppType, mockLanguage)
-            );
+            const { result } = renderHook(() => useAuthorization());
 
             await act(async () => {
                 await result.current.initialize();
@@ -166,9 +169,7 @@ describe("useAuthorization", () => {
             (authService.authorize as jest.Mock).mockResolvedValue(mockUnauthorizedResponse);
             (authService.autoCreateNickname as jest.Mock).mockResolvedValue(mockAutoCreateResponse);
 
-            const { result } = renderHook(() =>
-                useAuthorization(mockToken, mockAppType, mockLanguage)
-            );
+            const { result } = renderHook(() => useAuthorization());
 
             await act(async () => {
                 await result.current.initialize();
@@ -181,9 +182,7 @@ describe("useAuthorization", () => {
         it("should handle error during initialization", async () => {
             (authService.sso as jest.Mock).mockRejectedValue(new Error("Test error"));
 
-            const { result } = renderHook(() =>
-                useAuthorization(mockToken, mockAppType, mockLanguage)
-            );
+            const { result } = renderHook(() => useAuthorization());
 
             await act(async () => {
                 const response = await result.current.initialize();
@@ -201,13 +200,12 @@ describe("useAuthorization", () => {
             const mockAuthorizeResponse = {
                 authorized: true,
             };
+            (getQueryParameters as jest.Mock).mockReturnValue({});
 
             (authService.verifySession as jest.Mock).mockResolvedValue(mockSession);
             (authService.authorize as jest.Mock).mockResolvedValue(mockAuthorizeResponse);
 
-            const { result } = renderHook(() =>
-                useAuthorization("", mockAppType, mockLanguage)
-            );
+            const { result } = renderHook(() => useAuthorization());
 
             await act(async () => {
                 await result.current.initialize();
@@ -231,9 +229,7 @@ describe("useAuthorization", () => {
             (authService.authorize as jest.Mock).mockResolvedValue(mockAuthorizeResponse);
             (StorageManager.get as jest.Mock).mockReturnValue(null);
 
-            const { result } = renderHook(() =>
-                useAuthorization(mockToken, mockAppType, "fr")
-            );
+            const { result } = renderHook(() => useAuthorization());
 
             await act(async () => {
                 await result.current.initialize();
@@ -246,16 +242,14 @@ describe("useAuthorization", () => {
 
     describe("state management", () => {
         it("should allow manual update of umInfo", async () => {
-            const { result } = renderHook(() =>
-                useAuthorization(mockToken, mockAppType, mockLanguage)
-            );
+            const { result } = renderHook(() => useAuthorization());
 
             const newUMInfo = {
                 message: "New UM Message",
                 startTime: new Date(),
                 endTime: new Date(),
                 operatorId: "test-operator",
-                severity: 1
+                severity: 1,
             };
 
             act(() => {
@@ -265,4 +259,4 @@ describe("useAuthorization", () => {
             expect(result.current.umInfo).toEqual(newUMInfo);
         });
     });
-}); 
+});
