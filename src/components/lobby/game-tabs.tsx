@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import { storePlayerSetting } from "../../_shared/utils/player-setting";
-import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
-import FunctionUtil from "../../_shared/utils/function-util";
+
 import { useTranslator } from "../../_shared/react-hooks/use-translator";
 import { getGameUrl } from "../../_shared/utils";
+import FunctionUtil from "../../_shared/utils/function-util";
+import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
+import { storePlayerSetting } from "../../_shared/utils/player-setting";
 
 interface GameTabsProps {
     gameOfferIds: number[];
@@ -23,19 +24,13 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
 
     const calculateDimensions = useCallback(() => {
         const availableHeight = window.innerHeight - TAB_HEIGHT;
-        const availableWidth = window.innerWidth;
 
         let width = 828;
         let height = 1078;
 
-        const heightBasedWidth = Math.floor(availableHeight * ASPECT_RATIO);
-        if (heightBasedWidth <= availableWidth) {
-            height = availableHeight;
-            width = heightBasedWidth;
-        } else {
-            width = availableWidth;
-            height = Math.floor(width / ASPECT_RATIO);
-        }
+        const widthBasedHeight = Math.floor(availableHeight * ASPECT_RATIO);
+        height = availableHeight;
+        width = widthBasedHeight;
 
         setDimensions({ width, height });
     }, []);
