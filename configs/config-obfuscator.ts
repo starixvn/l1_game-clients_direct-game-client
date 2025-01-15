@@ -60,4 +60,4 @@ const runObfuscationProcess = async (dirNames: string[]) => {
     }
 };
 
-runObfuscationProcess(["./configs/sg/", "./configs/vg/"]);
+runObfuscationProcess(["./configs/sg/", "./configs/vg/", "./configs/sp_hd/"]);

@@ -9,6 +9,8 @@ import { getBaseGameUrl, getGameUrl, getParamCurrentUrl, buildUrlWithPath, getQu
 jest.mock("../../game-setting", () => ({
     appSettings: {
         gameDomain: "https://test-domain.com",
+        domainUrlFormat: "https://{host}/direct-client-{gameId}",
+        isDev: false,
     },
 }));
 
@@ -49,7 +51,87 @@ describe("url-helper", () => {
     describe("getBaseGameUrl", () => {
         it("should return correct URL", () => {
             const result = getBaseGameUrl(1);
-            expect(result).toBe("https://test-domain.com/direct-client-1/");
+            expect(result).toBe("https://test-domain.com/direct-client-1");
+        });
+
+        it("should throw error when domainUrlFormat is not set", () => {
+            // Temporarily override the mock
+            const originalSettings = { ...appSettings };
+            (appSettings as any).domainUrlFormat = "";
+
+            expect(() => getBaseGameUrl(1)).toThrow("Domain URL format is not set");
+
+            // Restore the original settings
+            Object.assign(appSettings, originalSettings);
+        });
+
+        it("should handle dev mode", () => {
+            // Temporarily override the mock
+            const originalSettings = { ...appSettings };
+            (appSettings as any).isDev = true;
+
+            const result = getBaseGameUrl(1);
+            expect(result).toBe("https://{host}/direct-client-1");
+
+            // Restore the original settings
+            Object.assign(appSettings, originalSettings);
+        });
+
+        it("should handle subdomain correctly", () => {
+            // Arrange
+            const originalSettings = { ...appSettings };
+            appSettings.domainUrlFormat = "https://game-{gameId}.{host}";
+            Object.defineProperty(window, "location", {
+                value: { host: "test.example.com" },
+                writable: true,
+            });
+
+            // Act
+            const result = getBaseGameUrl(456);
+
+            // Assert
+            expect(result).toBe("https://game-456.example.com");
+
+            // Cleanup
+            Object.assign(appSettings, originalSettings);
+        });
+
+        it("should handle multiple subdomains correctly", () => {
+            // Arrange
+            const originalSettings = { ...appSettings };
+            appSettings.domainUrlFormat = "https://game-{gameId}.{host}";
+            Object.defineProperty(window, "location", {
+                value: { host: "sub1.sub2.example.com" },
+                writable: true,
+            });
+
+            // Act
+            const result = getBaseGameUrl(456);
+
+            // Assert
+            expect(result).toBe("https://game-456.example.com");
+
+            // Cleanup
+            Object.assign(appSettings, originalSettings);
+        });
+
+        it("should not modify root domain", () => {
+            // Arrange
+            const originalSettings = { ...appSettings };
+            appSettings.domainUrlFormat = "https://game-{gameId}.{host}";
+            Object.defineProperty(window, "location", {
+                value: { host: "example.com" },
+                writable: true,
+            });
+
+            // Act
+            const result = getBaseGameUrl(456);
+
+            // Assert
+            expect(result).toBe("https://game-456.example.com");
+
+            // Cleanup
+            Object.assign(appSettings, originalSettings);
         });
     });
 
@@ -75,7 +157,9 @@ describe("url-helper", () => {
 
         it("should return complete game URL with encoded parameters", () => {
             const result = getGameUrl(1);
-            expect(result).toContain("https://test-domain.com/direct-client-1/?params=");
+            expect(result).toContain(
+                "https://test-domain.com/direct-client-1?params=encoded_ss=test-session&uname=testuser&lang=en&appType=1&purl=encoded_https%3A%2F%2Ftest-domain.com%2F&rurl=encoded_https%3A%2F%2Ftest-domain.com%2F&musicEnable=true&sfxEnable=true&isUserGesture=false&op=testOperator"
+            );
             expect(Base64Util.base64Encode).toHaveBeenCalled();
         });
 
@@ -92,7 +176,9 @@ describe("url-helper", () => {
         it("should handle missing operator value", () => {
             (StorageManager.get as jest.Mock).mockReturnValue(null);
             const result = getGameUrl(1);
-            expect(result).toContain("https://test-domain.com/direct-client-1/?params=");
+            expect(result).toContain(
+                "https://test-domain.com/direct-client-1?params=encoded_ss=test-session&uname=testuser&lang=en&appType=1&purl=encoded_https%3A%2F%2Ftest-domain.com%2F&rurl=encoded_https%3A%2F%2Ftest-domain.com%2F&musicEnable=true&sfxEnable=true&isUserGesture=false&op=null"
+            );
             expect(Base64Util.base64Encode).toHaveBeenCalledWith(expect.not.stringContaining("op="));
         });
     });

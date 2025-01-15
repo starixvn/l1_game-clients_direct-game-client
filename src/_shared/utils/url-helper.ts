@@ -19,6 +19,13 @@ export type URLContextModel = {
     operator?: string;
 };
 
+const getRootHost = (host: string): string => {
+    // Split host by dots and get the last two parts
+    const parts = host.split(".");
+    if (parts.length <= 2) return host;
+    return parts.slice(-2).join(".");
+};
+
 export const getBaseGameUrl = (gameId: number) => {
     if (appSettings.domainUrlFormat == null || appSettings.domainUrlFormat == "") {
         throw new Error("Domain URL format is not set");
@@ -28,7 +35,7 @@ export const getBaseGameUrl = (gameId: number) => {
         return appSettings.domainUrlFormat.replace("{gameId}", gameId.toString());
     }
 
-    let baseUrl = appSettings.domainUrlFormat.replace("{gameId}", gameId.toString()).replace("{host}", window.location.host);
+    let baseUrl = appSettings.domainUrlFormat.replace("{gameId}", gameId.toString()).replace("{host}", getRootHost(window.location.host));
 
     return baseUrl;
 };

@@ -51,7 +51,7 @@ export class GameEventManager {
     private static instance: GameEventManager;
 
     static handleMessage(event: MessageEvent) {
-        if (appSettings.gameDomain === event.origin || event.origin === "http://localhost:7456") {
+        if (document.location.origin === event.origin || appSettings.isDev) {
             const key = Object.keys(event.data).find((k) => GameEvents[k]);
             GameEventManager.instance.notify(key, event.data);
         }

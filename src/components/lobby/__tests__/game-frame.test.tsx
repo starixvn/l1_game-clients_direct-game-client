@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen, act } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import { GameFrame } from "../game-frame";
 
 describe("GameFrame", () => {
@@ -23,7 +24,7 @@ describe("GameFrame", () => {
 
         const iframe = screen.getByTitle("Game 123");
         expect(iframe).toBeInTheDocument();
-        expect(iframe).toHaveAttribute("width", "742"); // (1000 - 34) * (828/1078)
+        expect(iframe).toHaveAttribute("width", "741"); // Math.floor((1000 - 34) * (828/1078))
         expect(iframe).toHaveAttribute("height", "966"); // 1000 - 34
         expect(iframe).toHaveAttribute("src", "https://example.com/game");
     });
@@ -46,7 +47,7 @@ describe("GameFrame", () => {
         });
 
         const iframe = screen.getByTitle("Game 123");
-        expect(iframe).toHaveAttribute("width", "588"); // (800 - 34) * (828/1078)
+        expect(iframe).toHaveAttribute("width", "588"); // Math.floor((800 - 34) * (828/1078))
         expect(iframe).toHaveAttribute("height", "766"); // 800 - 34
     });
 
@@ -54,7 +55,7 @@ describe("GameFrame", () => {
         render(<GameFrame gameId={123} iframeSrc="https://example.com/game" />);
 
         const iframe = screen.getByTitle("Game 123");
-        expect(iframe).toHaveAttribute("width", "768"); // 1000 * (828/1078)
+        expect(iframe).toHaveAttribute("width", "768"); // Math.floor(1000 * (828/1078))
         expect(iframe).toHaveAttribute("height", "1000"); // window.innerHeight - 0
     });
 });
