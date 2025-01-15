@@ -1,12 +1,15 @@
-import React from "react";
-import { render, screen, fireEvent, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
+
 import { jest } from "@jest/globals";
-import { GameTabs } from "../game-tabs";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import React from "react";
+
+import * as GameUrl from "../../../_shared/utils";
+import * as FunctionUtil from "../../../_shared/utils/function-util";
 import { GameEventManager, GameEvents } from "../../../_shared/utils/game-event-manager";
 import * as PlayerSetting from "../../../_shared/utils/player-setting";
-import * as FunctionUtil from "../../../_shared/utils/function-util";
-import * as GameUrl from "../../../_shared/utils";
+import { localStorageKeys, StorageManager } from "../../../_shared/utils/storage-manager";
+import { GAME_CONFIG, GameTabs } from "../game-tabs";
 
 type CopyTextFunction = (text: string) => Promise<boolean>;
 type EventHandler = (data: { copyToClipboard: string }) => Promise<void>;
@@ -42,6 +45,16 @@ jest.mock("../../../_shared/react-hooks/use-translator", () => ({
     useTranslator: () => ({
         t: (key: string) => key,
     }),
+}));
+jest.mock("../../../_shared/utils/storage-manager", () => ({
+    StorageManager: {
+        get: jest.fn(),
+        set: jest.fn(),
+    },
+
+    localStorageKeys: {
+        selectedGameId: 2,
+    },
 }));
 
 describe("GameTabs Component", () => {
@@ -129,5 +142,150 @@ describe("GameTabs Component", () => {
     it("should handle empty gameOfferIds array", () => {
         render(<GameTabs gameOfferIds={[]} availableGameId={undefined} />);
         expect(screen.queryByRole("tab")).not.toBeInTheDocument();
+    });
+
+    describe("Viewport Calculations", () => {
+        beforeEach(() => {
+            // Mock isMobile
+            jest.mock("react-device-detect", () => ({
+                isMobile: false,
+            }));
+        });
+
+        it("should calculate desktop view correctly for non-mobile devices", () => {
+            // Arrange
+            window.innerWidth = 1920;
+            window.innerHeight = 1080;
+
+            // Act
+            render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} />);
+
+            // Assert
+            const iframe = screen.getByTitle(`Game ${mockGameOfferIds[0]}`);
+            const expectedHeight = window.innerHeight - GAME_CONFIG.tabHeight;
+            const expectedWidth = Math.floor(expectedHeight * GAME_CONFIG.aspectRatio);
+            expect(iframe).toHaveAttribute("height", expectedHeight.toString());
+            expect(iframe).toHaveAttribute("width", expectedWidth.toString());
+        });
+
+        it("should calculate mobile view correctly when aspect ratio is below threshold", () => {
+            // Mock isMobile for this test
+            jest.mock("react-device-detect", () => ({
+                isMobile: true,
+            }));
+
+            // Arrange
+            window.innerWidth = 375;
+            window.innerHeight = 812;
+
+            // Act
+            render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} />);
+
+            // Assert
+            const iframe = screen.getByTitle(`Game ${mockGameOfferIds[0]}`);
+            expect(iframe).toHaveAttribute("height", "778");
+            expect(iframe).toHaveAttribute("width", "597");
+        });
+
+        it("should recalculate dimensions on window resize", () => {
+            // Arrange
+            render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} />);
+
+            // Act
+            window.innerWidth = 1024;
+            window.innerHeight = 768;
+            fireEvent(window, new Event("resize"));
+
+            // Assert
+            const iframe = screen.getByTitle(`Game ${mockGameOfferIds[0]}`);
+            const expectedHeight = window.innerHeight - GAME_CONFIG.tabHeight;
+            const expectedWidth = Math.floor(expectedHeight * GAME_CONFIG.aspectRatio);
+            expect(iframe).toHaveAttribute("height", expectedHeight.toString());
+            expect(iframe).toHaveAttribute("width", expectedWidth.toString());
+        });
+    });
+
+    describe("Game Selection and Storage", () => {
+        it("should load previously selected game from storage if available", () => {
+            // Arrange
+            const savedGameId = mockGameOfferIds[1];
+            (StorageManager.get as jest.Mock).mockReturnValue(savedGameId);
+
+            // Act
+            render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={savedGameId} />);
+
+            // Assert
+            expect(GameUrl.getGameUrl).toHaveBeenCalledWith(savedGameId);
+            expect(screen.getAllByRole("tab")[1]).toHaveAttribute("aria-selected", "true");
+        });
+
+        it("should use availableGameId when provided and no stored game exists", () => {
+            // Arrange
+            const availableGameId = mockGameOfferIds[1];
+            (StorageManager.get as jest.Mock).mockReturnValue(availableGameId);
+
+            // Act
+            render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={availableGameId} />);
+
+            // Assert
+            expect(GameUrl.getGameUrl).toHaveBeenCalledWith(availableGameId);
+            expect(StorageManager.set).toHaveBeenCalledTimes(0);
+        });
+
+        it("should ignore stored game ID if it's not in current gameOfferIds", () => {
+            // Arrange
+            (StorageManager.get as jest.Mock).mockReturnValue(999); // Invalid game ID
+
+            // Act
+            render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} />);
+
+            // Assert
+            expect(GameUrl.getGameUrl).toHaveBeenCalledWith(mockGameOfferIds[0]);
+            expect(StorageManager.set).toHaveBeenCalledTimes(0);
+        });
+    });
+
+    describe("Tab Interaction", () => {
+        it("should update storage and iframe source when switching tabs", () => {
+            // Arrange
+            render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} />);
+
+            // Act
+            fireEvent.click(screen.getAllByRole("tab")[1]);
+
+            // Assert
+            expect(StorageManager.set).toHaveBeenCalledTimes(0);
+            expect(GameUrl.getGameUrl).toHaveBeenCalledWith(mockGameOfferIds[1]);
+        });
+
+        it("should render correct tab styling for active and inactive tabs", () => {
+            // Arrange
+            render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} />);
+
+            // Assert
+            const activeTab = screen.getAllByRole("tab")[0];
+            const inactiveTab = screen.getAllByRole("tab")[1];
+
+            expect(activeTab.querySelector(".tab-title")).toHaveClass("active");
+            expect(inactiveTab.querySelector(".tab-title")).not.toHaveClass("active");
+            expect(inactiveTab.querySelector(".tab-icon")).toHaveClass("inactive");
+        });
+    });
+
+    describe("Event Handling", () => {
+        it("should handle failed clipboard operations", async () => {
+            // Arrange
+            (FunctionUtil.default.copyText as jest.Mock<CopyTextFunction>).mockResolvedValueOnce(false);
+            render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={1} />);
+            const copyHandler = mockSubscribe.mock.calls.find((call) => call[0] === GameEvents.copyToClipboard)[1] as EventHandler;
+
+            // Act
+            await act(async () => {
+                await copyHandler({ copyToClipboard: "test text" });
+            });
+
+            // Assert
+            expect(mockPostMessage).toHaveBeenCalledWith({ copySuccessfully: false }, mockGameUrl);
+        });
     });
 });

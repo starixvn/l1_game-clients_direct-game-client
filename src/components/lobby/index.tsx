@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import "./lobby.scss";
+
+import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
+import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import { getAvailableGameId, getOfferedGameIds } from "../../_shared/utils/game-setting";
 import Loading from "../common/loading";
-import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
-import { GameTabs } from "./game-tabs";
-import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import LandscapeMode from "../landscape-mode";
+import { GameTabs } from "./game-tabs";
+import { LobbyContainer } from "./styles/lobby.style";
 
 const SessionTimeoutPage = React.lazy(() => import("../timeout"));
 const UMPage = React.lazy(() => import("../um"));
@@ -57,9 +58,9 @@ const Lobby: React.FC = () => {
     return (
         <>
             <LandscapeMode />
-            <div className="lobby">
+            <LobbyContainer>
                 <GameTabs gameOfferIds={gameOfferIds} availableGameId={availableGameId} />
-            </div>
+            </LobbyContainer>
         </>
     );
 };
