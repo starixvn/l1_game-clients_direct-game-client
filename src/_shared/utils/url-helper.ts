@@ -20,15 +20,15 @@ export type URLContextModel = {
 };
 
 export const getBaseGameUrl = (gameId: number) => {
-    let baseUrl = `${appSettings.gameDomain}/direct-client-${gameId}/`;
-    // if (process.env.NODE_ENV === "development") {
-    //     //baseUrl = `http://localhost:7456`;
-    //     baseUrl = `http://localhost:7456/web-mobile/web-mobile/index.html`;
+    if (appSettings.domainUrlFormat == null || appSettings.domainUrlFormat == "") {
+        throw new Error("Domain URL format is not set");
+    }
 
-    //     if (gameId === 2) {
-    //         baseUrl = `http://localhost:7456`;
-    //     }
-    // }
+    if (appSettings.isDev) {
+        return appSettings.domainUrlFormat.replace("{gameId}", gameId.toString());
+    }
+
+    let baseUrl = appSettings.domainUrlFormat.replace("{gameId}", gameId.toString()).replace("{host}", window.location.host);
 
     return baseUrl;
 };

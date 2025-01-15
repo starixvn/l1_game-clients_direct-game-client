@@ -15,4 +15,7 @@ export interface IAppSettings {
     gameDomain: string;
     env: string;
     subDirectory?: string;
+    isDev?: boolean;
+    domainUrlFormat?: string;
+    hideGameTab?: boolean;
 }

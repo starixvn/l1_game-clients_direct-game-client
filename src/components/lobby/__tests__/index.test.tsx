@@ -1,10 +1,11 @@
 import React from "react";
-import { render, screen, act, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Lobby from "../index";
 import * as urlHelper from "../../../_shared/utils";
 import * as gameSettings from "../../../_shared/utils/game-setting";
 import * as useAuthHook from "../../../_shared/react-hooks/use-authorization";
+import { StorageManager } from "../../_shared/utils";
 
 // Mock appSettings
 jest.mock("../../../_shared/game-setting", () => ({
@@ -256,5 +257,220 @@ describe("Lobby Component", () => {
         unmount();
         // In React 18 Strict Mode, cleanup runs twice, so we expect 6 unsubscribe calls (3 events × 2)
         expect(mockUnsubscribe).toHaveBeenCalledTimes(6);
+    });
+});
+
+describe("Lobby", () => {
+    const mockUseAuthorization = useAuthHook.useAuthorization as jest.Mock;
+    const mockGetOfferedGameIds = gameSettings.getOfferedGameIds as jest.Mock;
+    const mockGetAvailableGameId = gameSettings.getAvailableGameId as jest.Mock;
+
+    beforeEach(() => {
+        // Clear all mocks
+        jest.clearAllMocks();
+
+        // Default mock implementations
+        mockUseAuthorization.mockReturnValue({
+            isLoading: false,
+            umInfo: null,
+            setUMInfo: jest.fn(),
+            isSessionTimeout: false,
+            initialize: jest.fn().mockResolvedValue({ authorized: true }),
+        });
+        mockGetOfferedGameIds.mockReturnValue([1, 2, 3]);
+        mockGetAvailableGameId.mockReturnValue(1);
+    });
+
+    it("should use gameId from query string when available and valid", async () => {
+        // Mock window.location.search
+        const originalLocation = window.location;
+        delete window.location;
+        window.location = { ...originalLocation, search: "?gameId=2" };
+
+        render(<Lobby />);
+
+        await waitFor(() => {
+            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+        });
+
+        // GameId 2 should be used instead of the default available game (1)
+        expect(screen.getByTitle("Game 2")).toBeInTheDocument();
+
+        // Restore original location
+        window.location = originalLocation;
+    });
+
+    it("should fall back to default available game when query string gameId is not in offered games", async () => {
+        // Mock window.location.search with invalid gameId
+        const originalLocation = window.location;
+        delete window.location;
+        window.location = { ...originalLocation, search: "?gameId=999" };
+
+        render(<Lobby />);
+
+        await waitFor(() => {
+            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+        });
+
+        // Default available game (1) should be used
+        expect(screen.getByTitle("Game 1")).toBeInTheDocument();
+
+        // Restore original location
+        window.location = originalLocation;
+    });
+
+    it("should use default available game when no query string gameId is present", async () => {
+        render(<Lobby />);
+
+        await waitFor(() => {
+            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+        });
+
+        // Default available game (1) should be used
+        expect(screen.getByTitle("Game 1")).toBeInTheDocument();
+    });
+
+    it("should initialize with queryGameId immediately", async () => {
+        // Mock window.location.search
+        const originalLocation = window.location;
+        delete window.location;
+        window.location = { ...originalLocation, search: "?gameId=2" };
+
+        const mockInitialize = jest.fn().mockResolvedValue({ authorized: true });
+        mockUseAuthorization.mockReturnValue({
+            isLoading: false,
+            umInfo: null,
+            setUMInfo: jest.fn(),
+            isSessionTimeout: false,
+            initialize: mockInitialize,
+        });
+
+        render(<Lobby />);
+
+        // The initialize function should be called immediately
+        expect(mockInitialize).toHaveBeenCalledTimes(1);
+
+        // Wait for the effect to complete
+        await waitFor(() => {
+            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+        });
+
+        // Restore original location
+        window.location = originalLocation;
+    });
+
+    it("should set gameId to 0 when no game is available", async () => {
+        // Mock no available games
+        mockGetOfferedGameIds.mockReturnValue([]);
+        mockGetAvailableGameId.mockReturnValue(undefined);
+
+        const mockInitialize = jest.fn().mockResolvedValue({ authorized: true });
+        mockUseAuthorization.mockReturnValue({
+            isLoading: false,
+            umInfo: null,
+            setUMInfo: jest.fn(),
+            isSessionTimeout: false,
+            initialize: mockInitialize,
+        });
+
+        render(<Lobby />);
+
+        await waitFor(() => {
+            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+        });
+
+        // Should render NonOfferPage when no games are available
+        expect(screen.getByTestId("non-offer")).toBeInTheDocument();
+    });
+
+    it("should set gameId to 0 when query parameter is invalid", async () => {
+        // Mock window.location.search with invalid gameId
+        const originalLocation = window.location;
+        delete window.location;
+        window.location = { ...originalLocation, search: "?gameId=invalid" };
+
+        render(<Lobby />);
+
+        await waitFor(() => {
+            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+        });
+
+        // Should fall back to default game (1) when query parameter is invalid
+        expect(screen.getByTitle("Game 1")).toBeInTheDocument();
+
+        // Restore original location
+        window.location = originalLocation;
+    });
+
+    it("should use gameId from localStorage when no query string is present", async () => {
+        // Mock StorageManager.get
+        const mockStorageGet = jest.spyOn(StorageManager, "get");
+        mockStorageGet.mockReturnValue(2); // Simulate stored gameId of 2
+
+        // Mock window.location.search with no gameId
+        const originalLocation = window.location;
+        delete window.location;
+        window.location = { ...originalLocation, search: "" };
+
+        render(<Lobby />);
+
+        await waitFor(() => {
+            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+        });
+
+        // GameId 2 from localStorage should be used
+        expect(screen.getByTitle("Game 2")).toBeInTheDocument();
+
+        // Restore original location and cleanup mock
+        window.location = originalLocation;
+        mockStorageGet.mockRestore();
+    });
+
+    it("should prioritize query string gameId over localStorage gameId", async () => {
+        // Mock StorageManager.get
+        const mockStorageGet = jest.spyOn(StorageManager, "get");
+        mockStorageGet.mockReturnValue(2); // Simulate stored gameId of 2
+
+        // Mock window.location.search with different gameId
+        const originalLocation = window.location;
+        delete window.location;
+        window.location = { ...originalLocation, search: "?gameId=3" };
+
+        render(<Lobby />);
+
+        await waitFor(() => {
+            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+        });
+
+        // GameId 3 from query string should be used instead of 2 from localStorage
+        expect(screen.getByTitle("Game 3")).toBeInTheDocument();
+
+        // Restore original location and cleanup mock
+        window.location = originalLocation;
+        mockStorageGet.mockRestore();
+    });
+
+    it("should fall back to 0 when both query string and localStorage are invalid", async () => {
+        // Mock StorageManager.get
+        const mockStorageGet = jest.spyOn(StorageManager, "get");
+        mockStorageGet.mockReturnValue(null); // Simulate no stored gameId
+
+        // Mock window.location.search with invalid gameId
+        const originalLocation = window.location;
+        delete window.location;
+        window.location = { ...originalLocation, search: "?gameId=invalid" };
+
+        render(<Lobby />);
+
+        await waitFor(() => {
+            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+        });
+
+        // Should fall back to default game (1) when both sources are invalid
+        expect(screen.getByTitle("Game 1")).toBeInTheDocument();
+
+        // Restore original location and cleanup mock
+        window.location = originalLocation;
+        mockStorageGet.mockRestore();
     });
 });
