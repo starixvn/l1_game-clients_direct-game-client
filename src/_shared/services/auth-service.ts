@@ -4,7 +4,7 @@ import { appSettings } from "../game-setting";
 import UserClientCommunication from "sc-user-service-client/dist/user-client-communication";
 import NameGenerator from "..//utils/name-generator";
 import { randomInteger } from "..//utils/number-helper";
-import { MAX_AVATAR_ID } from "../consts";
+import { errorCodes, MAX_AVATAR_ID } from "../consts";
 import { getSession, storeSessionData } from "../utils";
 
 const gameDomain = appSettings.gameDomain;
@@ -58,9 +58,14 @@ export const getBalance = async (userSession: SSOResponse) => {
 };
 
 export const autoCreateNickname = async (session: SSOResponse) => {
-    const nickname = NameGenerator.generateName();
     const selectedAvatarId = randomInteger(1, MAX_AVATAR_ID);
-    const authorizeResponse = (await createNickname(session, nickname, selectedAvatarId)) as AuthorizeResponse;
+    let attemptCount = 0;
+    let authorizeResponse;
+    do {
+        const nickname = NameGenerator.generateName();
+        authorizeResponse = await createNickname(session, nickname, selectedAvatarId);
+        attemptCount++;
+    } while (authorizeResponse.errorCode === errorCodes.NICKNAME_EXISTS && attemptCount < 3);
 
     return authorizeResponse;
 };

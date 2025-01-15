@@ -24,3 +24,7 @@ export const ResourceTypes = {
 };
 
 export const buildVersion = process.env.BUILD_VERSION || 111;
+
+export const errorCodes = {
+    NICKNAME_EXISTS: "SB0015",
+};
