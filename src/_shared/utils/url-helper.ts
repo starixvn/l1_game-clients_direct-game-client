@@ -3,6 +3,7 @@ import Base64Util from "./base64-util";
 import { getSession } from "./session-manager";
 import { getPlayerSetting } from "./player-setting";
 import { localStorageKeys, StorageManager } from "./storage-manager";
+import { locales } from "../consts";
 
 export type URLContextModel = {
     token?: string;
@@ -20,14 +21,14 @@ export type URLContextModel = {
 
 export const getBaseGameUrl = (gameId: number) => {
     let baseUrl = `${appSettings.gameDomain}/direct-client-${gameId}/`;
-    if (process.env.NODE_ENV === "development") {
-        //baseUrl = `http://localhost:7456`;
-        baseUrl = `http://localhost:7456/web-mobile/web-mobile/index.html`;
+    // if (process.env.NODE_ENV === "development") {
+    //     //baseUrl = `http://localhost:7456`;
+    //     baseUrl = `http://localhost:7456/web-mobile/web-mobile/index.html`;
 
-        if (gameId === 2) {
-            baseUrl = `http://localhost:7456`;
-        }
-    }
+    //     if (gameId === 2) {
+    //         baseUrl = `http://localhost:7456`;
+    //     }
+    // }
 
     return baseUrl;
 };
@@ -47,6 +48,7 @@ const buildSessionParams = () => {
         lang: sessionInfo.language,
         appType: sessionInfo.system,
         purl: Base64Util.base64Encode(window.location.href),
+        rurl: Base64Util.base64Encode(window.location.href),
         musicEnable: playerSetting.musicEnable,
         sfxEnable: playerSetting.sfxEnable,
         isUserGesture: false,
@@ -78,9 +80,9 @@ export function getQueryParameters(): URLContextModel | undefined {
 
     const token = params.get("token") || "";
     if (token) {
-        const lang = params.get("lang");
+        const lang = params.get("lang") ?? locales.en;
         const gameId = Number(params.get("gameId") || 0);
-        const appType = Number(params.get("appType") || 0);
+        const appType = Number(params.get("appType") || 1);
         const isDirectMode = !!params.get("ref");
         const operator = params.get("op");
         const redirectUrl = isDirectMode ? params.get("rurl") : "";

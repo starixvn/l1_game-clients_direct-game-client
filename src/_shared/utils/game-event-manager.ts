@@ -13,7 +13,6 @@ export const GameEvents = {
     isNotPermittedToPlay: "isNotPermittedToPlay",
     isUnderMaintain: "isUnderMaintain",
     sessionTimeout: "sessionTimeout",
-    isDisconnect: "isDisconnect",
     musicEnable: "musicEnable",
     sfxEnable: "sfxEnable",
     replaceUrl: "replaceUrl",

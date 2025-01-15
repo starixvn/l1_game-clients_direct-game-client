@@ -1,22 +1,22 @@
 import { useState } from "react";
 import { authorize, autoCreateNickname, sso, verifySession } from "../services/auth-service";
 import { SSOResponse, AuthorizeResponse, UMInfo } from "sc-user-service-client/dist/auth";
-import { localStorageKeys, StorageManager, storeSessionData } from "../utils";
+import { getQueryParameters, localStorageKeys, StorageManager, storeSessionData } from "../utils";
 import { languageMapping, locales } from "../consts";
 import { tolgee } from "../../tolgee";
 
-export const useAuthorization = (token: string, appType: number, language: string) => {
+export const useAuthorization = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isSessionTimeout, setIsSessionTimeout] = useState(false);
     const [umInfo, setUMInfo] = useState<UMInfo | null>(null);
 
-    const loadSession = async (token: string | undefined) => {
+    const loadSession = async (token: string | undefined, appType: number) => {
         return token ? sso(token, appType) : verifySession();
     };
 
-    const loadLanguage = async (session: SSOResponse) => {
+    const loadLanguage = async (session: SSOResponse, languageCode: string) => {
         const oldLang = StorageManager.get<string>(localStorageKeys.language);
-        const lang = languageMapping[language] || languageMapping[session?.language] || oldLang || locales.en;
+        const lang = languageMapping[languageCode] || languageMapping[session?.language] || oldLang || locales.en;
         await tolgee.changeLanguage(lang);
         StorageManager.set(localStorageKeys.language, lang);
         return lang;
@@ -44,8 +44,10 @@ export const useAuthorization = (token: string, appType: number, language: strin
 
     const initialize = async (): Promise<AuthorizeResponse | null> => {
         try {
-            const session = await loadSession(token);
-            await loadLanguage(session);
+            const queryParameters = getQueryParameters();
+            const { token, appType, lang: language, operator } = queryParameters;
+            const session = await loadSession(token, appType);
+            await loadLanguage(session, language);
             if (!session || isTimeoutSession(session)) {
                 setIsSessionTimeout(true);
                 return null;
@@ -59,6 +61,7 @@ export const useAuthorization = (token: string, appType: number, language: strin
             }
 
             const authorizeInfo = (await authorize(session)) as AuthorizeResponse;
+            operator && StorageManager.set(localStorageKeys.operator, operator);
             return await handleAuthorization(session, authorizeInfo);
         } catch (error) {
             console.log("Authorization error: ", error);

@@ -24,18 +24,15 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
     const calculateDimensions = useCallback(() => {
         const availableHeight = window.innerHeight - TAB_HEIGHT;
         const availableWidth = window.innerWidth;
-        const parentHeight = containerRef.current?.parentElement?.clientHeight || availableHeight;
 
         let width = 828;
         let height = 1078;
 
-        // Calculate dimensions based on available height
         const heightBasedWidth = Math.floor(availableHeight * ASPECT_RATIO);
         if (heightBasedWidth <= availableWidth) {
             height = availableHeight;
             width = heightBasedWidth;
         } else {
-            // If width is too large, calculate based on available width
             width = availableWidth;
             height = Math.floor(width / ASPECT_RATIO);
         }
@@ -45,8 +42,8 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
 
     useEffect(() => {
         calculateDimensions();
-        window.addEventListener('resize', calculateDimensions);
-        return () => window.removeEventListener('resize', calculateDimensions);
+        window.addEventListener("resize", calculateDimensions);
+        return () => window.removeEventListener("resize", calculateDimensions);
     }, [calculateDimensions]);
 
     const postMessageToMicroSite = useCallback(
@@ -65,16 +62,17 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
     );
 
     useEffect(() => {
-        const musicListener = GameEventManager.getInstance().subscribe(GameEvents.musicEnable, storePlayerSetting);
-        const sfxListener = GameEventManager.getInstance().subscribe(GameEvents.sfxEnable, storePlayerSetting);
-        const isUserGestureListener = GameEventManager.getInstance().subscribe(GameEvents.isUserGesture, storePlayerSetting);
-        const copyTextListener = GameEventManager.getInstance().subscribe(GameEvents.copyToClipboard, handleCopyToClipboard);
+        const listeners = [
+            { event: GameEvents.musicEnable, handler: storePlayerSetting },
+            { event: GameEvents.sfxEnable, handler: storePlayerSetting },
+            { event: GameEvents.isUserGesture, handler: storePlayerSetting },
+            { event: GameEvents.copyToClipboard, handler: handleCopyToClipboard },
+        ];
+        const gameEventManager = GameEventManager.getInstance();
+        const subscribers = listeners.map(({ event, handler }) => gameEventManager.subscribe(event, handler));
 
         return () => {
-            GameEventManager.getInstance().unsubscribe(musicListener);
-            GameEventManager.getInstance().unsubscribe(sfxListener);
-            GameEventManager.getInstance().unsubscribe(isUserGestureListener);
-            GameEventManager.getInstance().unsubscribe(copyTextListener);
+            subscribers.forEach((id) => gameEventManager.unsubscribe(id));
         };
     }, [handleCopyToClipboard]);
 
@@ -114,14 +112,17 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
                             <div
                                 ref={containerRef}
                                 style={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'top',
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "top",
                                     backgroundImage: `url(/images/bg-full-${gameId}.webp)`,
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'center',
-                                    width: '100%',
-                                    height: `${Math.max(dimensions.height, containerRef.current?.parentElement?.clientHeight || dimensions.height)}px`
+                                    backgroundSize: "cover",
+                                    backgroundPosition: "center",
+                                    width: "100%",
+                                    height: `${Math.max(
+                                        dimensions.height,
+                                        containerRef.current?.parentElement?.clientHeight || dimensions.height
+                                    )}px`,
                                 }}
                             >
                                 <iframe
