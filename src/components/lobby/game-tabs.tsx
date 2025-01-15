@@ -11,8 +11,13 @@ interface GameTabsProps {
     gameOfferIds: number[];
 }
 
-const ASPECT_RATIO = 828 / 1078;
-const TAB_HEIGHT = 34; // Estimated height of the tab bar
+// Default game window configuration
+const GAME_CONFIG = {
+    width: 828,
+    height: 1078,
+    aspectRatio: 828 / 1078,
+    tabHeight: 34, // Height of the tab navigation bar in pixels
+};
 
 export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
@@ -20,17 +25,14 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds }) => {
     const { t } = useTranslator();
     const [activeKey, setActiveKey] = useState(0);
     const [iframeSrc, setIframeSrc] = useState<string>();
-    const [dimensions, setDimensions] = useState({ width: 828, height: 1078 });
+    const [dimensions, setDimensions] = useState({ width: GAME_CONFIG.width, height: GAME_CONFIG.height });
 
     const calculateDimensions = useCallback(() => {
-        const availableHeight = window.innerHeight - TAB_HEIGHT;
+        let width = GAME_CONFIG.width;
+        let height = GAME_CONFIG.height;
 
-        let width = 828;
-        let height = 1078;
-
-        const widthBasedHeight = Math.floor(availableHeight * ASPECT_RATIO);
-        height = availableHeight;
-        width = widthBasedHeight;
+        height = window.innerHeight - GAME_CONFIG.tabHeight;
+        width = Math.floor(height * GAME_CONFIG.aspectRatio);
 
         setDimensions({ width, height });
     }, []);
