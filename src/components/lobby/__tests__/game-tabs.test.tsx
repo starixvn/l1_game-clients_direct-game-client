@@ -61,13 +61,13 @@ describe("GameTabs Component", () => {
     });
 
     it("should render game tabs with correct number of tabs", () => {
-        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} />);
+        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} tabHeight={100} />);
         const tabs = screen.getAllByRole("tab");
         expect(tabs).toHaveLength(mockGameOfferIds.length);
     });
 
     it("should render game icons and names in tabs", () => {
-        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} />);
+        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} tabHeight={100} />);
         mockGameOfferIds.forEach((gameId) => {
             expect(screen.getByAltText(`gameNames.${gameId}`)).toBeInTheDocument();
             expect(screen.getByText(`gameNames.${gameId}`)).toBeInTheDocument();
@@ -75,7 +75,7 @@ describe("GameTabs Component", () => {
     });
 
     it("should switch tabs and update iframe source when clicking different tabs", () => {
-        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} />);
+        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} tabHeight={100} />);
 
         // Click second tab
         fireEvent.click(screen.getAllByRole("tab")[1]);
@@ -90,7 +90,7 @@ describe("GameTabs Component", () => {
         const mockCopyText = "test text";
         (FunctionUtil.default.copyText as jest.Mock<CopyTextFunction>).mockResolvedValueOnce(true);
 
-        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} />);
+        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} tabHeight={100} />);
 
         // Get the copyToClipboard event handler
         const copyHandler = mockSubscribe.mock.calls.find((call) => call[0] === GameEvents.copyToClipboard)[1] as EventHandler;
@@ -105,7 +105,7 @@ describe("GameTabs Component", () => {
     });
 
     it("should subscribe to game events on mount and unsubscribe on unmount", () => {
-        const { unmount } = render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} />);
+        const { unmount } = render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} tabHeight={100} />);
 
         // In React 18 Strict Mode, effects run twice, so we expect 4 subscriptions
         expect(mockSubscribe).toHaveBeenCalledWith(GameEvents.musicEnable, PlayerSetting.storePlayerSetting);
@@ -120,14 +120,14 @@ describe("GameTabs Component", () => {
     });
 
     it("should set initial iframe source on mount", () => {
-        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} />);
+        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} tabHeight={100} />);
         expect(GameUrl.getGameUrl).toHaveBeenCalledWith(mockGameOfferIds[0]);
         const iframe = screen.getByTitle(`Game ${mockGameOfferIds[0]}`);
         expect(iframe).toHaveAttribute("src", mockGameUrl);
     });
 
     it("should handle empty gameOfferIds array", () => {
-        render(<GameTabs gameOfferIds={[]} availableGameId={undefined} />);
+        render(<GameTabs gameOfferIds={[]} availableGameId={undefined} tabHeight={100} />);
         expect(screen.queryByRole("tab")).not.toBeInTheDocument();
     });
 });
