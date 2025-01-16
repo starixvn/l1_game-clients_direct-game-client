@@ -50,10 +50,28 @@ export class GameEventManager {
 
     private static instance: GameEventManager;
 
+    static getRootDomain(hostname: string): string {
+        const parts = hostname.split(".");
+        if (parts.length > 2) {
+            return parts.slice(-2).join(".");
+        }
+        return hostname;
+    }
+
     static handleMessage(event: MessageEvent) {
-        if (document.location.origin === event.origin || appSettings.isDev) {
-            const key = Object.keys(event.data).find((k) => GameEvents[k]);
-            GameEventManager.instance.notify(key, event.data);
+        try {
+            const eventUrl = new URL(event.origin);
+            const currentUrl = new URL(document.location.href);
+
+            const eventRootDomain = GameEventManager.getRootDomain(eventUrl.hostname);
+            const currentRootDomain = GameEventManager.getRootDomain(currentUrl.hostname);
+
+            if (eventRootDomain === currentRootDomain || appSettings.isDev) {
+                const key = Object.keys(event.data).find((k) => GameEvents[k]);
+                GameEventManager.instance.notify(key, event.data);
+            }
+        } catch (error) {
+            console.error("Error processing message event:", error);
         }
     }
     static getInstance(): GameEventManager {
