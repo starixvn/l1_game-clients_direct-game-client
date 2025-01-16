@@ -20,7 +20,7 @@ Object.defineProperty(window.navigator, 'clipboard', {
 // Mock appSettings
 jest.mock("../../../_shared/game-setting", () => ({
     appSettings: {
-        gameDomain: "https://test-domain.com",
+        serviceDomain: "https://test-domain.com",
         system: "test-system",
         ssl: true,
         env: "test",
@@ -28,7 +28,7 @@ jest.mock("../../../_shared/game-setting", () => ({
             dsn: "test-dsn",
             environment: "test",
         },
-        domainUrlFormat: "https://{gameId}.example.com",
+        clientUrlFormat: "https://{gameId}.example.com",
         isDev: false,
     },
 }));

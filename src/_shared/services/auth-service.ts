@@ -7,9 +7,9 @@ import { randomInteger } from "../utils/number-helper";
 import { errorCodes, MAX_AVATAR_ID } from "../consts";
 import { getSession, storeSessionData } from "../utils";
 
-const gameDomain = appSettings.gameDomain;
+const serviceDomain = appSettings.serviceDomain;
 
-const authService = UserClientCommunication?.getUserClientInstance(gameDomain)?.auth;
+const authService = UserClientCommunication?.getUserClientInstance(serviceDomain)?.auth;
 
 export const sso = async (token: string, appType: number): Promise<SSOResponse> => {
     const userSession = await authService?.sso(token, appType);

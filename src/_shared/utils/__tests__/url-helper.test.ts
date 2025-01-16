@@ -3,13 +3,20 @@ import Base64Util from "../base64-util";
 import * as SessionManager from "../session-manager";
 import * as PlayerSetting from "../player-setting";
 import { StorageManager, localStorageKeys } from "../storage-manager";
-import { getBaseGameUrl, getGameUrl, getParamCurrentUrl, buildUrlWithPath, getQueryParameters, URLContextModel } from "../url-helper";
+import {
+    getBaseGameUrl,
+    getGameUrl,
+    getParamCurrentUrl,
+    buildServiceUrlWithPath,
+    getQueryParameters,
+    URLContextModel,
+} from "../url-helper";
 
 // Mock external dependencies
 jest.mock("../../game-setting", () => ({
     appSettings: {
-        gameDomain: "https://test-domain.com",
-        domainUrlFormat: "https://{host}/direct-client-{gameId}",
+        serviceDomain: "https://test-domain.com",
+        clientUrlFormat: "https://{host}/direct-client-{gameId}",
         isDev: false,
     },
 }));
@@ -54,10 +61,10 @@ describe("url-helper", () => {
             expect(result).toBe("https://test-domain.com/direct-client-1");
         });
 
-        it("should throw error when domainUrlFormat is not set", () => {
+        it("should throw error when clientUrlFormat is not set", () => {
             // Temporarily override the mock
             const originalSettings = { ...appSettings };
-            (appSettings as any).domainUrlFormat = "";
+            (appSettings as any).clientUrlFormat = "";
 
             expect(() => getBaseGameUrl(1)).toThrow("Domain URL format is not set");
 
@@ -80,7 +87,7 @@ describe("url-helper", () => {
         it("should handle subdomain correctly", () => {
             // Arrange
             const originalSettings = { ...appSettings };
-            appSettings.domainUrlFormat = "https://game-{gameId}.{host}";
+            appSettings.clientUrlFormat = "https://game-{gameId}.{host}";
             Object.defineProperty(window, "location", {
                 value: { host: "test.example.com" },
                 writable: true,
@@ -99,7 +106,7 @@ describe("url-helper", () => {
         it("should handle multiple subdomains correctly", () => {
             // Arrange
             const originalSettings = { ...appSettings };
-            appSettings.domainUrlFormat = "https://game-{gameId}.{host}";
+            appSettings.clientUrlFormat = "https://game-{gameId}.{host}";
             Object.defineProperty(window, "location", {
                 value: { host: "sub1.sub2.example.com" },
                 writable: true,
@@ -118,7 +125,7 @@ describe("url-helper", () => {
         it("should not modify root domain", () => {
             // Arrange
             const originalSettings = { ...appSettings };
-            appSettings.domainUrlFormat = "https://game-{gameId}.{host}";
+            appSettings.clientUrlFormat = "https://game-{gameId}.{host}";
             Object.defineProperty(window, "location", {
                 value: { host: "example.com" },
                 writable: true,
@@ -201,7 +208,7 @@ describe("url-helper", () => {
 
     describe("buildUrlWithPath", () => {
         it("should combine domain and path", () => {
-            const result = buildUrlWithPath("/test-path");
+            const result = buildServiceUrlWithPath("/test-path");
             expect(result).toBe("https://test-domain.com/test-path");
         });
     });

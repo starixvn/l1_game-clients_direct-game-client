@@ -7,8 +7,8 @@ import { appSettings } from "../../game-setting";
 jest.mock("sc-user-service-client/dist/user-client-communication");
 jest.mock("../../game-setting", () => ({
     appSettings: {
-        gameDomain: "test-domain"
-    }
+        serviceDomain: "test-domain",
+    },
 }));
 
 describe("lobby-service", () => {
@@ -23,22 +23,22 @@ describe("lobby-service", () => {
         umInfo: {
             startTime: new Date(),
             endTime: new Date(),
-            operatorId: ""
+            operatorId: "",
         },
-        system: 0
+        system: 0,
     };
 
     const mockLobbyConfigs = {
-        someConfig: "value"
+        someConfig: "value",
     };
 
     // Mock implementation of getUserClientInstance
     const mockGetLobbyConfigs = jest.fn();
     const mockLobbyService = {
-        getLobbyConfigs: mockGetLobbyConfigs
+        getLobbyConfigs: mockGetLobbyConfigs,
     };
     const mockGetUserClientInstance = jest.fn().mockReturnValue({
-        lobby: mockLobbyService
+        lobby: mockLobbyService,
     });
 
     beforeEach(() => {
@@ -56,7 +56,7 @@ describe("lobby-service", () => {
             const result = await getLobbyConfigs(mockSession);
 
             // Assert
-            expect(mockGetUserClientInstance).toHaveBeenCalledWith(appSettings.gameDomain);
+            expect(mockGetUserClientInstance).toHaveBeenCalledWith(appSettings.serviceDomain);
             expect(mockGetLobbyConfigs).toHaveBeenCalledWith(mockSession.ss, mockSession.username);
             expect(result).toEqual(mockLobbyConfigs);
         });
@@ -66,9 +66,7 @@ describe("lobby-service", () => {
             mockGetUserClientInstance.mockReturnValue({ lobby: null });
 
             // Act & Assert
-            await expect(getLobbyConfigs(mockSession))
-                .rejects
-                .toThrow("Lobby service not initialized");
+            await expect(getLobbyConfigs(mockSession)).rejects.toThrow("Lobby service not initialized");
         });
 
         it("should throw error when UserClientCommunication is undefined", async () => {
@@ -76,23 +74,18 @@ describe("lobby-service", () => {
             (UserClientCommunication.getUserClientInstance as jest.Mock).mockReturnValue(null);
 
             // Act & Assert
-            await expect(getLobbyConfigs(mockSession))
-                .rejects
-                .toThrow("Lobby service not initialized");
+            await expect(getLobbyConfigs(mockSession)).rejects.toThrow("Lobby service not initialized");
         });
 
         it("should handle API errors properly", async () => {
             // Arrange
             const expectedError = new Error("API Error");
             // Reset the mock chain to ensure proper setup
-            (UserClientCommunication.getUserClientInstance as jest.Mock)
-                .mockReturnValue({ lobby: mockLobbyService });
+            (UserClientCommunication.getUserClientInstance as jest.Mock).mockReturnValue({ lobby: mockLobbyService });
             mockGetLobbyConfigs.mockRejectedValue(expectedError);
 
             // Act & Assert
-            await expect(getLobbyConfigs(mockSession))
-                .rejects
-                .toThrow(expectedError);
+            await expect(getLobbyConfigs(mockSession)).rejects.toThrow(expectedError);
         });
     });
-}); 
+});

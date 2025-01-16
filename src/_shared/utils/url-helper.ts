@@ -27,15 +27,15 @@ const getRootHost = (host: string): string => {
 };
 
 export const getBaseGameUrl = (gameId: number) => {
-    if (appSettings.domainUrlFormat == null || appSettings.domainUrlFormat == "") {
+    if (appSettings.clientUrlFormat == null || appSettings.clientUrlFormat == "") {
         throw new Error("Domain URL format is not set");
     }
 
     if (appSettings.isDev) {
-        return appSettings.domainUrlFormat.replace("{gameId}", gameId.toString());
+        return appSettings.clientUrlFormat.replace("{gameId}", gameId.toString());
     }
 
-    let baseUrl = appSettings.domainUrlFormat.replace("{gameId}", gameId.toString()).replace("{host}", getRootHost(window.location.host));
+    let baseUrl = appSettings.clientUrlFormat.replace("{gameId}", gameId.toString()).replace("{host}", getRootHost(window.location.host));
 
     return baseUrl;
 };
@@ -73,9 +73,9 @@ export const getParamCurrentUrl = (param: string): string | null => {
     return parsedUrl.searchParams.get(param);
 };
 
-export const buildUrlWithPath = (path: string) => {
-    const { gameDomain } = appSettings;
-    return `${gameDomain}${path}`;
+export const buildServiceUrlWithPath = (path: string) => {
+    const { serviceDomain } = appSettings;
+    return `${serviceDomain}${path}`;
 };
 
 export function getQueryParameters(): URLContextModel | undefined {

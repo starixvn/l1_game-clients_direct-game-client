@@ -9,7 +9,7 @@ import { getQueryParameters } from "../../utils";
 // Mock appSettings
 jest.mock("../../game-setting", () => ({
     appSettings: {
-        gameDomain: "https://test-domain.com",
+        serviceDomain: "https://test-domain.com",
         system: "test-system",
         ssl: true,
         env: "test",

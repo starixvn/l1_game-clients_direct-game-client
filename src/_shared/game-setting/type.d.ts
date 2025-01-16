@@ -12,10 +12,10 @@ export interface IAppSettings {
     sentry: SentryOptions;
     system: string;
     ssl: boolean;
-    gameDomain: string;
+    serviceDomain: string;
     env: string;
     subDirectory?: string;
     isDev?: boolean;
-    domainUrlFormat?: string;
+    clientUrlFormat?: string;
     hideGameTab?: boolean;
 }
