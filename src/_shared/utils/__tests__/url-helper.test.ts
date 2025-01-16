@@ -10,6 +10,7 @@ import {
     buildServiceUrlWithPath,
     getQueryParameters,
     URLContextModel,
+    getBaseServiceUrl,
 } from "../url-helper";
 
 // Mock external dependencies
@@ -290,6 +291,43 @@ describe("url-helper", () => {
                 isThirdParty: false,
                 operator: null,
             });
+        });
+    });
+
+    describe("getBaseServiceUrl", () => {
+        const originalWindow = { ...window };
+
+        beforeEach(() => {
+            // Reset window.location
+            Object.defineProperty(window, "location", {
+                value: { host: "test.example.com" },
+                writable: true,
+            });
+        });
+
+        afterEach(() => {
+            // Restore window
+            Object.defineProperty(window, "location", {
+                value: originalWindow.location,
+                writable: true,
+            });
+        });
+
+        it("should throw error when serviceDomain is not set", () => {
+            appSettings.serviceDomain = "";
+            expect(() => getBaseServiceUrl()).toThrow("Service domain is not set");
+        });
+
+        it("should return serviceDomain as is when in dev mode", () => {
+            appSettings.isDev = true;
+            appSettings.serviceDomain = "https://dev-api.example.com";
+            expect(getBaseServiceUrl()).toBe("https://dev-api.example.com");
+        });
+
+        it("should replace {host} with root domain in production mode", () => {
+            appSettings.isDev = false;
+            appSettings.serviceDomain = "https://api.{host}";
+            expect(getBaseServiceUrl()).toBe("https://api.example.com");
         });
     });
 });

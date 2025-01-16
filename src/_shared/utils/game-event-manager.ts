@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { appSettings } from "../game-setting";
+import { getRootHost } from "./url-helper";
 
 export type Listener = {
     id: string;
@@ -51,11 +52,7 @@ export class GameEventManager {
     private static instance: GameEventManager;
 
     static getRootDomain(hostname: string): string {
-        const parts = hostname.split(".");
-        if (parts.length > 2) {
-            return parts.slice(-2).join(".");
-        }
-        return hostname;
+        return getRootHost(hostname);
     }
 
     static handleMessage(event: MessageEvent) {
@@ -63,8 +60,8 @@ export class GameEventManager {
             const eventUrl = new URL(event.origin);
             const currentUrl = new URL(document.location.href);
 
-            const eventRootDomain = GameEventManager.getRootDomain(eventUrl.hostname);
-            const currentRootDomain = GameEventManager.getRootDomain(currentUrl.hostname);
+            const eventRootDomain = getRootHost(eventUrl.hostname);
+            const currentRootDomain = getRootHost(currentUrl.hostname);
 
             if (eventRootDomain === currentRootDomain || appSettings.isDev) {
                 const key = Object.keys(event.data).find((k) => GameEvents[k]);

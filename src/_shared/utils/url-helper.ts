@@ -19,7 +19,7 @@ export type URLContextModel = {
     operator?: string;
 };
 
-const getRootHost = (host: string): string => {
+export const getRootHost = (host: string): string => {
     // Split host by dots and get the last two parts
     const parts = host.split(".");
 
@@ -28,6 +28,18 @@ const getRootHost = (host: string): string => {
     }
 
     return parts.slice(-2).join(".");
+};
+
+export const getBaseServiceUrl = (): string => {
+    if (!appSettings.serviceDomain) {
+        throw new Error("Service domain is not set");
+    }
+
+    if (appSettings.isDev) {
+        return appSettings.serviceDomain;
+    }
+
+    return appSettings.serviceDomain.replace("{host}", getRootHost(window.location.host));
 };
 
 export const getBaseGameUrl = (gameId: number) => {

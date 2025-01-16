@@ -5,7 +5,7 @@ window.envConfig = {
     },
     system: "SG",
     ssl: true,
-    serviceDomain: "https://l1-proxy.lumigame.com",
+    serviceDomain: "https://l1-proxy.{host}",
     env: "LOCAL",
     clientUrlFormat: "https://l1-proxy.{host}/direct-client-{gameId}/",
 };

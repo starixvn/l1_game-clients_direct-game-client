@@ -5,7 +5,7 @@ window.envConfig = {
     },
     system: "SG",
     ssl: true,
-    serviceDomain: "https://l1-proxy1.lumigame.com",
+    serviceDomain: "https://l1-proxy1.{host}",
     env: "LOCAL1",
     clientUrlFormat: "https://l1-proxy1.{host}/portrait-client-{gameId}/",
     hideGameTab: true,

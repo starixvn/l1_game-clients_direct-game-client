@@ -17,7 +17,12 @@ jest.mock("../../game-setting", () => ({
 }));
 
 // Mock all external dependencies
-jest.mock("../../services/auth-service");
+jest.mock("../../services/auth-service", () => ({
+    sso: jest.fn(),
+    authorize: jest.fn(),
+    autoCreateNickname: jest.fn(),
+    verifySession: jest.fn(),
+}));
 jest.mock("../../utils", () => ({
     StorageManager: {
         get: jest.fn(),
@@ -31,6 +36,7 @@ jest.mock("../../utils", () => ({
     },
     storeSessionData: jest.fn(),
     getQueryParameters: jest.fn(),
+    getBaseServiceUrl: jest.fn().mockReturnValue("https://test-service-url.com"),
 }));
 jest.mock("../../../tolgee", () => ({
     tolgee: {
@@ -50,7 +56,7 @@ describe("useAuthorization", () => {
         originalConsoleLog = console.log;
         // Suppress authorization error logs
         console.log = (message: string, ...args: any[]) => {
-            if (typeof message === 'string' && !message.includes('Authorization error:')) {
+            if (typeof message === "string" && !message.includes("Authorization error:")) {
                 originalConsoleLog(message, ...args);
             }
         };

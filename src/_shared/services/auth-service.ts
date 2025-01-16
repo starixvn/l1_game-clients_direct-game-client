@@ -1,15 +1,11 @@
 import { SSOResponse } from "sc-user-service-client/dist/auth";
-
-import { appSettings } from "../game-setting";
 import UserClientCommunication from "sc-user-service-client/dist/user-client-communication";
 import NameGenerator from "../utils/name-generator";
 import { randomInteger } from "../utils/number-helper";
 import { errorCodes, MAX_AVATAR_ID } from "../consts";
-import { getSession, storeSessionData } from "../utils";
+import { getBaseServiceUrl, getSession, storeSessionData } from "../utils";
 
-const serviceDomain = appSettings.serviceDomain;
-
-const authService = UserClientCommunication?.getUserClientInstance(serviceDomain)?.auth;
+const authService = UserClientCommunication?.getUserClientInstance(getBaseServiceUrl())?.auth;
 
 export const sso = async (token: string, appType: number): Promise<SSOResponse> => {
     const userSession = await authService?.sso(token, appType);
