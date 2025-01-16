@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
+
 import { useTranslator } from "../../_shared/react-hooks/use-translator";
 import { getGameUrl, localStorageKeys, StorageManager } from "../../_shared/utils";
 import { GameFrame } from "./game-frame";
@@ -7,12 +8,10 @@ import { GameFrame } from "./game-frame";
 interface GameTabsProps {
     gameOfferIds: number[];
     availableGameId: number | undefined;
+    tabHeight: number;
 }
 
-// Height of the tab navigation bar in pixels
-const TAB_HEIGHT = 34;
-
-export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameId }) => {
+export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameId, tabHeight }) => {
     const { t } = useTranslator();
     const [activeKey, setActiveKey] = useState(0);
     const [iframeSrc, setIframeSrc] = useState<string>();
@@ -57,7 +56,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
                         key={gameId}
                         unmountOnExit={true}
                     >
-                        {isActive && <GameFrame gameId={gameId} iframeSrc={iframeSrc} tabHeight={TAB_HEIGHT} />}
+                        {isActive && <GameFrame gameId={gameId} iframeSrc={iframeSrc} tabHeight={tabHeight} />}
                     </Tab>
                 );
             })}

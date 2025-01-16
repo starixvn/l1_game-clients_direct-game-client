@@ -16,6 +16,9 @@ const SessionTimeoutPage = React.lazy(() => import("../timeout"));
 const UMPage = React.lazy(() => import("../um"));
 const NonOfferPage = React.lazy(() => import("../non-offer"));
 
+// Height of the tab navigation bar in pixels
+const TAB_HEIGHT = 34;
+
 const Lobby: React.FC = () => {
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
     const [availableGameId, setAvailableGameId] = useState<number>(0);
@@ -82,12 +85,12 @@ const Lobby: React.FC = () => {
     return (
         <>
             <LandscapeMode />
-            <LobbyContainer>
+            <LobbyContainer $tabHeight={TAB_HEIGHT} $hideTab={appSettings.hideGameTab && availableGameId > 0}>
                 {isAuthorized ? (
                     appSettings.hideGameTab && availableGameId > 0 ? (
                         <GameFrame gameId={availableGameId} iframeSrc={getGameUrl(availableGameId)} />
                     ) : (
-                        <GameTabs gameOfferIds={gameOfferIds} availableGameId={availableGameId} />
+                        <GameTabs gameOfferIds={gameOfferIds} availableGameId={availableGameId} tabHeight={TAB_HEIGHT} />
                     )
                 ) : (
                     <div>Loading...</div>
