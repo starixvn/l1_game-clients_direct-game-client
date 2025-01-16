@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 
 import { useTranslator } from "../../_shared/react-hooks/use-translator";
-import { getGameUrl, localStorageKeys, StorageManager } from "../../_shared/utils";
+import { getBaseGameUrl, getGameUrl, localStorageKeys, StorageManager } from "../../_shared/utils";
 import { GameFrame } from "./game-frame";
 
 interface GameTabsProps {
@@ -46,7 +46,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
                         title={
                             <div className={`tab-title ${isActive ? "active" : ""}`}>
                                 <img
-                                    src={`/images/icon-${gameId}.png`}
+                                    src={`${getBaseGameUrl(gameId)}/remote/icon/icon-game-tab.png`}
                                     alt={t(`gameNames.${gameId}`)}
                                     className={`tab-icon ${!isActive ? "inactive" : ""}`}
                                 />
