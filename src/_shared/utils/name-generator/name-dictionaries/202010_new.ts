@@ -1,4 +1,4 @@
-export const New_202010 = [
+export const NEW_202010 = [
     "Coolman",
     "Sun",
     "Phoenix",

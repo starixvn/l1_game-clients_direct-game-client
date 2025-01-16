@@ -1,9 +1,9 @@
-import { jest } from '@jest/globals';
+import { fn } from 'jest-mock';
 
 type CopyTextFunction = (text: string) => Promise<boolean>;
 
 const FunctionUtil = {
-    copyText: jest.fn<CopyTextFunction>().mockResolvedValue(true),
+    copyText: fn<CopyTextFunction>().mockResolvedValue(true),
 };
 
 export default FunctionUtil; 

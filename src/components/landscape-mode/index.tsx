@@ -25,11 +25,17 @@ const LandscapeMode = () => {
     useEffect(() => {
         if (isMobileDevice) {
             window.addEventListener(orientationChange, handleOrientation);
-            return () => window.removeEventListener(orientationChange, handleOrientation);
         }
+        return () => {
+            if (isMobileDevice) {
+                window.removeEventListener(orientationChange, handleOrientation);
+            }
+        };
     }, [handleOrientation]);
 
-    if (!isMobileDevice || orientation !== orientationType.landscape) return null;
+    if (!isMobileDevice || orientation !== orientationType.landscape) {
+        return null;
+    }
 
     return (
         <div className="landscape-mode" data-testid="landscape-mode-component">

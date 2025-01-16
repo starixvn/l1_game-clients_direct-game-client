@@ -22,12 +22,16 @@ export type URLContextModel = {
 const getRootHost = (host: string): string => {
     // Split host by dots and get the last two parts
     const parts = host.split(".");
-    if (parts.length <= 2) return host;
+
+    if (parts.length <= 2) {
+        return host;
+    }
+
     return parts.slice(-2).join(".");
 };
 
 export const getBaseGameUrl = (gameId: number) => {
-    if (appSettings.clientUrlFormat == null || appSettings.clientUrlFormat == "") {
+    if (appSettings.clientUrlFormat === null || appSettings.clientUrlFormat === "") {
         throw new Error("Domain URL format is not set");
     }
 
@@ -35,13 +39,12 @@ export const getBaseGameUrl = (gameId: number) => {
         return appSettings.clientUrlFormat.replace("{gameId}", gameId.toString());
     }
 
-    let baseUrl = appSettings.clientUrlFormat.replace("{gameId}", gameId.toString()).replace("{host}", getRootHost(window.location.host));
 
-    return baseUrl;
+    return appSettings.clientUrlFormat.replace("{gameId}", gameId.toString()).replace("{host}", getRootHost(window.location.host));;
 };
 
 export const getGameUrl = (gameId: number) => {
-    let baseUrl = getBaseGameUrl(gameId);
+    const baseUrl = getBaseGameUrl(gameId);
     return `${baseUrl}?${buildSessionParams()}`;
 };
 

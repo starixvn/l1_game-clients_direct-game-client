@@ -27,8 +27,7 @@ export const useAuthorization = () => {
     };
 
     const isTimeoutSession = (session: SSOResponse) => {
-        const isTimeout = !session || (!session?.isUM && !session?.isAuthenticated);
-        return isTimeout;
+        return !session || (!session?.isUM && !session?.isAuthenticated);
     };
 
     const handleAuthorization = async (session: SSOResponse, authorizeInfo: AuthorizeResponse) => {

@@ -77,10 +77,18 @@ const Lobby: React.FC = () => {
         };
     }, []);
 
-    if (isLoading) return <Loading />;
-    if (isSessionTimeout || isTimeout) return <SessionTimeoutPage />;
-    if (umInfo) return <UMPage umInfo={umInfo} />;
-    if (gameOfferIds.length === 0) return <NonOfferPage />;
+    if (isLoading) {
+        return <Loading />;
+    }
+    if (isSessionTimeout || isTimeout) {
+        return <SessionTimeoutPage />;
+    }
+    if (umInfo) {
+        return <UMPage umInfo={umInfo} />;
+    }
+    if (gameOfferIds.length === 0) {
+        return <NonOfferPage />;
+    }
 
     return (
         <>

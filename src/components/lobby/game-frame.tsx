@@ -33,8 +33,8 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
     const { isMobile } = deviceInfo;
 
     const calculateDimensions = useCallback(() => {
-        let height = window.innerHeight - tabHeight;
-        let width = Math.floor(height * GAME_CONFIG.aspectRatio);
+        const height = window.innerHeight - tabHeight;
+        const width = Math.floor(height * GAME_CONFIG.aspectRatio);
         isDesktopView ? setDimensions({ width, height }) : setDimensions({ width: "100%", height: "100%" });
     }, [tabHeight, isDesktopView]);
 
