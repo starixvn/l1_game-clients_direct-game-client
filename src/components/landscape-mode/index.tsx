@@ -1,21 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./landscape-mode.scss";
 import { ResourceTypes } from "../../_shared/consts";
-import { isMobile } from "../../_shared/utils";
 import { useTranslator } from "../../_shared/react-hooks";
+import { deviceInfo } from "../../_shared/utils/device-detect-wrapper";
 
 const orientationType = { portrait: "portrait", landscape: "landscape" };
 const orientationChange = "orientationchange";
 const ORIENTATION_DELAY = 200;
 
-const isMobileDevice = isMobile();
-
 const LandscapeMode = () => {
+
     const { t } = useTranslator([ResourceTypes.COMMON]);
     const [orientation, setOrientation] = useState(() =>
         window.innerHeight < window.innerWidth ? orientationType.landscape : orientationType.portrait
     );
-
+    const { isMobileOnly } = deviceInfo;
     const handleOrientation = useCallback(() => {
         setTimeout(() => {
             setOrientation(window.innerHeight < window.innerWidth ? orientationType.landscape : orientationType.portrait);
@@ -23,17 +22,17 @@ const LandscapeMode = () => {
     }, []);
 
     useEffect(() => {
-        if (isMobileDevice) {
+        if (isMobileOnly) {
             window.addEventListener(orientationChange, handleOrientation);
         }
         return () => {
-            if (isMobileDevice) {
+            if (isMobileOnly) {
                 window.removeEventListener(orientationChange, handleOrientation);
             }
         };
     }, [handleOrientation]);
 
-    if (!isMobileDevice || orientation !== orientationType.landscape) {
+    if (!isMobileOnly || orientation !== orientationType.landscape) {
         return null;
     }
 
