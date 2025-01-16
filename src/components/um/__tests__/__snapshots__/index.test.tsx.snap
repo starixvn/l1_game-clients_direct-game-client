@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UM Component should not render anything when umInfo is null 1`] = `
+<div
+  class="um"
+/>
+`;
