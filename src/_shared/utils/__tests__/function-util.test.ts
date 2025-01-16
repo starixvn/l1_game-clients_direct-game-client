@@ -3,11 +3,45 @@ import FunctionUtil from '../function-util';
 describe('FunctionUtil', () => {
     let originalNavigator: any;
     let originalWindow: any;
+    let originalConsoleWarn: any;
+    let originalConsoleLog: any;
+    let originalLocalStorage: any;
 
     beforeEach(() => {
+        // Store original console methods
+        originalConsoleWarn = console.warn;
+        originalConsoleLog = console.log;
+
+        // Suppress specific warnings and logs
+        console.warn = (message: string) => {
+            if (message !== "Clipboard API is not available in this environment.") {
+                originalConsoleWarn(message);
+            }
+        };
+        console.log = (message: string) => {
+            if (message !== "Browser not support Local Storage") {
+                originalConsoleLog(message);
+            }
+        };
+
         // Store original window and navigator
         originalNavigator = global.navigator;
         originalWindow = global.window;
+        originalLocalStorage = global.localStorage;
+
+        // Mock localStorage
+        const localStorageMock = {
+            getItem: jest.fn(),
+            setItem: jest.fn(),
+            removeItem: jest.fn(),
+            clear: jest.fn(),
+            length: 0,
+            key: jest.fn(),
+        };
+        Object.defineProperty(global, 'localStorage', {
+            value: localStorageMock,
+            writable: true
+        });
 
         // Reset window and navigator before each test
         // @ts-ignore
@@ -17,9 +51,14 @@ describe('FunctionUtil', () => {
     });
 
     afterEach(() => {
-        // Restore original window and navigator
+        // Restore original console methods
+        console.warn = originalConsoleWarn;
+        console.log = originalConsoleLog;
+
+        // Restore original globals
         global.navigator = originalNavigator;
         global.window = originalWindow;
+        global.localStorage = originalLocalStorage;
     });
 
     describe('isAndroidWebView', () => {

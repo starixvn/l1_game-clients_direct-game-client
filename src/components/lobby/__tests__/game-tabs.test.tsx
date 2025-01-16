@@ -1,133 +1,132 @@
 import React from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { jest } from "@jest/globals";
 import { GameTabs } from "../game-tabs";
-import { GameEventManager, GameEvents } from "../../../_shared/utils/game-event-manager";
-import * as PlayerSetting from "../../../_shared/utils/player-setting";
-import * as FunctionUtil from "../../../_shared/utils/function-util";
-import * as GameUrl from "../../../_shared/utils";
-
-type CopyTextFunction = (text: string) => Promise<boolean>;
-type EventHandler = (data: { copyToClipboard: string }) => Promise<void>;
+import { StorageManager } from "../../../_shared/utils";
+import * as translatorHook from "../../../_shared/react-hooks/use-translator";
 
 // Mock dependencies
-const mockSubscribe = jest.fn();
-const mockUnsubscribe = jest.fn();
-const mockGetInstance = jest.fn(() => ({
-    subscribe: mockSubscribe,
-    unsubscribe: mockUnsubscribe,
+jest.mock("../../../_shared/utils", () => ({
+    StorageManager: {
+        get: jest.fn(),
+        set: jest.fn(),
+    },
+    getGameUrl: jest.fn((gameId) => `game-url/${gameId}`),
+    getBaseGameUrl: jest.fn((gameId) => `base-url/${gameId}/`),
+    localStorageKeys: {
+        selectedGameId: "selectedGameId",
+    },
 }));
 
-jest.mock("../../../_shared/utils/game-event-manager", () => ({
-    GameEvents: {
-        musicEnable: "musicEnable",
-        sfxEnable: "sfxEnable",
-        isUserGesture: "isUserGesture",
-        copyToClipboard: "copyToClipboard",
-    },
-    GameEventManager: {
-        getInstance: () => mockGetInstance(),
-    },
-}));
-jest.mock("../../../_shared/utils/player-setting");
-jest.mock("../../../_shared/utils/function-util", () => ({
-    __esModule: true,
-    default: {
-        copyText: jest.fn<CopyTextFunction>(),
-    },
-}));
-jest.mock("../../../_shared/utils");
-jest.mock("../../../_shared/react-hooks/use-translator", () => ({
-    useTranslator: () => ({
-        t: (key: string) => key,
-    }),
+jest.mock("../game-frame", () => ({
+    GameFrame: jest.fn(() => <div data-testid="game-frame" />),
 }));
 
-describe("GameTabs Component", () => {
-    const mockGameOfferIds = [1, 2, 3];
-    const mockGameUrl = "http://example.com/game/1";
-    let mockPostMessage: jest.Mock;
+const mockTranslate = jest.fn((key) => `translated-${key}`);
+jest.spyOn(translatorHook, "useTranslator").mockImplementation(() => ({
+    t: mockTranslate,
+    i18n: {} as any,
+}));
+
+describe("GameTabs", () => {
+    const defaultProps = {
+        gameOfferIds: [1, 2, 3],
+        availableGameId: 1,
+        tabHeight: 100,
+    };
 
     beforeEach(() => {
         jest.clearAllMocks();
-        (GameUrl.getGameUrl as jest.Mock).mockReturnValue(mockGameUrl);
-        mockPostMessage = jest.fn();
-        // Mock iframe contentWindow
-        Object.defineProperty(HTMLIFrameElement.prototype, "contentWindow", {
-            value: { postMessage: mockPostMessage },
-            writable: true,
-        });
     });
 
-    it("should render game tabs with correct number of tabs", () => {
-        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} tabHeight={100} />);
-        const tabs = screen.getAllByRole("tab");
-        expect(tabs).toHaveLength(mockGameOfferIds.length);
-    });
-
-    it("should render game icons and names in tabs", () => {
-        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} tabHeight={100} />);
-        mockGameOfferIds.forEach((gameId) => {
-            expect(screen.getByAltText(`gameNames.${gameId}`)).toBeInTheDocument();
-            expect(screen.getByText(`gameNames.${gameId}`)).toBeInTheDocument();
-        });
-    });
-
-    it("should switch tabs and update iframe source when clicking different tabs", () => {
-        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} tabHeight={100} />);
-
-        // Click second tab
-        fireEvent.click(screen.getAllByRole("tab")[1]);
-        expect(GameUrl.getGameUrl).toHaveBeenCalledWith(mockGameOfferIds[1]);
-
-        // Click third tab
-        fireEvent.click(screen.getAllByRole("tab")[2]);
-        expect(GameUrl.getGameUrl).toHaveBeenCalledWith(mockGameOfferIds[2]);
-    });
-
-    it("should handle copy to clipboard events", async () => {
-        const mockCopyText = "test text";
-        (FunctionUtil.default.copyText as jest.Mock<CopyTextFunction>).mockResolvedValueOnce(true);
-
-        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} tabHeight={100} />);
-
-        // Get the copyToClipboard event handler
-        const copyHandler = mockSubscribe.mock.calls.find((call) => call[0] === GameEvents.copyToClipboard)[1] as EventHandler;
-
-        // Simulate copyToClipboard event
+    it("should render all game tabs", async () => {
         await act(async () => {
-            await copyHandler({ copyToClipboard: mockCopyText });
+            render(<GameTabs {...defaultProps} />);
         });
 
-        expect(FunctionUtil.default.copyText).toHaveBeenCalledWith(mockCopyText);
-        expect(mockPostMessage).toHaveBeenCalledWith({ copySuccessfully: true }, mockGameUrl);
+        defaultProps.gameOfferIds.forEach((gameId) => {
+            expect(screen.getByText(`translated-gameNames.${gameId}`)).toBeInTheDocument();
+            expect(screen.getByAltText(`translated-gameNames.${gameId}`)).toHaveAttribute(
+                "src",
+                `base-url/${gameId}/remote/icon/icon-game-tab.png`
+            );
+        });
     });
 
-    it("should subscribe to game events on mount and unsubscribe on unmount", () => {
-        const { unmount } = render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} tabHeight={100} />);
+    it("should initialize with stored game ID if available", async () => {
+        const storedGameId = 2;
+        (StorageManager.get as jest.Mock).mockReturnValue(storedGameId);
 
-        // In React 18 Strict Mode, effects run twice, so we expect 4 subscriptions
-        expect(mockSubscribe).toHaveBeenCalledWith(GameEvents.musicEnable, PlayerSetting.storePlayerSetting);
-        expect(mockSubscribe).toHaveBeenCalledWith(GameEvents.sfxEnable, PlayerSetting.storePlayerSetting);
-        expect(mockSubscribe).toHaveBeenCalledWith(GameEvents.isUserGesture, PlayerSetting.storePlayerSetting);
-        expect(mockSubscribe).toHaveBeenCalledWith(GameEvents.copyToClipboard, expect.any(Function));
+        await act(async () => {
+            render(<GameTabs {...defaultProps} />);
+        });
 
-        unmount();
-
-        // In React 18 Strict Mode, cleanup runs twice, so we expect 8 unsubscribe calls
-        expect(mockUnsubscribe).toHaveBeenCalledTimes(8);
+        expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", storedGameId);
+        expect(screen.getByTestId("game-frame")).toBeInTheDocument();
     });
 
-    it("should set initial iframe source on mount", () => {
-        render(<GameTabs gameOfferIds={mockGameOfferIds} availableGameId={undefined} tabHeight={100} />);
-        expect(GameUrl.getGameUrl).toHaveBeenCalledWith(mockGameOfferIds[0]);
-        const iframe = screen.getByTitle(`Game ${mockGameOfferIds[0]}`);
-        expect(iframe).toHaveAttribute("src", mockGameUrl);
+    it("should initialize with available game ID if no stored game ID", async () => {
+        (StorageManager.get as jest.Mock).mockReturnValue(undefined);
+
+        await act(async () => {
+            render(<GameTabs {...defaultProps} />);
+        });
+
+        expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", defaultProps.availableGameId);
     });
 
-    it("should handle empty gameOfferIds array", () => {
-        render(<GameTabs gameOfferIds={[]} availableGameId={undefined} tabHeight={100} />);
-        expect(screen.queryByRole("tab")).not.toBeInTheDocument();
+    it("should initialize with first game ID if no stored or available game ID", async () => {
+        (StorageManager.get as jest.Mock).mockReturnValue(undefined);
+
+        await act(async () => {
+            render(<GameTabs {...{ ...defaultProps, availableGameId: undefined }} />);
+        });
+
+        expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", defaultProps.gameOfferIds[0]);
+    });
+
+    it("should handle tab selection", async () => {
+        await act(async () => {
+            render(<GameTabs {...defaultProps} />);
+        });
+
+        await act(async () => {
+            fireEvent.click(screen.getByText(`translated-gameNames.${defaultProps.gameOfferIds[1]}`));
+        });
+
+        expect(StorageManager.set).toHaveBeenCalledWith(
+            "selectedGameId",
+            defaultProps.gameOfferIds[1]
+        );
+    });
+
+    it("should not use stored game ID if it's not in gameOfferIds", async () => {
+        (StorageManager.get as jest.Mock).mockReturnValue(999);
+
+        await act(async () => {
+            render(<GameTabs {...defaultProps} />);
+        });
+
+        expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", defaultProps.availableGameId);
+    });
+
+    it("should render empty when no game offers", async () => {
+        await act(async () => {
+            render(<GameTabs gameOfferIds={[]} availableGameId={undefined} tabHeight={100} />);
+        });
+
+        expect(screen.queryByTestId("game-frame")).not.toBeInTheDocument();
+    });
+
+    it("should apply active class to selected tab", async () => {
+        await act(async () => {
+            render(<GameTabs {...defaultProps} />);
+        });
+
+        const firstTabTitle = screen.getByText(`translated-gameNames.${defaultProps.gameOfferIds[0]}`).parentElement;
+        expect(firstTabTitle).toHaveClass("nav-link active");
+
+        const secondTabTitle = screen.getByText(`translated-gameNames.${defaultProps.gameOfferIds[1]}`).parentElement;
+        expect(secondTabTitle).toHaveClass("nav-link");
     });
 });

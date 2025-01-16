@@ -3,8 +3,18 @@ import { StorageManager, buildLocalStorageKey, localStorageKeys } from '../stora
 describe('StorageManager', () => {
     let mockLocalStorage: { [key: string]: string };
     let originalLocalStorage: Storage;
+    let originalConsoleLog: any;
 
     beforeEach(() => {
+        // Store original console.log
+        originalConsoleLog = console.log;
+        // Suppress localStorage not supported warning
+        console.log = (message: string, ...args: any[]) => {
+            if (typeof message === 'string' && !message.includes('Browser not support Local Storage')) {
+                originalConsoleLog(message, ...args);
+            }
+        };
+
         // Save original localStorage
         originalLocalStorage = global.localStorage;
 
@@ -32,6 +42,9 @@ describe('StorageManager', () => {
     });
 
     afterEach(() => {
+        // Restore original console.log
+        console.log = originalConsoleLog;
+
         // Restore original localStorage
         Object.defineProperty(window, 'localStorage', {
             value: originalLocalStorage

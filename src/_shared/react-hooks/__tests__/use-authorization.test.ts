@@ -43,8 +43,18 @@ describe("useAuthorization", () => {
     const mockAppType = 1;
     const mockLanguage = "en";
     const mockOperator = "test-operator";
+    let originalConsoleLog: any;
 
     beforeEach(() => {
+        // Store original console.log
+        originalConsoleLog = console.log;
+        // Suppress authorization error logs
+        console.log = (message: string, ...args: any[]) => {
+            if (typeof message === 'string' && !message.includes('Authorization error:')) {
+                originalConsoleLog(message, ...args);
+            }
+        };
+
         jest.clearAllMocks();
         // Add query parameter mock setup
         (getQueryParameters as jest.Mock).mockReturnValue({
@@ -53,6 +63,11 @@ describe("useAuthorization", () => {
             lang: mockLanguage,
             operator: mockOperator,
         });
+    });
+
+    afterEach(() => {
+        // Restore original console.log
+        console.log = originalConsoleLog;
     });
 
     describe("initialize", () => {

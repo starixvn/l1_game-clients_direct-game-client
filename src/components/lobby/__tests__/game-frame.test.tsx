@@ -1,7 +1,10 @@
-import React from "react";
 import { render, screen, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { GameFrame } from "../game-frame";
+
+jest.mock("../../../_shared/utils/url-helper", () => ({
+    getBaseGameUrl: jest.fn(() => "/mocked/base/url/")
+}));
 
 describe("GameFrame", () => {
     const defaultProps = {
@@ -34,7 +37,7 @@ describe("GameFrame", () => {
 
         const container = screen.getByTitle("Game 123").parentElement;
         expect(container).toHaveStyle({
-            backgroundImage: "url(/images/bg-full-123.webp)",
+            backgroundImage: "url(/mocked/base/url/remote/background/game-background.webp)",
         });
     });
 

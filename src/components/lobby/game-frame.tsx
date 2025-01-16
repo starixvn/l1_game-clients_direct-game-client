@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { isMobile } from "react-device-detect";
+
 
 import FunctionUtil from "../../_shared/utils/function-util";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import { storePlayerSetting } from "../../_shared/utils/player-setting";
 import { GameContainer } from "./styles/game-frame.style";
 import { getBaseGameUrl } from "../../_shared/utils/url-helper";
+import { deviceInfo } from "../../_shared/utils/device-detect-wrapper";
 
 interface GameFrameProps {
     gameId: number;
@@ -28,6 +29,8 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
         height: number | string;
     }>({ width: GAME_CONFIG.width, height: GAME_CONFIG.height });
     const [isDesktopView, setIsDesktopView] = useState(false);
+
+    const { isMobile } = deviceInfo;
 
     const calculateDimensions = useCallback(() => {
         let height = window.innerHeight - tabHeight;
@@ -82,7 +85,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
     }, [handleCopyToClipboard]);
 
     return (
-        <GameContainer ref={containerRef} $gameId={gameId} $height={dimensions.height} $remoteGameBackgroundUrl={`${getBaseGameUrl(gameId)}/remote/background/game-background.webp`}>
+        <GameContainer ref={containerRef} $gameId={gameId} $height={dimensions.height} $remoteGameBackgroundUrl={`${getBaseGameUrl(gameId)}remote/background/game-background.webp`}>
             <iframe
                 ref={(el) => {
                     if (el) {

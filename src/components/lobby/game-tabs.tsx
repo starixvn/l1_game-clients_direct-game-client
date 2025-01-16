@@ -46,7 +46,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
                         title={
                             <div className={`tab-title ${isActive ? "active" : ""}`}>
                                 <img
-                                    src={`${getBaseGameUrl(gameId)}/remote/icon/icon-game-tab.png`}
+                                    src={`${getBaseGameUrl(gameId)}remote/icon/icon-game-tab.png`}
                                     alt={t(`gameNames.${gameId}`)}
                                     className={`tab-icon ${!isActive ? "inactive" : ""}`}
                                 />

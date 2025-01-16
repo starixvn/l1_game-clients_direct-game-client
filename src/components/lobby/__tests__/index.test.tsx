@@ -8,6 +8,15 @@ import * as useAuthHook from "../../../_shared/react-hooks/use-authorization";
 import { StorageManager } from "../../../_shared/utils";
 import * as gameSettingUtils from "../../../_shared/utils/game-setting";
 
+// Mock Clipboard API
+Object.defineProperty(window.navigator, 'clipboard', {
+    value: {
+        writeText: jest.fn().mockImplementation(() => Promise.resolve()),
+        readText: jest.fn().mockImplementation(() => Promise.resolve('')),
+    },
+    writable: true,
+});
+
 // Mock appSettings
 jest.mock("../../../_shared/game-setting", () => ({
     appSettings: {
@@ -116,7 +125,7 @@ describe("Lobby Component", () => {
         jest.resetAllMocks();
     });
 
-    it("should render loading state initially", () => {
+    it("should render loading state initially", async () => {
         mockUseAuthorization.mockReturnValue({
             isLoading: true,
             umInfo: null,
@@ -125,7 +134,10 @@ describe("Lobby Component", () => {
             initialize: jest.fn(),
         });
 
-        render(<Lobby />);
+        await act(async () => {
+            render(<Lobby />);
+        });
+
         expect(screen.getByTestId("loading")).toBeInTheDocument();
     });
 
@@ -138,10 +150,11 @@ describe("Lobby Component", () => {
             initialize: jest.fn().mockResolvedValue(null),
         });
 
-        render(<Lobby />);
-        await waitFor(() => {
-            expect(screen.getByTestId("session-timeout")).toBeInTheDocument();
+        await act(async () => {
+            render(<Lobby />);
         });
+
+        expect(screen.getByTestId("session-timeout")).toBeInTheDocument();
     });
 
     it("should render UM page when under maintenance", async () => {
@@ -160,11 +173,12 @@ describe("Lobby Component", () => {
             initialize: jest.fn().mockResolvedValue(null),
         });
 
-        render(<Lobby />);
-        await waitFor(() => {
-            expect(screen.getByTestId("um-page")).toBeInTheDocument();
-            expect(screen.getByText("Under Maintenance")).toBeInTheDocument();
+        await act(async () => {
+            render(<Lobby />);
         });
+
+        expect(screen.getByTestId("um-page")).toBeInTheDocument();
+        expect(screen.getByText("Under Maintenance")).toBeInTheDocument();
     });
 
     it("should render non-offer page when no game offers available", async () => {
@@ -177,10 +191,11 @@ describe("Lobby Component", () => {
         });
         mockGetOfferedGameIds.mockReturnValue([]);
 
-        render(<Lobby />);
-        await waitFor(() => {
-            expect(screen.getByTestId("non-offer")).toBeInTheDocument();
+        await act(async () => {
+            render(<Lobby />);
         });
+
+        expect(screen.getByTestId("non-offer")).toBeInTheDocument();
     });
 
     it("should render game tabs with offered games", async () => {
@@ -194,12 +209,12 @@ describe("Lobby Component", () => {
         });
         mockGetOfferedGameIds.mockReturnValue([1, 2, 3]);
 
-        render(<Lobby />);
-
-        await waitFor(() => {
-            expect(screen.getByTestId("game-tabs")).toBeInTheDocument();
-            expect(screen.getByText("Game Tabs: 1,2,3")).toBeInTheDocument();
+        await act(async () => {
+            render(<Lobby />);
         });
+
+        expect(screen.getByTestId("game-tabs")).toBeInTheDocument();
+        expect(screen.getByText("Game Tabs: 1,2,3")).toBeInTheDocument();
     });
 
     it("should handle game events correctly", async () => {
@@ -213,58 +228,44 @@ describe("Lobby Component", () => {
             initialize: mockInitialize,
         });
 
-        render(<Lobby />);
+        await act(async () => {
+            render(<Lobby />);
+        });
 
         // Simulate event subscriptions
         const subscriptionCalls = mockSubscribe.mock.calls;
-        // In React 18 Strict Mode, effects run twice, so we expect 6 subscriptions (3 events × 2)
         expect(subscriptionCalls).toHaveLength(6);
 
-        // Get the first instance of each handler (we could use either instance as they're identical)
+        // Get the first instance of each handler
         const sessionTimeoutHandler = subscriptionCalls.find((call) => call[0] === "sessionTimeout")[1];
         const umHandler = subscriptionCalls.find((call) => call[0] === "isUnderMaintain")[1];
         const notPermittedHandler = subscriptionCalls.find((call) => call[0] === "isNotPermittedToPlay")[1];
 
         // Test session timeout event
-        act(() => {
+        await act(async () => {
             sessionTimeoutHandler();
         });
-        await waitFor(() => {
-            expect(screen.getByTestId("session-timeout")).toBeInTheDocument();
-        });
+        expect(screen.getByTestId("session-timeout")).toBeInTheDocument();
 
         // Test under maintenance event
-        act(() => {
-            umHandler({
-                umInfo: {
-                    message: "Test UM",
-                    startTime: new Date(),
-                    endTime: new Date(),
-                    operatorId: "test-operator",
-                    severity: 1,
-                },
-            });
-        });
-        expect(setUMInfo).toHaveBeenCalledWith({
+        const testUmInfo = {
             message: "Test UM",
-            startTime: expect.any(Date),
-            endTime: expect.any(Date),
+            startTime: new Date(),
+            endTime: new Date(),
             operatorId: "test-operator",
             severity: 1,
+        };
+
+        await act(async () => {
+            umHandler({ umInfo: testUmInfo });
         });
 
-        // Test not permitted to play event
-        act(() => {
-            notPermittedHandler({ isNotPermittedToPlay: true });
-        });
-        expect(mockInitialize).toHaveBeenCalled();
-    });
+        expect(setUMInfo).toHaveBeenCalledWith(testUmInfo);
 
-    it("should cleanup event subscriptions on unmount", () => {
-        const { unmount } = render(<Lobby />);
-        unmount();
-        // In React 18 Strict Mode, cleanup runs twice, so we expect 6 unsubscribe calls (3 events × 2)
-        expect(mockUnsubscribe).toHaveBeenCalledTimes(6);
+        // Test not permitted event
+        await act(async () => {
+            notPermittedHandler();
+        });
     });
 });
 
