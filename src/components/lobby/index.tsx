@@ -26,7 +26,6 @@ const Lobby: React.FC = () => {
     const { isLoading, umInfo, setUMInfo, isSessionTimeout, initialize } = useAuthorization();
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [queryGameId] = useState(() => {
-        // First check URL query parameter
         const params = new URLSearchParams(window.location.search);
         const gameId = params.get("gameId");
         if (gameId) {
@@ -34,7 +33,6 @@ const Lobby: React.FC = () => {
             return isNaN(parsedGameId) ? 0 : parsedGameId;
         }
 
-        // If no query parameter, check localStorage
         const storedGameId = StorageManager.get<number>(localStorageKeys.selectedGameId);
         return storedGameId || 0;
     });
@@ -45,7 +43,6 @@ const Lobby: React.FC = () => {
             const offeredGameIds = getOfferedGameIds(response);
             setGameOfferIds(offeredGameIds);
 
-            // Use query/stored gameId if it exists and is in offered games, otherwise use default logic
             const selectedGameId =
                 queryGameId && offeredGameIds.includes(queryGameId) ? queryGameId : getAvailableGameId(offeredGameIds, response) || 0;
 
@@ -77,6 +74,18 @@ const Lobby: React.FC = () => {
         };
     }, []);
 
+    const renderGameContent = () => {
+        if (!isAuthorized) {
+            return <div>Loading...</div>;
+        }
+
+        if (appSettings.hideGameTab && queryGameId > 0) {
+            return <GameFrame gameId={queryGameId} iframeSrc={getGameUrl(queryGameId)} />;
+        }
+
+        return <GameTabs gameOfferIds={gameOfferIds} availableGameId={availableGameId} tabHeight={TAB_HEIGHT} />;
+    };
+
     if (isLoading) {
         return <Loading />;
     }
@@ -94,15 +103,7 @@ const Lobby: React.FC = () => {
         <>
             <LandscapeMode />
             <LobbyContainer $tabHeight={TAB_HEIGHT} $hideTab={appSettings.hideGameTab && availableGameId > 0}>
-                {isAuthorized ? (
-                    appSettings.hideGameTab && availableGameId > 0 ? (
-                        <GameFrame gameId={availableGameId} iframeSrc={getGameUrl(availableGameId)} />
-                    ) : (
-                        <GameTabs gameOfferIds={gameOfferIds} availableGameId={availableGameId} tabHeight={TAB_HEIGHT} />
-                    )
-                ) : (
-                    <div>Loading...</div>
-                )}
+                {renderGameContent()}
             </LobbyContainer>
         </>
     );
