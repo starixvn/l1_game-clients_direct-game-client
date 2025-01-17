@@ -51,16 +51,27 @@ export const getBaseGameUrl = (gameId: number) => {
         return appSettings.clientUrlFormat.replace("{gameId}", gameId.toString());
     }
 
-
-    return appSettings.clientUrlFormat.replace("{gameId}", gameId.toString()).replace("{host}", getRootHost(window.location.host));;
+    return appSettings.clientUrlFormat.replace("{gameId}", gameId.toString()).replace("{host}", getRootHost(window.location.host));
 };
 
-export const getGameUrl = (gameId: number) => {
+export const getIconGameTabUrl = (gameId: number) => {
+    return `${getBaseGameUrl(gameId)}remote/icon/icon-game-tab.png`;
+};
+
+export const getGameBackgroundUrl = (gameId: number) => {
+    return `${getBaseGameUrl(gameId)}remote/background/game-background.webp`;
+};
+
+export const getGameLocalizationUrl = (gameId: number) => {
+    return `${getBaseGameUrl(gameId)}remote/localization.json`;
+};
+
+export const getGameUrl = (gameId: number, offeredGamesId: number[]) => {
     const baseUrl = getBaseGameUrl(gameId);
-    return `${baseUrl}?${buildSessionParams()}`;
+    return `${baseUrl}?${buildSessionParams(offeredGamesId)}`;
 };
 
-const buildSessionParams = () => {
+const buildSessionParams = (offeredGamesId: number[]) => {
     const sessionInfo = getSession();
     const operator = StorageManager.get(localStorageKeys.operator);
     const playerSetting = getPlayerSetting();
@@ -75,11 +86,11 @@ const buildSessionParams = () => {
         sfxEnable: playerSetting.sfxEnable,
         isUserGesture: false,
         op: operator,
+        supportedGamesId: offeredGamesId,
     };
     const searchParams = new URLSearchParams();
     Object.keys(params).forEach((key) => params[key] !== undefined && searchParams.append(key, params[key]));
     const encodedQueryString = Base64Util.base64Encode(searchParams.toString());
-
     return `params=${encodedQueryString}`;
 };
 

@@ -164,15 +164,15 @@ describe("url-helper", () => {
         });
 
         it("should return complete game URL with encoded parameters", () => {
-            const result = getGameUrl(1);
+            const result = getGameUrl(1, [1, 2, 3]);
             expect(result).toContain(
-                "https://test-domain.com/direct-client-1?params=encoded_ss=test-session&uname=testuser&lang=en&appType=1&purl=encoded_https%3A%2F%2Ftest-domain.com%2F&rurl=encoded_https%3A%2F%2Ftest-domain.com%2F&musicEnable=true&sfxEnable=true&isUserGesture=false&op=testOperator"
+                "https://test-domain.com/direct-client-1?params=encoded_ss=test-session&uname=testuser&lang=en&appType=1&purl=encoded_https%3A%2F%2Ftest-domain.com%2F&rurl=encoded_https%3A%2F%2Ftest-domain.com%2F&musicEnable=true&sfxEnable=true&isUserGesture=false&op=testOperator&supportedGamesId=1%2C2%2C3"
             );
             expect(Base64Util.base64Encode).toHaveBeenCalled();
         });
 
         it("should include all required parameters in encoded form", () => {
-            const result = getGameUrl(1);
+            const result = getGameUrl(1, [1, 2, 3]);
             const encodedParams = result.split("params=")[1];
             expect(Base64Util.base64Encode).toHaveBeenCalledWith(expect.stringContaining("ss=test-session"));
             expect(Base64Util.base64Encode).toHaveBeenCalledWith(expect.stringContaining("uname=testuser"));
@@ -183,7 +183,7 @@ describe("url-helper", () => {
 
         it("should handle missing operator value", () => {
             (StorageManager.get as jest.Mock).mockReturnValue(null);
-            const result = getGameUrl(1);
+            const result = getGameUrl(1, [1, 2, 3]);
             expect(result).toContain(
                 "https://test-domain.com/direct-client-1?params=encoded_ss=test-session&uname=testuser&lang=en&appType=1&purl=encoded_https%3A%2F%2Ftest-domain.com%2F&rurl=encoded_https%3A%2F%2Ftest-domain.com%2F&musicEnable=true&sfxEnable=true&isUserGesture=false&op=null"
             );

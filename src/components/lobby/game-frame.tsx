@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-
 import FunctionUtil from "../../_shared/utils/function-util";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import { storePlayerSetting } from "../../_shared/utils/player-setting";
 import { GameContainer } from "./styles/game-frame.style";
-import { getBaseGameUrl } from "../../_shared/utils/url-helper";
+import { getGameBackgroundUrl } from "../../_shared/utils/url-helper";
 import { deviceInfo } from "../../_shared/utils/device-detect-wrapper";
 
 interface GameFrameProps {
@@ -85,7 +84,12 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
     }, [handleCopyToClipboard]);
 
     return (
-        <GameContainer ref={containerRef} $gameId={gameId} $height={dimensions.height} $remoteGameBackgroundUrl={`${getBaseGameUrl(gameId)}remote/background/game-background.webp`}>
+        <GameContainer
+            ref={containerRef}
+            $gameId={gameId}
+            $height={dimensions.height}
+            $remoteGameBackgroundUrl={getGameBackgroundUrl(gameId)}
+        >
             <iframe
                 ref={(el) => {
                     if (el) {

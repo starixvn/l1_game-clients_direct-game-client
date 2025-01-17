@@ -18,7 +18,6 @@ export type LanguageKey = keyof typeof languageMapping;
 
 export const ResourceTypes = {
     COMMON: "Common",
-    GAME_NAMES: "gameNames",
     MESSAGES: "messages",
     INSTANT_GAME: "InstantGame",
 };

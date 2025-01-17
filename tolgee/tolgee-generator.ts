@@ -15,7 +15,7 @@ function writeFile(fileName: string, content: string, extension = "json") {
     });
 }
 
-const namespaces = [ResourceTypes.GAME_NAMES, ResourceTypes.COMMON, ResourceTypes.MESSAGES, ResourceTypes.INSTANT_GAME];
+const namespaces = [ResourceTypes.COMMON, ResourceTypes.MESSAGES, ResourceTypes.INSTANT_GAME];
 const tg = Tolgee().use(DevTools()).init({
     defaultLanguage: locales.en,
     availableLanguages: languageCodes,

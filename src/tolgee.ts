@@ -2,7 +2,7 @@ import { FormatIcu } from "@tolgee/format-icu";
 import { BackendFetch, GetPath, Tolgee } from "@tolgee/react";
 import { buildVersion, languageCodes, locales, ResourceTypes } from "../src/_shared/consts";
 
-const namespaces = [ResourceTypes.GAME_NAMES, ResourceTypes.COMMON];
+const namespaces = [ResourceTypes.COMMON];
 
 const trimSlashes = (path: string): string => {
     if (path.endsWith("/")) {

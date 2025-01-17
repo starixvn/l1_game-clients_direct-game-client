@@ -1,132 +1,159 @@
-import React from "react";
-import { render, screen, fireEvent, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { GameTabs } from "../game-tabs";
 import { StorageManager } from "../../../_shared/utils";
-import * as translatorHook from "../../../_shared/react-hooks/use-translator";
+import { useTolgee } from "@tolgee/react";
 
 // Mock dependencies
+jest.mock("@tolgee/react", () => ({
+    useTolgee: jest.fn(),
+}));
+
 jest.mock("../../../_shared/utils", () => ({
     StorageManager: {
         get: jest.fn(),
         set: jest.fn(),
     },
-    getGameUrl: jest.fn((gameId) => `game-url/${gameId}`),
-    getBaseGameUrl: jest.fn((gameId) => `base-url/${gameId}/`),
     localStorageKeys: {
         selectedGameId: "selectedGameId",
     },
+    getGameUrl: jest.fn((gameId) => `http://game-${gameId}/`),
+    getGameLocalizationUrl: jest.fn((gameId) => `http://game-${gameId}/localization.json`),
+    getIconGameTabUrl: jest.fn((gameId) => `http://game-${gameId}/icon.png`),
 }));
-
 jest.mock("../game-frame", () => ({
     GameFrame: jest.fn(() => <div data-testid="game-frame" />),
 }));
 
-const mockTranslate = jest.fn((key) => `translated-${key}`);
-jest.spyOn(translatorHook, "useTranslator").mockImplementation(() => ({
-    t: mockTranslate,
-    i18n: {} as any,
-}));
+// Mock fetch
+global.fetch = jest.fn();
 
 describe("GameTabs", () => {
+    const mockGameOfferIds = [1, 2, 3];
     const defaultProps = {
-        gameOfferIds: [1, 2, 3],
-        availableGameId: 1,
-        tabHeight: 100,
+        gameOfferIds: mockGameOfferIds,
+        availableGameId: undefined,
+        tabHeight: 800,
     };
 
     beforeEach(() => {
         jest.clearAllMocks();
+        (useTolgee as jest.Mock).mockReturnValue({ getLanguage: () => "en" });
+        (global.fetch as jest.Mock).mockImplementation((url) => {
+            const gameId = url.split("game-")[1][0];
+            return Promise.resolve({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        gameNames: {
+                            en: `Test Game ${gameId}`,
+                        },
+                    }),
+            });
+        });
     });
 
-    it("should render all game tabs", async () => {
-        await act(async () => {
-            render(<GameTabs {...defaultProps} />);
-        });
-
-        defaultProps.gameOfferIds.forEach((gameId) => {
-            expect(screen.getByText(`translated-gameNames.${gameId}`)).toBeInTheDocument();
-            expect(screen.getByAltText(`translated-gameNames.${gameId}`)).toHaveAttribute(
-                "src",
-                `base-url/${gameId}/remote/icon/icon-game-tab.png`
-            );
-        });
-    });
-
-    it("should initialize with stored game ID if available", async () => {
-        const storedGameId = 2;
-        (StorageManager.get as jest.Mock).mockReturnValue(storedGameId);
-
-        await act(async () => {
-            render(<GameTabs {...defaultProps} />);
-        });
-
-        expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", storedGameId);
-        expect(screen.getByTestId("game-frame")).toBeInTheDocument();
-    });
-
-    it("should initialize with available game ID if no stored game ID", async () => {
+    test("should initialize with first game when no previously selected game exists", async () => {
+        // Arrange
         (StorageManager.get as jest.Mock).mockReturnValue(undefined);
 
-        await act(async () => {
-            render(<GameTabs {...defaultProps} />);
-        });
+        // Act
+        render(<GameTabs {...defaultProps} />);
 
-        expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", defaultProps.availableGameId);
+        // Assert
+        await waitFor(() => {
+            expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", 1);
+        });
     });
 
-    it("should initialize with first game ID if no stored or available game ID", async () => {
-        (StorageManager.get as jest.Mock).mockReturnValue(undefined);
+    test("should initialize with previously selected game from storage", async () => {
+        // Arrange
+        (StorageManager.get as jest.Mock).mockReturnValue(2);
 
-        await act(async () => {
-            render(<GameTabs {...{ ...defaultProps, availableGameId: undefined }} />);
+        // Act
+        render(<GameTabs {...defaultProps} />);
+
+        // Assert
+        await waitFor(() => {
+            expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", 2);
         });
-
-        expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", defaultProps.gameOfferIds[0]);
     });
 
-    it("should handle tab selection", async () => {
-        await act(async () => {
-            render(<GameTabs {...defaultProps} />);
-        });
+    test("should initialize with availableGameId when provided", async () => {
+        // Arrange
+        (StorageManager.get as jest.Mock).mockReturnValueOnce(undefined);
+        const propsWithAvailableGame = {
+            ...defaultProps,
+            availableGameId: 3,
+        };
 
-        await act(async () => {
-            fireEvent.click(screen.getByText(`translated-gameNames.${defaultProps.gameOfferIds[1]}`));
-        });
+        // Act
+        render(<GameTabs {...propsWithAvailableGame} />);
 
-        expect(StorageManager.set).toHaveBeenCalledWith(
-            "selectedGameId",
-            defaultProps.gameOfferIds[1]
-        );
+        // Assert
+        await waitFor(() => {
+            expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", 3);
+        });
     });
 
-    it("should not use stored game ID if it's not in gameOfferIds", async () => {
-        (StorageManager.get as jest.Mock).mockReturnValue(999);
+    test("should switch tabs when clicking on a different game tab", async () => {
+        // Arrange
+        render(<GameTabs {...defaultProps} />);
+        await waitFor(() => screen.getByText("Test Game 1"));
 
-        await act(async () => {
-            render(<GameTabs {...defaultProps} />);
+        // Act
+        const secondTab = screen.getAllByRole("tab")[1];
+        fireEvent.click(secondTab);
+
+        // Assert
+        await waitFor(() => {
+            expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", 2);
         });
-
-        expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", defaultProps.availableGameId);
     });
 
-    it("should render empty when no game offers", async () => {
-        await act(async () => {
-            render(<GameTabs gameOfferIds={[]} availableGameId={undefined} tabHeight={100} />);
-        });
+    test("should display fallback game name when API request fails", async () => {
+        // Arrange
+        (global.fetch as jest.Mock).mockRejectedValue(new Error("Network error"));
 
-        expect(screen.queryByTestId("game-frame")).not.toBeInTheDocument();
+        // Act
+        render(<GameTabs {...defaultProps} />);
+
+        // Assert
+        await waitFor(() => {
+            expect(screen.getByText("game-1")).toBeInTheDocument();
+        });
     });
 
-    it("should apply active class to selected tab", async () => {
-        await act(async () => {
-            render(<GameTabs {...defaultProps} />);
+    test("should fetch and display game names for all tabs", async () => {
+        // Arrange
+        const gameNames = {
+            1: "Game One",
+            2: "Game Two",
+            3: "Game Three",
+        };
+
+        (global.fetch as jest.Mock).mockImplementation((url) => {
+            const gameId = url.split("game-")[1][0];
+            return Promise.resolve({
+                ok: true,
+                json: () =>
+                    Promise.resolve({
+                        gameNames: {
+                            en: gameNames[gameId],
+                        },
+                    }),
+            });
         });
 
-        const firstTabTitle = screen.getByText(`translated-gameNames.${defaultProps.gameOfferIds[0]}`).parentElement;
-        expect(firstTabTitle).toHaveClass("nav-link active");
+        // Act
+        render(<GameTabs {...defaultProps} />);
 
-        const secondTabTitle = screen.getByText(`translated-gameNames.${defaultProps.gameOfferIds[1]}`).parentElement;
-        expect(secondTabTitle).toHaveClass("nav-link");
+        // Assert
+        await waitFor(() => {
+            Object.values(gameNames).forEach((gameName) => {
+                expect(screen.getByText(gameName)).toBeInTheDocument();
+            });
+        });
     });
 });

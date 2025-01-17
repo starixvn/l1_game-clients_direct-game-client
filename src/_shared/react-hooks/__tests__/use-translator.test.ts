@@ -30,17 +30,13 @@ describe("useTranslator", () => {
 
     it("should initialize with default namespaces only", () => {
         renderHook(() => useTranslator());
-        expect(useTranslate).toHaveBeenCalledWith([ResourceTypes.COMMON, ResourceTypes.GAME_NAMES]);
+        expect(useTranslate).toHaveBeenCalledWith([ResourceTypes.COMMON]);
     });
 
     it("should initialize with custom namespaces plus defaults", () => {
         const customNs = ["CustomNs1", "CustomNs2"];
         renderHook(() => useTranslator(customNs));
-        expect(useTranslate).toHaveBeenCalledWith([
-            ...customNs,
-            ResourceTypes.COMMON,
-            ResourceTypes.GAME_NAMES,
-        ]);
+        expect(useTranslate).toHaveBeenCalledWith([...customNs, ResourceTypes.COMMON]);
     });
 
     it("should translate key without namespace", () => {
@@ -100,4 +96,4 @@ describe("useTranslator", () => {
         });
         expect(translation).toBe("translated with options");
     });
-}); 
+});

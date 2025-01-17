@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
-
-import { useTranslator } from "../../_shared/react-hooks/use-translator";
-import { getBaseGameUrl, getGameUrl, localStorageKeys, StorageManager } from "../../_shared/utils";
+import { useTolgee } from "@tolgee/react";
+import { getGameLocalizationUrl, getGameUrl, getIconGameTabUrl, localStorageKeys, StorageManager } from "../../_shared/utils";
 import { GameFrame } from "./game-frame";
 
 interface GameTabsProps {
@@ -12,14 +11,15 @@ interface GameTabsProps {
 }
 
 export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameId, tabHeight }) => {
-    const { t } = useTranslator();
+    const currentLanguage = useTolgee().getLanguage();
     const [activeKey, setActiveKey] = useState(0);
     const [iframeSrc, setIframeSrc] = useState<string>();
+    const [gameNames, setGameNames] = useState<Record<number, string>>({});
 
     const setSelectedGameId = (gameId: number) => {
         setActiveKey(gameOfferIds.indexOf(gameId));
         StorageManager.set(localStorageKeys.selectedGameId, gameId);
-        setIframeSrc(getGameUrl(gameId));
+        setIframeSrc(getGameUrl(gameId, gameOfferIds));
     };
 
     useEffect(() => {
@@ -36,6 +36,29 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
         setSelectedGameId(gameId);
     };
 
+    const getGameName = async (gameId: number) => {
+        const url = getGameLocalizationUrl(gameId);
+        try {
+            const response = await fetch(url);
+            if (response.ok) {
+                const data = await response.json();
+                return { [gameId]: data.gameNames?.[currentLanguage] || `game-${gameId}` };
+            }
+        } catch (error) {
+            console.error(`Error fetching game name for game ${gameId}:`, error);
+        }
+        return { [gameId]: `game-${gameId}` };
+    };
+
+    useEffect(() => {
+        const fetchGameNames = async () => {
+            const names = await Promise.all(gameOfferIds.map((gameId) => getGameName(gameId)));
+            const gameNames = names.reduce((result, gameName) => ({ ...result, ...gameName }), {});
+            setGameNames(gameNames);
+        };
+        fetchGameNames();
+    }, []);
+
     return (
         <Tabs activeKey={activeKey} onSelect={(k) => k && handleTabSelect(+k)}>
             {gameOfferIds.map((gameId, index) => {
@@ -46,11 +69,11 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
                         title={
                             <div className={`tab-title ${isActive ? "active" : ""}`}>
                                 <img
-                                    src={`${getBaseGameUrl(gameId)}remote/icon/icon-game-tab.png`}
-                                    alt={t(`gameNames.${gameId}`)}
+                                    src={getIconGameTabUrl(gameId)}
+                                    alt={`game-${gameId}`}
                                     className={`tab-icon ${!isActive ? "inactive" : ""}`}
                                 />
-                                {t(`gameNames.${gameId}`)}
+                                {gameNames[gameId]}
                             </div>
                         }
                         key={gameId}

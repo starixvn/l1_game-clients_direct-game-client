@@ -12,7 +12,7 @@ export function parseTranslationKey(input: string) {
 }
 
 export const useTranslator = (gameNamespaces?: string[]) => {
-    const defaultNamespaces = [ResourceTypes.COMMON, ResourceTypes.GAME_NAMES];
+    const defaultNamespaces = [ResourceTypes.COMMON];
     const ns = gameNamespaces ? gameNamespaces.concat(defaultNamespaces) : defaultNamespaces;
     const translator = useTranslate(ns);
     const t = (key: string, params?: any, opt?: any) => {
