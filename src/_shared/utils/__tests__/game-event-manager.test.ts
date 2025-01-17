@@ -95,8 +95,8 @@ describe("GameEventManager", () => {
             const testData = { value: "test" };
 
             // Act
-            manager.subscribe(GameEvents.getGameName, mockHandler);
-            manager.notify(GameEvents.getGameName, testData);
+            manager.subscribe(GameEvents.musicEnable, mockHandler);
+            manager.notify(GameEvents.musicEnable, testData);
 
             // Assert
             expect(mockHandler).toHaveBeenCalledWith(testData);
@@ -107,7 +107,7 @@ describe("GameEventManager", () => {
             const mockHandler = jest.fn();
 
             // Act
-            manager.subscribe(GameEvents.getGameName, mockHandler);
+            manager.subscribe(GameEvents.musicEnable, mockHandler);
             manager.notify(GameEvents.isUserGesture, { value: "test" });
 
             // Assert
@@ -121,9 +121,9 @@ describe("GameEventManager", () => {
             const testData = { value: "test" };
 
             // Act
-            manager.subscribe(GameEvents.getGameName, mockHandler1);
-            manager.subscribe(GameEvents.getGameName, mockHandler2);
-            manager.notify(GameEvents.getGameName, testData);
+            manager.subscribe(GameEvents.musicEnable, mockHandler1);
+            manager.subscribe(GameEvents.musicEnable, mockHandler2);
+            manager.notify(GameEvents.musicEnable, testData);
 
             // Assert
             expect(mockHandler1).toHaveBeenCalledWith(testData);
@@ -135,11 +135,11 @@ describe("GameEventManager", () => {
         it("should remove listener when unsubscribed", () => {
             // Arrange
             const mockHandler = jest.fn();
-            const subscriptionId = manager.subscribe(GameEvents.getGameName, mockHandler);
+            const subscriptionId = manager.subscribe(GameEvents.musicEnable, mockHandler);
 
             // Act
             manager.unsubscribe(subscriptionId);
-            manager.notify(GameEvents.getGameName, { value: "test" });
+            manager.notify(GameEvents.musicEnable, { value: "test" });
 
             // Assert
             expect(mockHandler).not.toHaveBeenCalled();
@@ -151,12 +151,12 @@ describe("GameEventManager", () => {
             // Arrange
             const mockHandler1 = jest.fn();
             const mockHandler2 = jest.fn();
-            manager.subscribe(GameEvents.getGameName, mockHandler1);
+            manager.subscribe(GameEvents.musicEnable, mockHandler1);
             manager.subscribe(GameEvents.isUserGesture, mockHandler2);
 
             // Act
             manager.clear();
-            manager.notify(GameEvents.getGameName, { value: "test" });
+            manager.notify(GameEvents.musicEnable, { value: "test" });
             manager.notify(GameEvents.isUserGesture, { value: "test" });
 
             // Assert
@@ -201,11 +201,11 @@ describe("GameEventManager", () => {
             mockSettings.appSettings.isDev = true;
 
             const mockHandler = jest.fn();
-            manager.subscribe(GameEvents.getGameName, mockHandler);
+            manager.subscribe(GameEvents.musicEnable, mockHandler);
 
             // Create data object with the exact event key
             const messageData = {};
-            messageData[GameEvents.getGameName] = "testGame";
+            messageData[GameEvents.musicEnable] = true;
 
             // Act
             const messageEvent = new MessageEvent("message", {
@@ -222,11 +222,11 @@ describe("GameEventManager", () => {
         it("should not process message events from different root domains in production", () => {
             // Arrange
             const mockHandler = jest.fn();
-            manager.subscribe(GameEvents.getGameName, mockHandler);
+            manager.subscribe(GameEvents.musicEnable, mockHandler);
 
             // Create data object with the exact event key
             const messageData = {};
-            messageData[GameEvents.getGameName] = "testGame";
+            messageData[GameEvents.musicEnable] = true;
 
             // Act
             const messageEvent = new MessageEvent("message", {
@@ -243,12 +243,12 @@ describe("GameEventManager", () => {
         it("should handle invalid message events gracefully", () => {
             // Arrange
             const mockHandler = jest.fn();
-            manager.subscribe(GameEvents.getGameName, mockHandler);
+            manager.subscribe(GameEvents.musicEnable, mockHandler);
             const consoleSpy = jest.spyOn(console, "error").mockImplementation();
 
             // Create data object with the exact event key
             const messageData = {};
-            messageData[GameEvents.getGameName] = "testGame";
+            messageData[GameEvents.musicEnable] = true;
 
             // Act
             const messageEvent = new MessageEvent("message", {

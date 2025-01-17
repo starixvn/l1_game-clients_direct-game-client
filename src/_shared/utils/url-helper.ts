@@ -20,7 +20,6 @@ export type URLContextModel = {
 };
 
 export const getRootHost = (host: string): string => {
-    // Split host by dots and get the last two parts
     const parts = host.split(".");
 
     if (parts.length <= 2) {

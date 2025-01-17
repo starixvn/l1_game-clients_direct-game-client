@@ -10,14 +10,11 @@ export type Listener = {
 
 export const GameEvents = {
     isUserGesture: "isUserGesture",
-    getGameName: "getGameName",
     isNotPermittedToPlay: "isNotPermittedToPlay",
     isUnderMaintain: "isUnderMaintain",
     sessionTimeout: "sessionTimeout",
     musicEnable: "musicEnable",
     sfxEnable: "sfxEnable",
-    replaceUrl: "replaceUrl",
-    copyToClipboard: "copyToClipboard",
 };
 
 export class GameEventManager {

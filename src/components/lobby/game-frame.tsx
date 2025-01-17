@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import FunctionUtil from "../../_shared/utils/function-util";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import { storePlayerSetting } from "../../_shared/utils/player-setting";
 import { GameContainer } from "./styles/game-frame.style";
@@ -53,27 +52,11 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
         return () => window.removeEventListener("resize", handleResize);
     }, [calculateDimensions]);
 
-    const postMessageToMicroSite = useCallback(
-        (data: any) => {
-            wrapperIframeRef?.current?.contentWindow?.postMessage(data, wrapperIframeRef?.current?.src);
-        },
-        [wrapperIframeRef]
-    );
-
-    const handleCopyToClipboard = useCallback(
-        async (data: any) => {
-            const copySuccessfully = await FunctionUtil.copyText(data.copyToClipboard);
-            postMessageToMicroSite({ copySuccessfully });
-        },
-        [postMessageToMicroSite]
-    );
-
     useEffect(() => {
         const listeners = [
             { event: GameEvents.musicEnable, handler: storePlayerSetting },
             { event: GameEvents.sfxEnable, handler: storePlayerSetting },
             { event: GameEvents.isUserGesture, handler: storePlayerSetting },
-            { event: GameEvents.copyToClipboard, handler: handleCopyToClipboard },
         ];
         const gameEventManager = GameEventManager.getInstance();
         const subscribers = listeners.map(({ event, handler }) => gameEventManager.subscribe(event, handler));
@@ -81,7 +64,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
         return () => {
             subscribers.forEach((id) => gameEventManager.unsubscribe(id));
         };
-    }, [handleCopyToClipboard]);
+    }, []);
 
     return (
         <GameContainer

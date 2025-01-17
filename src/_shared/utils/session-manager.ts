@@ -27,15 +27,3 @@ export function storeSessionData(data: any) {
 export function clearSessionData() {
     StorageManager.remove(getSessionKey());
 }
-
-export function getMicrositeGameId() {
-    return StorageManager.get(micrositeGameIdKey) ?? 0;
-}
-
-export function storeMicrositeGameId(gameId: number) {
-    StorageManager.set(micrositeGameIdKey, gameId);
-}
-
-export function removeMicrositeGameId() {
-    StorageManager.remove(micrositeGameIdKey);
-}

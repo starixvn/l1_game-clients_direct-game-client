@@ -42,6 +42,7 @@ module.exports = {
                         loader: "css-loader",
                         options: {
                             modules: false, // Disable CSS modules for global styles
+                            url: false,
                         },
                     },
                     "sass-loader",

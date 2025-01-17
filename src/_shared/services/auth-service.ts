@@ -49,10 +49,6 @@ export const authorize = async (userSession: SSOResponse) => {
     return authService?.authorize(userSession.ss, userSession.username);
 };
 
-export const getBalance = async (userSession: SSOResponse) => {
-    return authService?.getBalance(userSession.ss, userSession.username);
-};
-
 export const autoCreateNickname = async (session: SSOResponse) => {
     const selectedAvatarId = randomInteger(1, MAX_AVATAR_ID);
     let attemptCount = 0;
