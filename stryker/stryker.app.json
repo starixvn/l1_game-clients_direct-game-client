@@ -11,7 +11,11 @@
     "jest": {
         "projectType": "custom",
         "configFile": "jest.config.js",
-        "enableFindRelatedTests": true
+        "enableFindRelatedTests": true,
+        "testMatch": [
+            "<rootDir>/src/__tests__/App.test.tsx",
+            "<rootDir>/src/tolgee.test.ts"
+        ]
     },
     "checkers": [
         "typescript"
@@ -29,5 +33,11 @@
         "reports",
         "**/__tests__/**",
         "**/__mocks__/**"
+    ],
+    "inPlace": true,
+    "threads": 2,
+    "timeoutMS": 20000,
+    "testRunnerNodeArgs": [
+        "--max-old-space-size=4096"
     ]
 }

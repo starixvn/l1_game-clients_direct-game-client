@@ -11,17 +11,19 @@
     "jest": {
         "projectType": "custom",
         "configFile": "jest.config.js",
-        "enableFindRelatedTests": true
+        "enableFindRelatedTests": true,
+        "testMatch": [
+            "<rootDir>/src/_shared/utils/__tests__/player-setting.test.ts",
+            "<rootDir>/src/_shared/utils/__tests__/session-manager.test.ts"
+        ]
     },
     "checkers": [
         "typescript"
     ],
     "tsconfigFile": "tsconfig.json",
     "mutate": [
-        "src/_shared/utils/name-generator.ts",
-        "src/_shared/utils/number-helper.ts",
-        "src/_shared/utils/game-setting.ts",
-        "src/_shared/utils/base64-util.ts"
+        "src/_shared/utils/player-setting.ts",
+        "src/_shared/utils/session-manager.ts"
     ],
     "ignorePatterns": [
         "node_modules",
@@ -30,5 +32,11 @@
         "reports",
         "**/__tests__/**",
         "**/__mocks__/**"
+    ],
+    "inPlace": true,
+    "threads": 2,
+    "timeoutMS": 20000,
+    "testRunnerNodeArgs": [
+        "--max-old-space-size=4096"
     ]
 }

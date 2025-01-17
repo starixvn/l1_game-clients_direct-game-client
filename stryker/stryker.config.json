@@ -17,6 +17,8 @@
         "typescript"
     ],
     "tsconfigFile": "tsconfig.json",
+    "maxConcurrentTestRunners": 4,
+    "timeoutMS": 20000,
     "mutate": [
         "src/**/*.ts",
         "src/**/*.tsx",

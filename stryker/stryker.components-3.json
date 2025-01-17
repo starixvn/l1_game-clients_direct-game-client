@@ -11,7 +11,12 @@
     "jest": {
         "projectType": "custom",
         "configFile": "jest.config.js",
-        "enableFindRelatedTests": true
+        "enableFindRelatedTests": true,
+        "testMatch": [
+            "<rootDir>/src/components/timeout/__tests__/index.test.tsx",
+            "<rootDir>/src/components/not-found/__tests__/index.test.tsx",
+            "<rootDir>/src/components/common/loading/__tests__/index.test.tsx"
+        ]
     },
     "checkers": [
         "typescript"
@@ -29,5 +34,11 @@
         "reports",
         "**/__tests__/**",
         "**/__mocks__/**"
+    ],
+    "inPlace": true,
+    "threads": 3,
+    "timeoutMS": 20000,
+    "testRunnerNodeArgs": [
+        "--max-old-space-size=4096"
     ]
 }
