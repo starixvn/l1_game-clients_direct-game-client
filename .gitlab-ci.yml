@@ -9,8 +9,12 @@ include:
 mutation_test:
   image: $NODEJS_IMAGE
   stage: test
-  needs:
-    - unit_test_js
+  tags:
+    - ci
+  # needs:
+  #   - unit_test_js
+  before_script:
+    - yarn install
   script:
     - npm run test:mutation
   allow_failure: true
