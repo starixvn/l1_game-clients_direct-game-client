@@ -9,12 +9,11 @@ include:
 mutation_test:
   image: $NODEJS_IMAGE
   stage: test
-  tags:
-    - ci
-  # needs:
-  #   - unit_test_js
+  needs:
+    - unit_test_js
   before_script:
-    - yarn install
+    - npm config set registry http://npm.lumigame.com
+    - npm ci
   script:
     - npm run test:mutation
   allow_failure: true
