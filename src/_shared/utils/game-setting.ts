@@ -1,12 +1,17 @@
 import { AuthorizeResponse } from "sc-user-service-client/dist/auth";
-import { gameSettings } from "../game-setting";
+import { gamesByCurrencyGroup } from "../game-setting";
+import { GroupCurrency } from "../consts";
 
-export const getOfferedGameIds = (authorizeInfo: AuthorizeResponse) => {
+export const getGameIdsByCurrencyGroup = (currencyGroup: string) => {
+    return gamesByCurrencyGroup[currencyGroup] || gamesByCurrencyGroup[GroupCurrency.Default];
+};
+
+export const getOfferedGameIdsByCurrencyGroup = (authorizeInfo: AuthorizeResponse) => {
+    const currencyGroup = authorizeInfo?.user?.currencyGroup;
     const gameIds = authorizeInfo?.user?.offerGames?.map((game: any) => +game?.gameId) || [];
-    return gameSettings
-        .filter((game) => gameIds.includes(game.id))
-        .sort((a, b) => a.order - b.order)
-        .map((game) => game.id);
+    const gameIdsByCurrencyGroup = getGameIdsByCurrencyGroup(currencyGroup);
+
+    return gameIdsByCurrencyGroup.filter((gameId) => gameIds.includes(gameId));
 };
 
 export const getAvailableGameId = (offeredGameIds: number[], authorizeInfo: AuthorizeResponse): number | undefined => {

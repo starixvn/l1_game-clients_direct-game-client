@@ -27,3 +27,13 @@ export const buildVersion = process.env.BUILD_VERSION || 111;
 export const errorCodes = {
     NICKNAME_EXISTS: "SB0015",
 };
+
+export const GroupCurrency = {
+    GrUSD: "GrUSD",
+    GrWon: "GrWon",
+    GrEURO: "GrEURO",
+    GrINH: "GrINH",
+    GrIDR: "GrIDR",
+    GrPFF: "GrPFF",
+    Default: "Default",
+};

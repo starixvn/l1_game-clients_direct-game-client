@@ -4,7 +4,7 @@ import { appSettings } from "../../_shared/game-setting";
 import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
 import { localStorageKeys, StorageManager } from "../../_shared/utils";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
-import { getAvailableGameId, getOfferedGameIds } from "../../_shared/utils/game-setting";
+import { getAvailableGameId, getOfferedGameIdsByCurrencyGroup } from "../../_shared/utils/game-setting";
 import { getGameUrl } from "../../_shared/utils/url-helper";
 import Loading from "../common/loading";
 import LandscapeMode from "../landscape-mode";
@@ -40,7 +40,7 @@ const Lobby: React.FC = () => {
     const authenticate = async () => {
         const response = await initialize();
         if (response?.authorized) {
-            const offeredGameIds = getOfferedGameIds(response);
+            const offeredGameIds = getOfferedGameIdsByCurrencyGroup(response);
             setGameOfferIds(offeredGameIds);
 
             const selectedGameId =

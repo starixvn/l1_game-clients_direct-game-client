@@ -1,5 +1,6 @@
-import gameSettingsConfig from "../../../game-settings.json";
-import { IAppSettings, IGameSetting } from "./type";
+import { GroupCurrency } from "../consts";
+import { GameIds } from "../consts/game-ids";
+import { IAppSettings } from "./type";
 
 declare global {
     interface Window {
@@ -11,4 +12,8 @@ const getAppSettings = (): IAppSettings => {
     return window?.envConfig;
 };
 export const appSettings: IAppSettings = getAppSettings();
-export const gameSettings: IGameSetting[] = gameSettingsConfig;
+
+export const gamesByCurrencyGroup = {
+    [GroupCurrency.GrUSD]: [GameIds.SeDie],
+    [GroupCurrency.Default]: [GameIds.SeDie],
+};
