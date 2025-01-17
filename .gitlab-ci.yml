@@ -24,27 +24,27 @@ include:
 mutation_test_shared_1:
   extends: .mutation_test_template
   script:
-    - npx stryker run -c stryker.shared-1.json
+    - npx stryker run -c stryker/stryker.shared-1.json
 
 mutation_test_shared_2:
   extends: .mutation_test_template
   script:
-    - npx stryker run -c stryker.shared-2.json
+    - npx stryker run -c stryker/stryker.shared-2.json
 
 mutation_test_components_1:
   extends: .mutation_test_template
   script:
-    - npx stryker run -c stryker.components-1.json
+    - npx stryker run -c stryker/stryker.components-1.json
 
 mutation_test_components_2:
   extends: .mutation_test_template
   script:
-    - npx stryker run -c stryker.components-2.json
+    - npx stryker run -c stryker/stryker.components-2.json
 
 mutation_test_app:
   extends: .mutation_test_template
   script:
-    - npx stryker run -c stryker.app.json
+    - npx stryker run -c stryker/stryker.app.json
 
 mutation_test_report:
   image: $NODEJS_IMAGE

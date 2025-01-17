@@ -9,7 +9,7 @@
         "test": "jest",
         "test:watch": "jest --watch",
         "test-coverage": "jest --coverage",
-        "test:mutation": "stryker run",
+        "test:mutation": "stryker run -c stryker/stryker.config.json",
         "generate-tolgee-data": "ts-node ./tolgee/tolgee-generator.ts",
         "obfuscator-config-file": "ts-node ./configs/config-obfuscator.ts",
         "reg": "npm set registry http://npm.lumigame.com"
