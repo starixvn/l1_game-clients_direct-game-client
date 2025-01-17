@@ -9,11 +9,13 @@ include:
 mutation_test:
   image: $NODEJS_IMAGE
   stage: test
-  script:
+  needs:
+    - unit_test_js
+  before_script:
+    - npm config set registry http://npm.lumigame.com
     - npm ci
+  script:
     - npm run test:mutation
-  # only:
-  #   - merge_requests
   allow_failure: true
   artifacts:
     reports:
