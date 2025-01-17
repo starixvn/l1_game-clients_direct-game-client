@@ -9,6 +9,7 @@
         "test": "jest",
         "test:watch": "jest --watch",
         "test-coverage": "jest --coverage",
+        "test:mutation": "stryker run",
         "generate-tolgee-data": "ts-node ./tolgee/tolgee-generator.ts",
         "obfuscator-config-file": "ts-node ./configs/config-obfuscator.ts",
         "reg": "npm set registry http://npm.lumigame.com"
@@ -72,6 +73,9 @@
         "url-loader": "^4.1.1",
         "webpack": "^5.94.0",
         "webpack-cli": "^5.1.4",
-        "webpack-dev-server": "^5.1.0"
+        "webpack-dev-server": "^5.1.0",
+        "@stryker-mutator/core": "^8.2.6",
+        "@stryker-mutator/jest-runner": "^8.2.6",
+        "@stryker-mutator/typescript-checker": "^8.2.6"
     }
 }

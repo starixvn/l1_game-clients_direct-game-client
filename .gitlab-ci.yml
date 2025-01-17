@@ -1,8 +1,29 @@
 variables:
   NODEJS_IMAGE: hub.lumigame.com/base/node:20.9.0-alpine
 
+stages:
+  - .pre
+  - test
+  - mutation
+  - .post
 
 include:
   - project: "ci/core-cicd"
     ref: main
     file: "luminet.gitlab-ci.yml"
+
+mutation_test:
+  image: $NODEJS_IMAGE
+  stage: mutation
+  before_script:
+    - npm config set registry http://npm.lumigame.com
+    - npm ci
+  script:
+    - npm run test:mutation
+  allow_failure: true
+  artifacts:
+    reports:
+      junit: reports/mutation/mutation.xml
+    paths:
+      - reports/mutation
+    expire_in: 1 week
