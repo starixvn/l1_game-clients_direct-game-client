@@ -1,18 +1,31 @@
 {
-    "extends": "./stryker.base.json",
+    "$schema": "../node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+    "packageManager": "npm",
+    "reporters": [
+        "html",
+        "clear-text",
+        "progress"
+    ],
+    "testRunner": "jest",
+    "coverageAnalysis": "perTest",
     "jest": {
         "projectType": "custom",
         "configFile": "jest.config.js",
-        "enableFindRelatedTests": true,
-        "testMatch": [
-            "<rootDir>/src/components/um/__tests__/index.test.tsx",
-            "<rootDir>/src/components/landscape-mode/__tests__/index.test.tsx",
-            "<rootDir>/src/components/non-offer/__tests__/index.test.tsx"
-        ]
+        "enableFindRelatedTests": true
     },
+    "checkers": [
+        "typescript"
+    ],
+    "tsconfigFile": "tsconfig.json",
     "mutate": [
         "src/components/um/index.tsx",
         "src/components/landscape-mode/index.tsx",
         "src/components/non-offer/index.tsx"
+    ],
+    "ignorePatterns": [
+        "node_modules",
+        "dist",
+        "coverage",
+        "reports"
     ]
 }

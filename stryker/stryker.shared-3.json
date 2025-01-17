@@ -1,16 +1,30 @@
 {
-    "extends": "./stryker.base.json",
+    "$schema": "../node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+    "packageManager": "npm",
+    "reporters": [
+        "html",
+        "clear-text",
+        "progress"
+    ],
+    "testRunner": "jest",
+    "coverageAnalysis": "perTest",
     "jest": {
         "projectType": "custom",
         "configFile": "jest.config.js",
-        "enableFindRelatedTests": true,
-        "testMatch": [
-            "<rootDir>/src/_shared/utils/__tests__/player-setting.test.ts",
-            "<rootDir>/src/_shared/utils/__tests__/session-manager.test.ts"
-        ]
+        "enableFindRelatedTests": true
     },
+    "checkers": [
+        "typescript"
+    ],
+    "tsconfigFile": "tsconfig.json",
     "mutate": [
         "src/_shared/utils/player-setting.ts",
         "src/_shared/utils/session-manager.ts"
+    ],
+    "ignorePatterns": [
+        "node_modules",
+        "dist",
+        "coverage",
+        "reports"
     ]
 }

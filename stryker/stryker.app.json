@@ -1,17 +1,31 @@
 {
-    "extends": "./stryker.base.json",
+    "$schema": "../node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+    "packageManager": "npm",
+    "reporters": [
+        "html",
+        "clear-text",
+        "progress"
+    ],
+    "testRunner": "jest",
+    "coverageAnalysis": "perTest",
     "jest": {
         "projectType": "custom",
         "configFile": "jest.config.js",
-        "enableFindRelatedTests": true,
-        "testMatch": [
-            "<rootDir>/src/__tests__/App.test.tsx",
-            "<rootDir>/src/tolgee.test.ts"
-        ]
+        "enableFindRelatedTests": true
     },
+    "checkers": [
+        "typescript"
+    ],
+    "tsconfigFile": "tsconfig.json",
     "mutate": [
         "src/App.tsx",
         "src/index.tsx",
         "src/tolgee.ts"
+    ],
+    "ignorePatterns": [
+        "node_modules",
+        "dist",
+        "coverage",
+        "reports"
     ]
 }
