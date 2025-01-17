@@ -11,9 +11,6 @@ mutation_test:
   stage: test
   needs:
     - unit_test_js
-  before_script:
-    - npm config set registry http://npm.lumigame.com
-    - npm ci
   script:
     - npm run test:mutation
   allow_failure: true
