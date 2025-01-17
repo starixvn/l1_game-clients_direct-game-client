@@ -2,10 +2,7 @@ variables:
   NODEJS_IMAGE: hub.lumigame.com/base/node:20.9.0-alpine
 
 stages:
-  - .pre
-  - test
   - mutation
-  - .post
 
 include:
   - project: "ci/core-cicd"
