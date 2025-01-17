@@ -2,17 +2,15 @@ import React from "react";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Lobby from "../index";
-import * as urlHelper from "../../../_shared/utils";
-import * as gameSettings from "../../../_shared/utils/game-setting";
 import * as useAuthHook from "../../../_shared/react-hooks/use-authorization";
 import { StorageManager } from "../../../_shared/utils";
 import * as gameSettingUtils from "../../../_shared/utils/game-setting";
 
 // Mock Clipboard API
-Object.defineProperty(window.navigator, 'clipboard', {
+Object.defineProperty(window.navigator, "clipboard", {
     value: {
         writeText: jest.fn().mockImplementation(() => Promise.resolve()),
-        readText: jest.fn().mockImplementation(() => Promise.resolve('')),
+        readText: jest.fn().mockImplementation(() => Promise.resolve("")),
     },
     writable: true,
 });
@@ -101,7 +99,7 @@ jest.mock("../../../_shared/utils/game-event-manager", () => ({
 }));
 
 describe("Lobby Component", () => {
-    const mockGetOfferedGameIds = jest.spyOn(gameSettingUtils, "getOfferedGameIds");
+    const mockGetOfferedGameIdsByCurrencyGroup = jest.spyOn(gameSettingUtils, "getOfferedGameIdsByCurrencyGroup");
     const mockGetAvailableGameId = jest.spyOn(gameSettingUtils, "getAvailableGameId");
     const mockUseAuthorization = jest.spyOn(useAuthHook, "useAuthorization");
 
@@ -117,7 +115,7 @@ describe("Lobby Component", () => {
             initialize: jest.fn().mockResolvedValue({ authorized: true }),
         }));
 
-        mockGetOfferedGameIds.mockReturnValue([]);
+        mockGetOfferedGameIdsByCurrencyGroup.mockReturnValue([]);
         mockGetAvailableGameId.mockReturnValue(1);
     });
 
@@ -189,7 +187,7 @@ describe("Lobby Component", () => {
             isSessionTimeout: false,
             initialize: jest.fn().mockResolvedValue({ authorized: true }),
         });
-        mockGetOfferedGameIds.mockReturnValue([]);
+        mockGetOfferedGameIdsByCurrencyGroup.mockReturnValue([]);
 
         await act(async () => {
             render(<Lobby />);
@@ -207,7 +205,7 @@ describe("Lobby Component", () => {
             isSessionTimeout: false,
             initialize: mockInitialize,
         });
-        mockGetOfferedGameIds.mockReturnValue([1, 2, 3]);
+        mockGetOfferedGameIdsByCurrencyGroup.mockReturnValue([1, 2, 3]);
 
         await act(async () => {
             render(<Lobby />);
@@ -271,7 +269,7 @@ describe("Lobby Component", () => {
 
 describe("Lobby", () => {
     const mockUseAuthorization = useAuthHook.useAuthorization as jest.Mock;
-    const mockGetOfferedGameIds = gameSettingUtils.getOfferedGameIds as jest.Mock;
+    const mockGetOfferedGameIdsByCurrencyGroup = gameSettingUtils.getOfferedGameIdsByCurrencyGroup as jest.Mock;
     const mockGetAvailableGameId = gameSettingUtils.getAvailableGameId as jest.Mock;
 
     beforeEach(() => {
@@ -286,7 +284,7 @@ describe("Lobby", () => {
             isSessionTimeout: false,
             initialize: jest.fn().mockResolvedValue({ authorized: true }),
         });
-        mockGetOfferedGameIds.mockReturnValue([1, 2, 3]);
+        mockGetOfferedGameIdsByCurrencyGroup.mockReturnValue([1, 2, 3]);
         mockGetAvailableGameId.mockReturnValue(1);
     });
 
@@ -299,7 +297,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGameIdsByCurrencyGroup).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs
@@ -319,7 +317,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGameIdsByCurrencyGroup).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs
@@ -334,7 +332,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGameIdsByCurrencyGroup).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs
@@ -364,7 +362,7 @@ describe("Lobby", () => {
 
         // Wait for the effect to complete
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGameIdsByCurrencyGroup).toHaveBeenCalled();
         });
 
         // Restore original location
@@ -373,7 +371,7 @@ describe("Lobby", () => {
 
     it("should set gameId to 0 when no game is available", async () => {
         // Mock no available games
-        mockGetOfferedGameIds.mockReturnValue([]);
+        mockGetOfferedGameIdsByCurrencyGroup.mockReturnValue([]);
         mockGetAvailableGameId.mockReturnValue(undefined);
 
         const mockInitialize = jest.fn().mockResolvedValue({ authorized: true });
@@ -388,7 +386,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGameIdsByCurrencyGroup).toHaveBeenCalled();
         });
 
         // Should render NonOfferPage when no games are available
@@ -404,7 +402,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGameIdsByCurrencyGroup).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs
@@ -428,7 +426,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGameIdsByCurrencyGroup).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs
@@ -453,7 +451,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGameIdsByCurrencyGroup).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs
@@ -478,7 +476,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGameIdsByCurrencyGroup).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs

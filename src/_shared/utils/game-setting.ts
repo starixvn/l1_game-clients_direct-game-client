@@ -1,6 +1,6 @@
 import { AuthorizeResponse } from "sc-user-service-client/dist/auth";
-import { gamesByCurrencyGroup } from "../game-setting";
 import { GroupCurrency } from "../consts";
+import { gamesByCurrencyGroup } from "../consts/games-by-currency-group";
 
 export const getGameIdsByCurrencyGroup = (currencyGroup: string) => {
     return gamesByCurrencyGroup[currencyGroup] || gamesByCurrencyGroup[GroupCurrency.Default];

@@ -2,7 +2,7 @@ import { getGameIdsByCurrencyGroup, getOfferedGameIdsByCurrencyGroup, getAvailab
 import { GroupCurrency } from "../../consts";
 import { AuthorizeResponse } from "sc-user-service-client/dist/auth";
 
-jest.mock("../../game-setting", () => {
+jest.mock("../../consts/games-by-currency-group", () => {
     const mockGamesByCurrencyGroup = {
         ["GrUSD"]: [4, 5, 6],
         ["Default"]: [1, 2, 3],
