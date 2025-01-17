@@ -1,13 +1,5 @@
 {
-    "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
-    "packageManager": "npm",
-    "reporters": [
-        "html",
-        "clear-text",
-        "progress"
-    ],
-    "testRunner": "jest",
-    "coverageAnalysis": "perTest",
+    "extends": "./stryker.base.json",
     "jest": {
         "projectType": "custom",
         "configFile": "jest.config.js",
@@ -19,28 +11,10 @@
             "<rootDir>/src/_shared/utils/__tests__/base64-util.test.ts"
         ]
     },
-    "checkers": [
-        "typescript"
-    ],
-    "tsconfigFile": "tsconfig.json",
     "mutate": [
         "src/_shared/utils/name-generator.ts",
         "src/_shared/utils/number-helper.ts",
         "src/_shared/utils/game-setting.ts",
         "src/_shared/utils/base64-util.ts"
-    ],
-    "ignorePatterns": [
-        "node_modules",
-        "dist",
-        "coverage",
-        "reports",
-        "**/__tests__/**",
-        "**/__mocks__/**"
-    ],
-    "inPlace": true,
-    "threads": 4,
-    "timeoutMS": 20000,
-    "testRunnerNodeArgs": [
-        "--max-old-space-size=4096"
     ]
 }

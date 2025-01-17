@@ -1,13 +1,5 @@
 {
-    "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
-    "packageManager": "npm",
-    "reporters": [
-        "html",
-        "clear-text",
-        "progress"
-    ],
-    "testRunner": "jest",
-    "coverageAnalysis": "perTest",
+    "extends": "./stryker.base.json",
     "jest": {
         "projectType": "custom",
         "configFile": "jest.config.js",
@@ -18,27 +10,9 @@
             "<rootDir>/src/components/lobby/__tests__/game-frame.test.tsx"
         ]
     },
-    "checkers": [
-        "typescript"
-    ],
-    "tsconfigFile": "tsconfig.json",
     "mutate": [
         "src/components/lobby/index.tsx",
         "src/components/lobby/game-tabs.tsx",
         "src/components/lobby/game-frame.tsx"
-    ],
-    "ignorePatterns": [
-        "node_modules",
-        "dist",
-        "coverage",
-        "reports",
-        "**/__tests__/**",
-        "**/__mocks__/**"
-    ],
-    "inPlace": true,
-    "threads": 3,
-    "timeoutMS": 20000,
-    "testRunnerNodeArgs": [
-        "--max-old-space-size=4096"
     ]
 }

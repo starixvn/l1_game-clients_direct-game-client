@@ -1,13 +1,5 @@
 {
-    "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
-    "packageManager": "npm",
-    "reporters": [
-        "html",
-        "clear-text",
-        "progress"
-    ],
-    "testRunner": "jest",
-    "coverageAnalysis": "perTest",
+    "extends": "./stryker.base.json",
     "jest": {
         "projectType": "custom",
         "configFile": "jest.config.js",
@@ -17,27 +9,9 @@
             "<rootDir>/src/tolgee.test.ts"
         ]
     },
-    "checkers": [
-        "typescript"
-    ],
-    "tsconfigFile": "tsconfig.json",
     "mutate": [
         "src/App.tsx",
         "src/index.tsx",
         "src/tolgee.ts"
-    ],
-    "ignorePatterns": [
-        "node_modules",
-        "dist",
-        "coverage",
-        "reports",
-        "**/__tests__/**",
-        "**/__mocks__/**"
-    ],
-    "inPlace": true,
-    "threads": 2,
-    "timeoutMS": 20000,
-    "testRunnerNodeArgs": [
-        "--max-old-space-size=4096"
     ]
 }
