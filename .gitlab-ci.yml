@@ -28,31 +28,43 @@ mutation_test_shared_1:
 
 mutation_test_shared_2:
   extends: .mutation_test_template
+  needs:
+    - mutation_test_shared_1
   script:
     - npx stryker run -c stryker/stryker.shared-2.json
 
 mutation_test_shared_3:
   extends: .mutation_test_template
+  needs:
+    - mutation_test_shared_2
   script:
     - npx stryker run -c stryker/stryker.shared-3.json
 
 mutation_test_components_1:
   extends: .mutation_test_template
+  needs:
+    - mutation_test_shared_3
   script:
     - npx stryker run -c stryker/stryker.components-1.json
 
 mutation_test_components_2:
   extends: .mutation_test_template
+  needs:
+    - mutation_test_components_1
   script:
     - npx stryker run -c stryker/stryker.components-2.json
 
 mutation_test_components_3:
   extends: .mutation_test_template
+  needs:
+    - mutation_test_components_2
   script:
     - npx stryker run -c stryker/stryker.components-3.json
 
 mutation_test_app:
   extends: .mutation_test_template
+  needs:
+    - mutation_test_components_3
   script:
     - npx stryker run -c stryker/stryker.app.json
 
@@ -60,12 +72,6 @@ mutation_test_report:
   image: $NODEJS_IMAGE
   stage: test
   needs:
-    - mutation_test_shared_1
-    - mutation_test_shared_2
-    - mutation_test_shared_3
-    - mutation_test_components_1
-    - mutation_test_components_2
-    - mutation_test_components_3
     - mutation_test_app
   script:
     - |
