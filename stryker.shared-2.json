@@ -1,0 +1,33 @@
+{
+    "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+    "packageManager": "npm",
+    "reporters": [
+        "html",
+        "clear-text",
+        "progress"
+    ],
+    "testRunner": "jest",
+    "coverageAnalysis": "perTest",
+    "jest": {
+        "projectType": "custom",
+        "configFile": "jest.config.js",
+        "enableFindRelatedTests": true
+    },
+    "checkers": [
+        "typescript"
+    ],
+    "tsconfigFile": "tsconfig.json",
+    "mutate": [
+        "src/_shared/utils/session-manager.ts",
+        "src/_shared/utils/name-generator.ts",
+        "src/_shared/utils/number-helper.ts",
+        "src/_shared/utils/game-setting.ts",
+        "src/_shared/utils/base64-util.ts"
+    ],
+    "ignorePatterns": [
+        "node_modules",
+        "dist",
+        "coverage",
+        "reports"
+    ]
+}

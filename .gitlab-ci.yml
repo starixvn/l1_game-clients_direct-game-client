@@ -21,15 +21,25 @@ include:
       - reports/mutation/$CI_JOB_NAME
     expire_in: 1 week
 
-mutation_test_shared:
+mutation_test_shared_1:
   extends: .mutation_test_template
   script:
-    - npx stryker run -c stryker.shared.json
+    - npx stryker run -c stryker.shared-1.json
 
-mutation_test_components:
+mutation_test_shared_2:
   extends: .mutation_test_template
   script:
-    - npx stryker run -c stryker.components.json
+    - npx stryker run -c stryker.shared-2.json
+
+mutation_test_components_1:
+  extends: .mutation_test_template
+  script:
+    - npx stryker run -c stryker.components-1.json
+
+mutation_test_components_2:
+  extends: .mutation_test_template
+  script:
+    - npx stryker run -c stryker.components-2.json
 
 mutation_test_app:
   extends: .mutation_test_template
@@ -40,8 +50,10 @@ mutation_test_report:
   image: $NODEJS_IMAGE
   stage: test
   needs:
-    - mutation_test_shared
-    - mutation_test_components
+    - mutation_test_shared_1
+    - mutation_test_shared_2
+    - mutation_test_components_1
+    - mutation_test_components_2
     - mutation_test_app
   script:
     - |
