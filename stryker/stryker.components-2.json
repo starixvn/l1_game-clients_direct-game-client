@@ -18,23 +18,16 @@
     ],
     "tsconfigFile": "tsconfig.json",
     "mutate": [
-        "src/components/um/**/*.ts",
-        "src/components/um/**/*.tsx",
-        "src/components/landscape-mode/**/*.ts",
-        "src/components/landscape-mode/**/*.tsx",
-        "src/components/non-offer/**/*.ts",
-        "src/components/non-offer/**/*.tsx",
-        "src/components/timeout/**/*.ts",
-        "src/components/timeout/**/*.tsx",
-        "src/components/not-found/**/*.ts",
-        "src/components/not-found/**/*.tsx",
-        "!src/components/**/__tests__/**/*",
-        "!src/components/**/__mocks__/**/*"
+        "src/components/um/index.tsx",
+        "src/components/landscape-mode/index.tsx",
+        "src/components/non-offer/index.tsx"
     ],
     "ignorePatterns": [
         "node_modules",
         "dist",
         "coverage",
-        "reports"
+        "reports",
+        "**/__tests__/**",
+        "**/__mocks__/**"
     ]
 }

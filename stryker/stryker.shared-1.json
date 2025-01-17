@@ -20,14 +20,14 @@
     "mutate": [
         "src/_shared/utils/url-helper.ts",
         "src/_shared/utils/function-util.ts",
-        "src/_shared/utils/storage-manager.ts",
-        "src/_shared/utils/game-event-manager.ts",
-        "src/_shared/utils/player-setting.ts"
+        "src/_shared/utils/storage-manager.ts"
     ],
     "ignorePatterns": [
         "node_modules",
         "dist",
         "coverage",
-        "reports"
+        "reports",
+        "**/__tests__/**",
+        "**/__mocks__/**"
     ]
 }

@@ -18,16 +18,16 @@
     ],
     "tsconfigFile": "tsconfig.json",
     "mutate": [
-        "src/_shared/utils/session-manager.ts",
-        "src/_shared/utils/name-generator.ts",
-        "src/_shared/utils/number-helper.ts",
-        "src/_shared/utils/game-setting.ts",
-        "src/_shared/utils/base64-util.ts"
+        "src/_shared/utils/game-event-manager.ts",
+        "src/_shared/utils/player-setting.ts",
+        "src/_shared/utils/session-manager.ts"
     ],
     "ignorePatterns": [
         "node_modules",
         "dist",
         "coverage",
-        "reports"
+        "reports",
+        "**/__tests__/**",
+        "**/__mocks__/**"
     ]
 }

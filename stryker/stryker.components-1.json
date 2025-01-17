@@ -18,15 +18,16 @@
     ],
     "tsconfigFile": "tsconfig.json",
     "mutate": [
-        "src/components/lobby/**/*.ts",
-        "src/components/lobby/**/*.tsx",
-        "!src/components/lobby/**/__tests__/**/*",
-        "!src/components/lobby/**/__mocks__/**/*"
+        "src/components/lobby/index.tsx",
+        "src/components/lobby/game-tabs.tsx",
+        "src/components/lobby/game-frame.tsx"
     ],
     "ignorePatterns": [
         "node_modules",
         "dist",
         "coverage",
-        "reports"
+        "reports",
+        "**/__tests__/**",
+        "**/__mocks__/**"
     ]
 }

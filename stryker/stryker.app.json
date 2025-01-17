@@ -18,15 +18,16 @@
     ],
     "tsconfigFile": "tsconfig.json",
     "mutate": [
-        "src/*.ts",
-        "src/*.tsx",
-        "!src/**/__tests__/**/*",
-        "!src/**/__mocks__/**/*"
+        "src/App.tsx",
+        "src/index.tsx",
+        "src/tolgee.ts"
     ],
     "ignorePatterns": [
         "node_modules",
         "dist",
         "coverage",
-        "reports"
+        "reports",
+        "**/__tests__/**",
+        "**/__mocks__/**"
     ]
 }
