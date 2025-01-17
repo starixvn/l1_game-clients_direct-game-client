@@ -17,6 +17,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@sentry/react": "^8.50.0",
         "@tolgee/format-icu": "^5.28.6",
         "@tolgee/react": "^5.28.6",
         "axios": "^1.6.8",
