@@ -6,21 +6,58 @@ include:
     ref: main
     file: "luminet.gitlab-ci.yml"
 
-mutation_test:
+.mutation_test_template:
   image: $NODEJS_IMAGE
   stage: test
   tags:
     - ci
-  # needs:
-  #   - unit_test_js
   before_script:
     - yarn install
-  script:
-    - npm run test:mutation
   allow_failure: true
   artifacts:
     reports:
-      junit: reports/mutation/mutation.xml
+      junit: reports/mutation/$CI_JOB_NAME/mutation.xml
+    paths:
+      - reports/mutation/$CI_JOB_NAME
+    expire_in: 1 week
+
+mutation_test_shared:
+  extends: .mutation_test_template
+  script:
+    - npx stryker run -c stryker.shared.json
+
+mutation_test_components:
+  extends: .mutation_test_template
+  script:
+    - npx stryker run -c stryker.components.json
+
+mutation_test_app:
+  extends: .mutation_test_template
+  script:
+    - npx stryker run -c stryker.app.json
+
+mutation_test_report:
+  image: $NODEJS_IMAGE
+  stage: test
+  needs:
+    - mutation_test_shared
+    - mutation_test_components
+    - mutation_test_app
+  script:
+    - |
+      echo "Mutation Testing Summary:"
+      echo "========================"
+      for dir in reports/mutation/mutation_test_*/; do
+        if [ -d "$dir" ]; then
+          echo "Results from ${dir}:"
+          cat "${dir}/mutation.xml" || echo "No results found in ${dir}"
+          echo "------------------------"
+        fi
+      done
+  artifacts:
+    reports:
+      junit:
+        - reports/mutation/mutation_test_*/mutation.xml
     paths:
       - reports/mutation
     expire_in: 1 week
