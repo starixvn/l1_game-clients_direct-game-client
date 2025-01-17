@@ -1,12 +1,6 @@
 variables:
   NODEJS_IMAGE: hub.lumigame.com/base/node:20.9.0-alpine
 
-stages:
-  - pre
-  - test
-  - mutation
-  - post
-
 include:
   - project: "ci/core-cicd"
     ref: main
@@ -14,12 +8,12 @@ include:
 
 mutation_test:
   image: $NODEJS_IMAGE
-  stage: mutation
-  before_script:
-    - npm config set registry http://npm.lumigame.com
-    - npm ci
+  stage: test
   script:
+    - npm ci
     - npm run test:mutation
+  # only:
+  #   - merge_requests
   allow_failure: true
   artifacts:
     reports:
