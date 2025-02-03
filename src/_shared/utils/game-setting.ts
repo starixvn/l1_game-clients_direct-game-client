@@ -1,17 +1,21 @@
 import { AuthorizeResponse } from "sc-user-service-client/dist/auth";
-import { GroupCurrency } from "../consts";
-import { gamesByCurrencyGroup } from "../consts/games-by-currency-group";
+import { getLobbyConfigs } from "../services/lobby-service";
+import { appSettings } from "../game-setting";
+import { getSession } from "./session-manager";
 
-export const getGameIdsByCurrencyGroup = (currencyGroup: string) => {
-    return gamesByCurrencyGroup[currencyGroup] || gamesByCurrencyGroup[GroupCurrency.Default];
+export const getOfferedGameIds = async (authorizeInfo: AuthorizeResponse) => {
+    const offeredGameIds = authorizeInfo?.user?.offerGames?.map((game: any) => +game?.gameId);
+    if (appSettings.hideGameTab) {
+        return offeredGameIds;
+    } else {
+        const lobbyGameIds = await getLobbyGameIds();
+        return lobbyGameIds.filter((gameId) => offeredGameIds.includes(gameId));
+    }
 };
 
-export const getOfferedGameIdsByCurrencyGroup = (authorizeInfo: AuthorizeResponse) => {
-    const currencyGroup = authorizeInfo?.user?.currencyGroup;
-    const gameIds = authorizeInfo?.user?.offerGames?.map((game: any) => +game?.gameId) || [];
-    const gameIdsByCurrencyGroup = getGameIdsByCurrencyGroup(currencyGroup);
-
-    return gameIdsByCurrencyGroup.filter((gameId) => gameIds.includes(gameId));
+const getLobbyGameIds = async () => {
+    const session = getSession();
+    return (await getLobbyConfigs(session.ss, session.username))?.gameIds || [];
 };
 
 export const getAvailableGameId = (offeredGameIds: number[], authorizeInfo: AuthorizeResponse): number | undefined => {

@@ -4,10 +4,9 @@ import { appSettings } from "../../_shared/game-setting";
 import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
 import { localStorageKeys, StorageManager } from "../../_shared/utils";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
-import { getAvailableGameId, getOfferedGameIdsByCurrencyGroup } from "../../_shared/utils/game-setting";
+import { getAvailableGameId, getOfferedGameIds } from "../../_shared/utils/game-setting";
 import { getGameUrl } from "../../_shared/utils/url-helper";
 import Loading from "../common/loading";
-import LandscapeMode from "../landscape-mode";
 import { GameFrame } from "./game-frame";
 import { GameTabs } from "./game-tabs";
 import { LobbyContainer } from "./styles/lobby.style";
@@ -15,6 +14,7 @@ import { LobbyContainer } from "./styles/lobby.style";
 const SessionTimeoutPage = React.lazy(() => import("../timeout"));
 const UMPage = React.lazy(() => import("../um"));
 const NonOfferPage = React.lazy(() => import("../non-offer"));
+const LandscapeMode = React.lazy(() => import("../landscape-mode"));
 
 // Height of the tab navigation bar in pixels
 const TAB_HEIGHT = 34;
@@ -30,22 +30,26 @@ const Lobby: React.FC = () => {
         const gameId = params.get("gameId");
         if (gameId) {
             const parsedGameId = parseInt(gameId, 10);
+            StorageManager.set(localStorageKeys.queryGameId, parsedGameId || 0);
             return isNaN(parsedGameId) ? 0 : parsedGameId;
         }
 
-        const storedGameId = StorageManager.get<number>(localStorageKeys.selectedGameId);
+        const token = params.get("token");
+        if (token) {
+            return 0;
+        }
+
+        const storedGameId = StorageManager.get<number>(localStorageKeys.queryGameId);
         return storedGameId || 0;
     });
 
     const authenticate = async () => {
         const response = await initialize();
         if (response?.authorized) {
-            const offeredGameIds = getOfferedGameIdsByCurrencyGroup(response);
+            const offeredGameIds = await getOfferedGameIds(response);
             setGameOfferIds(offeredGameIds);
-
             const selectedGameId =
                 queryGameId && offeredGameIds.includes(queryGameId) ? queryGameId : getAvailableGameId(offeredGameIds, response) || 0;
-
             setAvailableGameId(selectedGameId);
             setIsAuthorized(true);
         }
@@ -76,9 +80,8 @@ const Lobby: React.FC = () => {
 
     const renderGameContent = () => {
         if (!isAuthorized) {
-            return <div>Loading...</div>;
+            return <Loading />;
         }
-
         if (appSettings.hideGameTab && queryGameId > 0) {
             return <GameFrame gameId={queryGameId} iframeSrc={getGameUrl(queryGameId, gameOfferIds)} />;
         }
@@ -95,7 +98,7 @@ const Lobby: React.FC = () => {
     if (umInfo) {
         return <UMPage umInfo={umInfo} />;
     }
-    if (gameOfferIds.length === 0) {
+    if (gameOfferIds.length === 0 || (appSettings.hideGameTab && !gameOfferIds.includes(queryGameId))) {
         return <NonOfferPage />;
     }
 
