@@ -1,8 +1,3 @@
-export interface IGameSetting {
-    id: number;
-    order: number;
-}
-
 interface SentryOptions {
     dsn: string;
     environment: string;
@@ -18,6 +13,7 @@ export interface IAppSettings {
     isDev?: boolean;
     clientUrlFormat?: string;
     hideGameTab?: boolean;
+    xdGameUrl?: string;
     enablePromotionTournament?: boolean;
     promotionDomain?: string;
     intervalPromotionByMinute?: number;

@@ -13,9 +13,9 @@ export const getOfferedGameIds = async (authorizeInfo: AuthorizeResponse) => {
     }
 };
 
-const getLobbyGameIds = async () => {
+export const getLobbyGameIds = async (): Promise<number[]> => {
     const session = getSession();
-    return (await getLobbyConfigs(session.ss, session.username))?.gameIds || [];
+    return (await getLobbyConfigs(session.ss, session.username))?.categories[0]?.gameSettings.map((game) => game.gameId) || [];
 };
 
 export const getAvailableGameId = (offeredGameIds: number[], authorizeInfo: AuthorizeResponse): number | undefined => {

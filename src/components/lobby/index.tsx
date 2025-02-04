@@ -5,12 +5,12 @@ import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
 import { localStorageKeys, StorageManager } from "../../_shared/utils";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import { getAvailableGameId, getOfferedGameIds } from "../../_shared/utils/game-setting";
-import { getGameUrl } from "../../_shared/utils/url-helper";
+import { getGameUrl, getRootHost } from "../../_shared/utils/url-helper";
 import Loading from "../common/loading";
 import { GameFrame } from "./game-frame";
 import { GameTabs } from "./game-tabs";
 import { LobbyContainer } from "./styles/lobby.style";
-
+import { getLobbyGameIds } from "../../_shared/utils/game-setting";
 const SessionTimeoutPage = React.lazy(() => import("../timeout"));
 const UMPage = React.lazy(() => import("../um"));
 const NonOfferPage = React.lazy(() => import("../non-offer"));
@@ -30,22 +30,19 @@ const Lobby: React.FC = () => {
         const params = new URLSearchParams(window.location.search);
         const gameId = params.get("gameId");
         if (gameId) {
-            const parsedGameId = parseInt(gameId, 10);
-            StorageManager.set(localStorageKeys.queryGameId, parsedGameId || 0);
-            return isNaN(parsedGameId) ? 0 : parsedGameId;
+            let parsedGameId = parseInt(gameId, 10);
+            parsedGameId = isNaN(parsedGameId) ? 0 : parsedGameId;
+            StorageManager.set(localStorageKeys.portraitGameId, parsedGameId);
         }
 
-        const token = params.get("token");
-        if (token) {
-            return 0;
-        }
+        const storedGameId = StorageManager.get<number>(localStorageKeys.portraitGameId);
 
-        const storedGameId = StorageManager.get<number>(localStorageKeys.queryGameId);
         return storedGameId || 0;
     });
 
     const authenticate = async () => {
         setIsLoading(true);
+        const cacheParams = new URLSearchParams(window.location.search);
         const response = await initialize();
         if (response?.authorized) {
             const offeredGameIds = await getOfferedGameIds(response);
@@ -53,8 +50,41 @@ const Lobby: React.FC = () => {
             const selectedGameId =
                 queryGameId && offeredGameIds.includes(queryGameId) ? queryGameId : getAvailableGameId(offeredGameIds, response) || 0;
             setAvailableGameId(selectedGameId);
+
+            await handleRedirect(cacheParams);
         }
         setIsLoading(false);
+    };
+    const handleRedirect = async (cacheParams: URLSearchParams) => {
+        if (queryGameId > 0) {
+            const lobbyGameIds = await getLobbyGameIds();
+            if (!lobbyGameIds.includes(queryGameId)) {
+                redirectToGame(queryGameId, cacheParams);
+            }
+        }
+    };
+
+    const redirectToGame = (gameId: number, cacheParams: URLSearchParams) => {
+        // Add ref=m_direct parameter
+        cacheParams.append("ref", "m_direct");
+        // Get the redirect URL from environment config
+        const redirectUrl = window.envConfig["xdGameUrl"];
+
+        // Check if redirectUrl exists
+        if (!redirectUrl) {
+            console.warn(`Redirect URL not found for game ${gameId}`);
+            setIsTimeout(true);
+            return;
+        }
+
+        // Format the URL with host using getRootHost
+        const formattedRedirectUrl = redirectUrl.replace("{host}", getRootHost(window.location.host));
+
+        // Get query string with the added ref parameter
+        const queryString = cacheParams.toString();
+        // Construct final URL with query parameters if they exist
+        const finalUrl = queryString ? `${formattedRedirectUrl}?${queryString}` : formattedRedirectUrl;
+        window.location.href = finalUrl;
     };
 
     useEffect(() => {
@@ -117,7 +147,7 @@ const Lobby: React.FC = () => {
     if (isLoading) {
         return <Loading />;
     }
-    if (isSessionTimeout || isTimeout) {
+    if (isSessionTimeout || isTimeout || (!queryGameId && appSettings.hideGameTab)) {
         return <SessionTimeoutPage />;
     }
     if (umInfo) {
