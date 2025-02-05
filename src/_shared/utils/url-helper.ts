@@ -67,7 +67,7 @@ export const getGameLocalizationUrl = (gameId: number) => {
 
 export const getGameUrl = (gameId: number, offeredGamesId: number[]) => {
     const baseUrl = getBaseGameUrl(gameId);
-    return `${baseUrl}?${buildSessionParams(offeredGamesId)}`;
+    return `${baseUrl}?${buildSessionParams(offeredGamesId.filter((id) => id !== gameId))}`;
 };
 
 const buildSessionParams = (offeredGamesId: number[]) => {
