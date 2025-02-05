@@ -2,14 +2,14 @@ import "@testing-library/jest-dom";
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { GameTabs } from "../game-tabs";
-import { StorageManager } from "../../../_shared/utils";
+import { GameEventManager, StorageManager } from "../../../_shared/utils";
 import { useTolgee } from "@tolgee/react";
 
 // Mock dependencies
 jest.mock("@tolgee/react", () => ({
     useTolgee: jest.fn(),
 }));
-
+const mockSubscribe = jest.fn();
 jest.mock("../../../_shared/utils", () => ({
     StorageManager: {
         get: jest.fn(),
@@ -21,6 +21,8 @@ jest.mock("../../../_shared/utils", () => ({
     getGameUrl: jest.fn((gameId) => `http://game-${gameId}/`),
     getGameLocalizationUrl: jest.fn((gameId) => `http://game-${gameId}/localization.json`),
     getIconGameTabUrl: jest.fn((gameId) => `http://game-${gameId}/icon.png`),
+    GameEvents: { backLobby: "backLobby" },
+    GameEventManager: { getInstance: () => ({ subscribe: mockSubscribe, unsubscribe: jest.fn() }) },
 }));
 jest.mock("../game-frame", () => ({
     GameFrame: jest.fn(() => <div data-testid="game-frame" />),
@@ -154,6 +156,44 @@ describe("GameTabs", () => {
             Object.values(gameNames).forEach((gameName) => {
                 expect(screen.getByText(gameName)).toBeInTheDocument();
             });
+        });
+    });
+
+    test("should handle game event manager subscription for backLobby event", async () => {
+        // Act
+        render(<GameTabs {...defaultProps} />);
+
+        // Assert
+        expect(mockSubscribe).toHaveBeenCalledWith("backLobby", expect.any(Function));
+    });
+
+    test("should update iframe source when switching tabs", async () => {
+        // Arrange
+        render(<GameTabs {...defaultProps} />);
+        await waitFor(() => screen.getByText("Test Game 1"));
+
+        // Act
+        const secondTab = screen.getAllByRole("tab")[1];
+        fireEvent.click(secondTab);
+
+        // Assert
+        const gameFrame = screen.getByTestId("game-frame");
+        await waitFor(() => {
+            expect(gameFrame).toBeInTheDocument();
+            expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", 2);
+        });
+    });
+
+    test("should display game icons for each tab", async () => {
+        // Arrange & Act
+        render(<GameTabs {...defaultProps} />);
+
+        // Assert
+        const icons = screen.getAllByRole("img");
+        expect(icons).toHaveLength(mockGameOfferIds.length);
+        icons.forEach((icon, index) => {
+            expect(icon).toHaveAttribute("src", `http://game-${mockGameOfferIds[index]}/icon.png`);
+            expect(icon).toHaveAttribute("alt", `game-${mockGameOfferIds[index]}`);
         });
     });
 });

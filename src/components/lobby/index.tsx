@@ -83,7 +83,7 @@ const Lobby: React.FC = () => {
             return <Loading />;
         }
         if (appSettings.hideGameTab && queryGameId > 0) {
-            return <GameFrame gameId={queryGameId} iframeSrc={getGameUrl(queryGameId, gameOfferIds)} />;
+            return <GameFrame gameId={queryGameId} iframeSrc={getGameUrl(queryGameId, [])} />;
         }
 
         return <GameTabs gameOfferIds={gameOfferIds} availableGameId={availableGameId} tabHeight={TAB_HEIGHT} />;

@@ -15,6 +15,7 @@ export const GameEvents = {
     sessionTimeout: "sessionTimeout",
     musicEnable: "musicEnable",
     sfxEnable: "sfxEnable",
+    backLobby: "backLobby",
 };
 
 export class GameEventManager {

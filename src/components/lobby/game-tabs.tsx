@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import { useTolgee } from "@tolgee/react";
-import { getGameLocalizationUrl, getGameUrl, getIconGameTabUrl, localStorageKeys, StorageManager } from "../../_shared/utils";
+import {
+    GameEventManager,
+    GameEvents,
+    getGameLocalizationUrl,
+    getGameUrl,
+    getIconGameTabUrl,
+    localStorageKeys,
+    StorageManager,
+} from "../../_shared/utils";
 import { GameFrame } from "./game-frame";
 
 interface GameTabsProps {
@@ -21,6 +29,18 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
         StorageManager.set(localStorageKeys.selectedGameId, gameId);
         setIframeSrc(getGameUrl(gameId, gameOfferIds));
     };
+
+    useEffect(() => {
+        const listeners = [
+            { event: GameEvents.backLobby, handler: (data) => gameOfferIds.includes(+data?.gameId) && setSelectedGameId(data.gameId) },
+        ];
+        const gameEventManager = GameEventManager.getInstance();
+        const subscribers = listeners.map(({ event, handler }) => gameEventManager.subscribe(event, handler));
+
+        return () => {
+            subscribers.forEach((id) => gameEventManager.unsubscribe(id));
+        };
+    }, [gameOfferIds]);
 
     useEffect(() => {
         if (gameOfferIds.length > 0) {
