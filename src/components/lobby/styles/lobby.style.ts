@@ -5,14 +5,14 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
 
     .nav-tabs {
         flex-wrap: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
         white-space: nowrap;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: bold;
 
         button {
-            padding: 6px;
+            padding: 5px 8px 6px 8px;
+            border: none;
+            margin: 0;
         }
     }
 
@@ -25,15 +25,27 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         display: flex;
         align-items: center;
         color: #737373;
+        position: relative;
     }
 
     .tab-title.active {
-        color: #ff9000;
+        color: #5e85c5;
+
+        &::after {
+            content: "";
+            position: absolute;
+            bottom: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 110%;
+            height: 3.5px;
+            background-color: #5e85c5;
+        }
     }
 
     .tab-icon {
-        width: 20px;
-        height: 20px;
+        width: 23px;
+        height: 23px;
         margin-right: 8px;
 
         &.inactive {
