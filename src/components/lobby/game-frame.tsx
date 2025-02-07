@@ -15,8 +15,8 @@ interface GameFrameProps {
 // Default game window configuration
 const GAME_CONFIG = {
     width: 828,
-    height: 1078,
-    aspectRatio: 828 / 1078,
+    height: 1107,
+    aspectRatio: 828 / 1107,
 };
 
 export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeight = 0 }) => {

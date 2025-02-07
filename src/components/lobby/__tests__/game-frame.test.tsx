@@ -27,7 +27,7 @@ describe("GameFrame", () => {
 
         const iframe = screen.getByTitle("Game 123");
         expect(iframe).toBeInTheDocument();
-        expect(iframe).toHaveAttribute("width", "741"); // Math.floor((1000 - 34) * (828/1078))
+        expect(iframe).toHaveAttribute("width", "722"); // Math.floor((1000 - 34) * (828/1107))
         expect(iframe).toHaveAttribute("height", "966"); // 1000 - 34
         expect(iframe).toHaveAttribute("src", "https://example.com/game");
     });
@@ -50,7 +50,7 @@ describe("GameFrame", () => {
         });
 
         const iframe = screen.getByTitle("Game 123");
-        expect(iframe).toHaveAttribute("width", "588"); // Math.floor((800 - 34) * (828/1078))
+        expect(iframe).toHaveAttribute("width", "572"); // Math.floor((800 - 34) * (828/1107))
         expect(iframe).toHaveAttribute("height", "766"); // 800 - 34
     });
 
@@ -58,7 +58,7 @@ describe("GameFrame", () => {
         render(<GameFrame gameId={123} iframeSrc="https://example.com/game" />);
 
         const iframe = screen.getByTitle("Game 123");
-        expect(iframe).toHaveAttribute("width", "768"); // Math.floor(1000 * (828/1078))
+        expect(iframe).toHaveAttribute("width", "747"); // Math.floor(1000 * (828/1107))
         expect(iframe).toHaveAttribute("height", "1000"); // window.innerHeight - 0
     });
 });
