@@ -14,6 +14,10 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
             border: none;
             margin: 0;
         }
+
+        .nav-link.active {
+            background-color: transparent;
+        }
     }
 
     .tab-content,
