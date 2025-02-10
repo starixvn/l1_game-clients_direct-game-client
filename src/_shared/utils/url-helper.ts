@@ -5,6 +5,12 @@ import { getPlayerSetting } from "./player-setting";
 import { localStorageKeys, StorageManager } from "./storage-manager";
 import { locales } from "../consts";
 
+export type VersionsModel = {
+    banner: string;
+    icon: string;
+    localization: number;
+};
+
 export type URLContextModel = {
     token?: string;
     lang?: string;
@@ -53,8 +59,26 @@ export const getBaseGameUrl = (gameId: number) => {
     return appSettings.clientUrlFormat.replace("{gameId}", gameId.toString()).replace("{host}", getRootHost(window.location.host));
 };
 
-export const getIconGameTabUrl = (gameId: number) => {
-    return `${getBaseGameUrl(gameId)}remote/icon/icon-game-tab.png`;
+export const getVersionsRemoteUrl = (gameId: number) => {
+    return `${getBaseGameUrl(gameId)}remote/versions.json`;
+};
+
+export const fetchVersions = async (gameId: number): Promise<VersionsModel> => {
+    try {
+        const response = await fetch(getVersionsRemoteUrl(gameId));
+        if (response.ok) {
+            return response.json();
+        }
+    } catch (error) {
+        console.error(`Error fetching versions for game ${gameId}:`, error);
+        return { banner: "", icon: "", localization: 0 };
+    }
+};
+
+export const getIconGameTabUrl = async (gameId: number) => {
+    const versions = await fetchVersions(gameId);
+    const versionsIcon = versions.icon;
+    return `${getBaseGameUrl(gameId)}remote/icon/icon-game-tab.png?v=${versionsIcon}`;
 };
 
 export const getGameBackgroundUrl = (gameId: number) => {

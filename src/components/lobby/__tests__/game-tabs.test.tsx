@@ -189,11 +189,12 @@ describe("GameTabs", () => {
         render(<GameTabs {...defaultProps} />);
 
         // Assert
-        const icons = screen.getAllByRole("img");
-        expect(icons).toHaveLength(mockGameOfferIds.length);
-        icons.forEach((icon, index) => {
-            expect(icon).toHaveAttribute("src", `http://game-${mockGameOfferIds[index]}/icon.png`);
-            expect(icon).toHaveAttribute("alt", `game-${mockGameOfferIds[index]}`);
+        await waitFor(() => {
+            mockGameOfferIds.forEach((gameId) => {
+                const icon = screen.getByAltText(`game-${gameId}`);
+                expect(icon).toBeInTheDocument();
+                expect(icon).toHaveAttribute("src", `http://game-${gameId}/icon.png`);
+            });
         });
     });
 });

@@ -23,6 +23,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
     const [activeKey, setActiveKey] = useState(0);
     const [iframeSrc, setIframeSrc] = useState<string>();
     const [gameNames, setGameNames] = useState<Record<number, string>>({});
+    const [iconUrls, setIconUrls] = useState<Record<number, string>>({});
 
     const setSelectedGameId = (gameId: number) => {
         setActiveKey(gameOfferIds.indexOf(gameId));
@@ -79,6 +80,20 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
         fetchGameNames();
     }, []);
 
+    useEffect(() => {
+        const fetchIconUrls = async () => {
+            const urls = await Promise.all(
+                gameOfferIds.map(async (gameId) => {
+                    const url = await getIconGameTabUrl(gameId);
+                    return { [gameId]: url };
+                })
+            );
+            const iconUrls = urls.reduce((result, iconUrl) => ({ ...result, ...iconUrl }), {});
+            setIconUrls(iconUrls);
+        };
+        fetchIconUrls();
+    }, [gameOfferIds]);
+
     return (
         <Tabs activeKey={activeKey} onSelect={(k) => k && handleTabSelect(+k)}>
             {gameOfferIds.map((gameId, index) => {
@@ -88,11 +103,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
                         eventKey={index}
                         title={
                             <div className={`tab-title ${isActive ? "active" : ""}`}>
-                                <img
-                                    src={getIconGameTabUrl(gameId)}
-                                    alt={`game-${gameId}`}
-                                    className={`tab-icon ${!isActive ? "inactive" : ""}`}
-                                />
+                                <img src={iconUrls[gameId]} alt={`game-${gameId}`} className={`tab-icon ${!isActive ? "inactive" : ""}`} />
                                 {gameNames[gameId]}
                             </div>
                         }
