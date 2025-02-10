@@ -8,6 +8,9 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         white-space: nowrap;
         font-size: 14px;
         font-weight: bold;
+        overflow-x: auto;
+        scrollbar-width: none;
+        border: none;
 
         button {
             padding: 5px 8px 6px 8px;
@@ -38,11 +41,11 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         &::after {
             content: "";
             position: absolute;
-            bottom: -7px;
+            bottom: -6px;
             left: 50%;
             transform: translateX(-50%);
             width: 110%;
-            height: 3.5px;
+            height: 4px;
             background-color: #5e85c5;
         }
     }

@@ -31,6 +31,9 @@ jest.mock("../game-frame", () => ({
 // Mock fetch
 global.fetch = jest.fn();
 
+// Mock scrollIntoView
+window.HTMLElement.prototype.scrollIntoView = jest.fn();
+
 describe("GameTabs", () => {
     const mockGameOfferIds = [1, 2, 3];
     const defaultProps = {

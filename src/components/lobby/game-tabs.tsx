@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import { useTolgee } from "@tolgee/react";
 import {
@@ -25,10 +25,15 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
     const [gameNames, setGameNames] = useState<Record<number, string>>({});
     const [iconUrls, setIconUrls] = useState<Record<number, string>>({});
 
+    const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
+
     const setSelectedGameId = (gameId: number) => {
         setActiveKey(gameOfferIds.indexOf(gameId));
         StorageManager.set(localStorageKeys.selectedGameId, gameId);
         setIframeSrc(getGameUrl(gameId, gameOfferIds));
+
+        const index = gameOfferIds.indexOf(gameId);
+        tabRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     };
 
     useEffect(() => {
@@ -102,7 +107,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
                     <Tab
                         eventKey={index}
                         title={
-                            <div className={`tab-title ${isActive ? "active" : ""}`}>
+                            <div ref={(el) => (tabRefs.current[index] = el)} className={`tab-title ${isActive ? "active" : ""}`}>
                                 <img src={iconUrls[gameId]} alt={`game-${gameId}`} className={`tab-icon ${!isActive ? "inactive" : ""}`} />
                                 {gameNames[gameId]}
                             </div>
