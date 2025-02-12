@@ -16,6 +16,7 @@ export const GameEvents = {
     musicEnable: "musicEnable",
     sfxEnable: "sfxEnable",
     backLobby: "backLobby",
+    replaceUrl: "replaceUrl",
 };
 
 export class GameEventManager {

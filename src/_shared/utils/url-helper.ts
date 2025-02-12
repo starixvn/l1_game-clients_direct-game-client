@@ -17,12 +17,12 @@ export type URLContextModel = {
     gameId?: number;
     isDirectMode?: boolean;
     redirectUrl?: string;
-    isThirdParty?: boolean;
     backToLobby?: boolean;
     backToRedirectUrl?: Function;
     firstSSOToLobby?: boolean;
     appType?: number;
     operator?: string;
+    ref?: string;
 };
 
 export const getRootHost = (host: string): string => {
@@ -67,12 +67,12 @@ export const fetchVersions = async (gameId: number): Promise<VersionsModel> => {
     try {
         const response = await fetch(getVersionsRemoteUrl(gameId));
         if (response.ok) {
-            return response.json();
+            return response.json() as Promise<VersionsModel>;
         }
     } catch (error) {
         console.error(`Error fetching versions for game ${gameId}:`, error);
-        return { banner: "", icon: "", localization: 0 };
     }
+    return { banner: "", icon: "", localization: 0 };
 };
 
 export const getIconGameTabUrl = async (gameId: number) => {
@@ -97,6 +97,8 @@ export const getGameUrl = (gameId: number, offeredGamesId: number[]) => {
 const buildSessionParams = (offeredGamesId: number[]) => {
     const sessionInfo = getSession();
     const operator = StorageManager.get(localStorageKeys.operator);
+    const ref = StorageManager.get<string>(localStorageKeys.ref) || "";
+    const returnUrl = StorageManager.get<string>(localStorageKeys.returnUrl) || "";
     const playerSetting = getPlayerSetting();
     const params: any = {
         ss: sessionInfo.ss,
@@ -104,7 +106,8 @@ const buildSessionParams = (offeredGamesId: number[]) => {
         lang: sessionInfo.language,
         appType: sessionInfo.system,
         purl: Base64Util.base64Encode(window.location.href),
-        rurl: Base64Util.base64Encode(window.location.href),
+        ref: ref,
+        rurl: returnUrl,
         musicEnable: playerSetting.musicEnable,
         sfxEnable: playerSetting.sfxEnable,
         isUserGesture: false,
@@ -140,11 +143,11 @@ export function getQueryParameters(): URLContextModel | undefined {
         const gameId = Number(params.get("gameId") || 0);
         const appType = Number(params.get("appType") || 1);
         const isDirectMode = !!params.get("ref");
+        const ref = params.get("ref");
         const operator = params.get("op");
-        const redirectUrl = isDirectMode ? params.get("rurl") : "";
-        const isThirdParty = isDirectMode && !!redirectUrl;
+        const redirectUrl = isDirectMode || appSettings.hideGameTab ? params.get("rurl") : "";
         globalThis.history.pushState(null, "", globalThis.location?.href.split("?")[0]);
-        return { token, lang, gameId, appType, isDirectMode, redirectUrl, isThirdParty, operator };
+        return { token, lang, gameId, appType, isDirectMode, redirectUrl, operator, ref };
     }
 
     return {};

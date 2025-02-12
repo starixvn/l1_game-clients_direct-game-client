@@ -57,6 +57,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
             { event: GameEvents.musicEnable, handler: storePlayerSetting },
             { event: GameEvents.sfxEnable, handler: storePlayerSetting },
             { event: GameEvents.isUserGesture, handler: storePlayerSetting },
+            { event: GameEvents.replaceUrl, handler: (data) => window.location.replace(data.replaceUrl) },
         ];
         const gameEventManager = GameEventManager.getInstance();
         const subscribers = listeners.map(({ event, handler }) => gameEventManager.subscribe(event, handler));

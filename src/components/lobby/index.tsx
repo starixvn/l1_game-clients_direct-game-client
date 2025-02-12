@@ -25,7 +25,7 @@ const Lobby: React.FC = () => {
     const [isTimeout, setIsTimeout] = useState(false);
     const { isLoading, umInfo, setUMInfo, isSessionTimeout, initialize } = useAuthorization();
     const [isAuthorized, setIsAuthorized] = useState(false);
-    const [queryGameId] = useState(() => {
+    const [queryGameId, setQueryGameId] = useState(() => {
         const params = new URLSearchParams(window.location.search);
         const gameId = params.get("gameId");
         if (gameId) {
@@ -69,6 +69,10 @@ const Lobby: React.FC = () => {
             { event: GameEvents.sessionTimeout, handler: () => setIsTimeout(true) },
             { event: GameEvents.isUnderMaintain, handler: (data) => setUMInfo(data?.umInfo) },
             { event: GameEvents.isNotPermittedToPlay, handler: handleNotPermittedToPlay },
+            {
+                event: GameEvents.backLobby,
+                handler: (data) => appSettings.hideGameTab && gameOfferIds.includes(+data.gameId) && setQueryGameId(+data.gameId),
+            },
         ];
 
         const subscriptions = events.map(({ event, handler }) => gameEventManager.subscribe(event, handler));

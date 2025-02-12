@@ -232,7 +232,7 @@ describe("Lobby Component", () => {
 
         // Simulate event subscriptions
         const subscriptionCalls = mockSubscribe.mock.calls;
-        expect(subscriptionCalls).toHaveLength(6);
+        expect(subscriptionCalls).toHaveLength(8);
 
         // Get the first instance of each handler
         const sessionTimeoutHandler = subscriptionCalls.find((call) => call[0] === "sessionTimeout")[1];

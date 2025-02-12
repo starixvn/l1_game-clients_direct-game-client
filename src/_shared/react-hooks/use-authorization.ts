@@ -41,10 +41,16 @@ export const useAuthorization = () => {
         return response;
     };
 
+    const removeOldStorage = () => {
+        StorageManager.remove(localStorageKeys.selectedGameId);
+        StorageManager.remove(localStorageKeys.returnUrl);
+        StorageManager.remove(localStorageKeys.ref);
+    };
+
     const initialize = async (): Promise<AuthorizeResponse | null> => {
         try {
             const queryParameters = getQueryParameters();
-            const { token, appType, lang: language, operator } = queryParameters;
+            const { token, appType, lang: language, operator, ref, redirectUrl } = queryParameters;
             const session = await loadSession(token, appType);
             await loadLanguage(session, language);
             if (!session || isTimeoutSession(session)) {
@@ -59,8 +65,10 @@ export const useAuthorization = () => {
                 return null;
             }
 
+            token && removeOldStorage();
             operator && StorageManager.set(localStorageKeys.operator, operator);
-            token && StorageManager.remove(localStorageKeys.selectedGameId);
+            ref && StorageManager.set(localStorageKeys.ref, ref);
+            redirectUrl && StorageManager.set(localStorageKeys.returnUrl, redirectUrl);
             const authorizeInfo = (await authorize(session)) as AuthorizeResponse;
             return await handleAuthorization(session, authorizeInfo);
         } catch (error) {
