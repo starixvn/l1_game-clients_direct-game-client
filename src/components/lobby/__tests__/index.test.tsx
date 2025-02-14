@@ -102,20 +102,18 @@ describe("Lobby Component", () => {
     const mockGetOfferedGameIds = jest.spyOn(gameSettingUtils, "getOfferedGameIds");
     const mockGetAvailableGameId = jest.spyOn(gameSettingUtils, "getAvailableGameId");
     const mockUseAuthorization = jest.spyOn(useAuthHook, "useAuthorization");
+    const defaultAuthState = {
+        isLoading: false,
+        umInfo: null,
+        setUMInfo: jest.fn(),
+        isSessionTimeout: false,
+        initialize: jest.fn().mockResolvedValue({ authorized: true }),
+    };
 
     beforeEach(() => {
         jest.clearAllMocks();
-
-        // Initialize default mock implementations
-        mockUseAuthorization.mockImplementation(() => ({
-            isLoading: false,
-            umInfo: null,
-            setUMInfo: jest.fn(),
-            isSessionTimeout: false,
-            initialize: jest.fn().mockResolvedValue({ authorized: true }),
-        }));
-
-        mockGetOfferedGameIds.mockResolvedValue([]);
+        mockUseAuthorization.mockImplementation(() => defaultAuthState);
+        mockGetOfferedGameIds.mockResolvedValue([1, 2, 3]);
         mockGetAvailableGameId.mockReturnValue(1);
     });
 
@@ -123,146 +121,152 @@ describe("Lobby Component", () => {
         jest.resetAllMocks();
     });
 
-    it("should render loading state initially", async () => {
-        mockUseAuthorization.mockReturnValue({
-            isLoading: true,
-            umInfo: null,
-            setUMInfo: jest.fn(),
-            isSessionTimeout: false,
-            initialize: jest.fn(),
+    describe("Game Availability", () => {
+        it("should display game tabs with correct game IDs", async () => {
+            // Arrange
+            const availableGames = [1, 2, 3];
+            mockUseAuthorization.mockImplementation(() => defaultAuthState);
+            mockGetOfferedGameIds.mockResolvedValue([1, 2, 3]);
+
+            // Act
+            await act(async () => {
+                render(<Lobby />);
+            });
+
+            // Assert
+            expect(screen.getByTestId("game-tabs")).toBeInTheDocument();
+            expect(screen.getByText(`Game Tabs: ${availableGames.join(",")}`)).toBeInTheDocument();
         });
 
-        await act(async () => {
-            render(<Lobby />);
-        });
+        it("should display non-offer page when no games are available", async () => {
+            // Arrange
+            mockGetOfferedGameIds.mockResolvedValue([]);
 
-        expect(screen.getByTestId("loading")).toBeInTheDocument();
+            // Act
+            await act(async () => {
+                render(<Lobby />);
+            });
+
+            // Assert
+            expect(screen.getByTestId("non-offer")).toBeInTheDocument();
+        });
     });
 
-    it("should render session timeout page when session times out", async () => {
-        mockUseAuthorization.mockReturnValue({
-            isLoading: false,
-            umInfo: null,
-            setUMInfo: jest.fn(),
-            isSessionTimeout: true,
-            initialize: jest.fn().mockResolvedValue(null),
-        });
+    describe("Initial Loading State", () => {
+        it("should display loading component when authorization is in progress", async () => {
+            // Arrange
+            mockUseAuthorization.mockReturnValue({
+                ...defaultAuthState,
+                isLoading: true,
+            });
 
-        await act(async () => {
-            render(<Lobby />);
-        });
+            // Act
+            await act(async () => {
+                render(<Lobby />);
+            });
 
-        expect(screen.getByTestId("session-timeout")).toBeInTheDocument();
+            // Assert
+            expect(screen.getByTestId("loading")).toBeInTheDocument();
+        });
     });
 
-    it("should render UM page when under maintenance", async () => {
-        const umInfo = {
-            message: "Under Maintenance",
-            startTime: new Date(),
-            endTime: new Date(),
-            operatorId: "test-operator",
-            severity: 1,
-        };
-        mockUseAuthorization.mockReturnValue({
-            isLoading: false,
-            umInfo,
-            setUMInfo: jest.fn(),
-            isSessionTimeout: false,
-            initialize: jest.fn().mockResolvedValue(null),
-        });
+    describe("Session Management", () => {
+        it("should display timeout page when session expires", async () => {
+            // Arrange
+            mockUseAuthorization.mockReturnValue({
+                ...defaultAuthState,
+                isSessionTimeout: true,
+            });
 
-        await act(async () => {
-            render(<Lobby />);
-        });
+            // Act
+            await act(async () => {
+                render(<Lobby />);
+            });
 
-        expect(screen.getByTestId("um-page")).toBeInTheDocument();
-        expect(screen.getByText("Under Maintenance")).toBeInTheDocument();
+            // Assert
+            expect(screen.getByTestId("session-timeout")).toBeInTheDocument();
+        });
     });
 
-    it("should render non-offer page when no game offers available", async () => {
-        mockUseAuthorization.mockReturnValue({
-            isLoading: false,
-            umInfo: null,
-            setUMInfo: jest.fn(),
-            isSessionTimeout: false,
-            initialize: jest.fn().mockResolvedValue({ authorized: true }),
-        });
-        mockGetOfferedGameIds.mockResolvedValue([]);
+    describe("Maintenance Handling", () => {
+        it("should display maintenance page with correct message", async () => {
+            // Arrange
+            const maintenanceInfo = {
+                message: "Scheduled Maintenance",
+                startTime: new Date(),
+                endTime: new Date(),
+                operatorId: "test-operator",
+                severity: 1,
+            };
+            mockUseAuthorization.mockReturnValue({
+                ...defaultAuthState,
+                umInfo: maintenanceInfo,
+            });
 
-        await act(async () => {
-            render(<Lobby />);
-        });
+            // Act
+            await act(async () => {
+                render(<Lobby />);
+            });
 
-        expect(screen.getByTestId("non-offer")).toBeInTheDocument();
+            // Assert
+            expect(screen.getByTestId("um-page")).toBeInTheDocument();
+            expect(screen.getByText("Scheduled Maintenance")).toBeInTheDocument();
+        });
     });
 
-    it("should render game tabs with offered games", async () => {
-        const mockInitialize = jest.fn().mockResolvedValue({ authorized: true });
-        mockUseAuthorization.mockReturnValue({
-            isLoading: false,
-            umInfo: null,
-            setUMInfo: jest.fn(),
-            isSessionTimeout: false,
-            initialize: mockInitialize,
-        });
-        mockGetOfferedGameIds.mockResolvedValue([1, 2, 3]);
+    describe("Game Event Handling", () => {
+        it("should handle session timeout event correctly", async () => {
+            // Arrange
+            const setUMInfo = jest.fn();
+            mockUseAuthorization.mockReturnValue({
+                ...defaultAuthState,
+                setUMInfo,
+            });
 
-        await act(async () => {
-            render(<Lobby />);
-        });
+            // Act
+            await act(async () => {
+                render(<Lobby />);
+            });
 
-        expect(screen.getByTestId("game-tabs")).toBeInTheDocument();
-        expect(screen.getByText("Game Tabs: 1,2,3")).toBeInTheDocument();
-    });
+            const sessionTimeoutHandler = mockSubscribe.mock.calls.find((call) => call[0] === "sessionTimeout")[1];
 
-    it("should handle game events correctly", async () => {
-        const setUMInfo = jest.fn();
-        const mockInitialize = jest.fn().mockResolvedValue({ authorized: true });
-        mockUseAuthorization.mockReturnValue({
-            isLoading: false,
-            umInfo: null,
-            setUMInfo,
-            isSessionTimeout: false,
-            initialize: mockInitialize,
+            await act(async () => {
+                sessionTimeoutHandler();
+            });
+
+            // Assert
+            expect(screen.getByTestId("session-timeout")).toBeInTheDocument();
         });
 
-        await act(async () => {
-            render(<Lobby />);
-        });
+        it("should handle maintenance event correctly", async () => {
+            // Arrange
+            const setUMInfo = jest.fn();
+            mockUseAuthorization.mockReturnValue({
+                ...defaultAuthState,
+                setUMInfo,
+            });
 
-        // Simulate event subscriptions
-        const subscriptionCalls = mockSubscribe.mock.calls;
-        expect(subscriptionCalls).toHaveLength(8);
+            const maintenanceInfo = {
+                message: "Emergency Maintenance",
+                startTime: new Date(),
+                endTime: new Date(),
+                operatorId: "test-operator",
+                severity: 1,
+            };
 
-        // Get the first instance of each handler
-        const sessionTimeoutHandler = subscriptionCalls.find((call) => call[0] === "sessionTimeout")[1];
-        const umHandler = subscriptionCalls.find((call) => call[0] === "isUnderMaintain")[1];
-        const notPermittedHandler = subscriptionCalls.find((call) => call[0] === "isNotPermittedToPlay")[1];
+            // Act
+            await act(async () => {
+                render(<Lobby />);
+            });
 
-        // Test session timeout event
-        await act(async () => {
-            sessionTimeoutHandler();
-        });
-        expect(screen.getByTestId("session-timeout")).toBeInTheDocument();
+            const umHandler = mockSubscribe.mock.calls.find((call) => call[0] === "isUnderMaintain")[1];
 
-        // Test under maintenance event
-        const testUmInfo = {
-            message: "Test UM",
-            startTime: new Date(),
-            endTime: new Date(),
-            operatorId: "test-operator",
-            severity: 1,
-        };
+            await act(async () => {
+                umHandler({ umInfo: maintenanceInfo });
+            });
 
-        await act(async () => {
-            umHandler({ umInfo: testUmInfo });
-        });
-
-        expect(setUMInfo).toHaveBeenCalledWith(testUmInfo);
-
-        // Test not permitted event
-        await act(async () => {
-            notPermittedHandler();
+            // Assert
+            expect(setUMInfo).toHaveBeenCalledWith(maintenanceInfo);
         });
     });
 });

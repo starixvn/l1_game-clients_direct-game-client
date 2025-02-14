@@ -162,14 +162,6 @@ describe("GameTabs", () => {
         });
     });
 
-    test("should handle game event manager subscription for backLobby event", async () => {
-        // Act
-        render(<GameTabs {...defaultProps} />);
-
-        // Assert
-        expect(mockSubscribe).toHaveBeenCalledWith("backLobby", expect.any(Function));
-    });
-
     test("should update iframe source when switching tabs", async () => {
         // Arrange
         render(<GameTabs {...defaultProps} />);

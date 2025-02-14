@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { appSettings } from "../../_shared/game-setting";
 import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
@@ -63,6 +63,21 @@ const Lobby: React.FC = () => {
         authenticate();
     };
 
+    const handleOpenOtherGame = useCallback(
+        (gameId: number) => {
+            if (!gameOfferIds.includes(gameId)) {
+                return;
+            }
+            if (appSettings.hideGameTab) {
+                setQueryGameId(gameId);
+            } else {
+                StorageManager.remove(localStorageKeys.selectedGameId);
+                setAvailableGameId(gameId);
+            }
+        },
+        [gameOfferIds]
+    );
+
     useEffect(() => {
         const gameEventManager = GameEventManager.getInstance();
         const events = [
@@ -71,7 +86,7 @@ const Lobby: React.FC = () => {
             { event: GameEvents.isNotPermittedToPlay, handler: handleNotPermittedToPlay },
             {
                 event: GameEvents.backLobby,
-                handler: (data) => appSettings.hideGameTab && gameOfferIds.includes(+data.gameId) && setQueryGameId(+data.gameId),
+                handler: (data) => +data.gameId && handleOpenOtherGame(+data.gameId),
             },
         ];
 
@@ -80,7 +95,7 @@ const Lobby: React.FC = () => {
         return () => {
             subscriptions.forEach((id) => gameEventManager.unsubscribe(id));
         };
-    }, []);
+    }, [handleOpenOtherGame]);
 
     const renderGameContent = () => {
         if (!isAuthorized) {

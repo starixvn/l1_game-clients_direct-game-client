@@ -17,6 +17,7 @@ export const GameEvents = {
     sfxEnable: "sfxEnable",
     backLobby: "backLobby",
     replaceUrl: "replaceUrl",
+    splashEnabled: "splashEnabled",
 };
 
 export class GameEventManager {
