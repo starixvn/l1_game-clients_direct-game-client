@@ -1,8 +1,4 @@
-.error-page {
-    --error-page-background: #fff;
-    --error-page-text-color: #2aa2d2;
-    --error-page-text-highlight-color: #ff8800;
-
+.timeout-page {
     position: fixed;
     left: 0;
     top: 0;
@@ -13,61 +9,47 @@
     justify-content: center;
     flex-direction: column;
     padding: 1rem;
-    line-height: 2.4rem;
+    background: linear-gradient(to bottom, #0a141e, #152a49);
+    color: #ffffff;
     text-align: center;
+}
+
+.timeout-icon {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    z-index: -1;
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        width: 80%;
+    }
+
+    @media (min-width: 1025px) {
+        width: 60%;
+    }
+}
+
+.timeout-icon-wrapper {
+    height: 20rem;
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        height: 25rem;
+    }
+
+    @media (min-width: 1025px) {
+        height: 30rem;
+    }
+}
+.timeout-title {
     font-size: 1.8rem;
-    color: var(--error-page-text-color);
-    background-color: var(--error-page-background);
+    line-height: 1.5;
+    padding: 0 2rem;
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 3rem;
 
     @media (min-width: 768px) {
-        line-height: 3.4rem;
         font-size: 2.4rem;
-    }
-
-    .error-background {
-        max-width: 100%;
-        height: auto;
-
-        @media (min-width: 768px) {
-            width: 60rem;
-            &.small {
-                width: 50rem;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            width: 70rem;
-            &.small {
-                width: 60rem;
-            }
-        }
-    }
-
-    .session-timeout-title {
-        margin: 3rem 0 3rem;
-        font-weight: 500;
-
-        @media (min-width: 768px) {
-            margin-top: 4rem;
-        }
-    }
-
-    .um-title {
-        @extend .session-timeout-title;
-        line-height: 1.5;
-        font-size: 2rem;
-
-        @media (min-width: 768px) {
-            font-size: 3rem;
-        }
-    }
-
-    .highlight {
-        color: var(--error-page-text-highlight-color);
-    }
-
-    .info {
-        margin-top: 2rem;
-        padding: 0 1rem;
     }
 }

@@ -46,15 +46,15 @@ describe("TimeOut Component", () => {
 
         // Assert
         // Verify the image is rendered with correct attributes
-        const image = screen.getByAltText("SessionTimeout");
+        const image = screen.getByAltText("timeout");
         expect(image).toBeInTheDocument();
-        expect(image).toHaveAttribute("src", "/images/error-session.svg");
-        expect(image).toHaveClass("error-background");
+        expect(image).toHaveAttribute("src", "/images/icon-timeout.png");
+        expect(image).toHaveClass("timeout-icon");
 
         // Verify the translated message is rendered
         const message = screen.getByText("translated_message_session_timeout");
         expect(message).toBeInTheDocument();
-        expect(message).toHaveClass("session-timeout-title");
+        expect(message).toHaveClass("timeout-title");
     });
 
     it("should call useTranslator with correct resource type", () => {
@@ -87,6 +87,6 @@ describe("TimeOut Component", () => {
         const { container } = render(<TimeOut />);
 
         // Assert
-        expect(container.firstChild).toHaveClass("error-page");
+        expect(container.firstChild).toHaveClass("timeout-page");
     });
 });
