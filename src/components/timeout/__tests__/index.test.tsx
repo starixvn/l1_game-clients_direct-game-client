@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import TimeOut from "../index";
-import { clearSessionData, StorageManager, localStorageKeys } from "../../../_shared/utils";
-import { useTranslator } from "../../../_shared/react-hooks";
+import { clearSessionData } from "../../../_shared/utils";
+import { useTranslator, useRedirectUrl } from "../../../_shared/react-hooks";
 import "@testing-library/jest-dom";
 
 // Disable React.StrictMode for tests
@@ -10,20 +10,13 @@ jest.mock("react", () => ({
     StrictMode: ({ children }) => children,
 }));
 
-// Mock the dependencies
-jest.mock("../../../_shared/utils", () => ({
-    clearSessionData: jest.fn(),
-    StorageManager: {
-        get: jest.fn(),
-        remove: jest.fn(),
-    },
-    localStorageKeys: {
-        returnUrl: "returnUrl",
-    },
-}));
-
 jest.mock("../../../_shared/react-hooks", () => ({
     useTranslator: jest.fn(),
+    useRedirectUrl: jest.fn(),
+}));
+
+jest.mock("../../../_shared/utils", () => ({
+    clearSessionData: jest.fn(),
 }));
 
 describe("TimeOut Component", () => {
@@ -43,8 +36,8 @@ describe("TimeOut Component", () => {
         // Setup clearSessionData mock
         (clearSessionData as jest.Mock).mockImplementation(mockClearSessionData);
 
-        (StorageManager.get as jest.Mock).mockReturnValue("https://example.com");
-        (StorageManager.remove as jest.Mock).mockImplementation(() => {});
+        // Setup useRedirectUrl mock
+        (useRedirectUrl as jest.Mock).mockReturnValue("https://example.com");
     });
 
     it("should render correctly with translated message", () => {

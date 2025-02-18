@@ -1,15 +1,32 @@
 .back-button {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 8px 16px;
     color: white;
-    background-color: #2aa2d2;
-    border-radius: 36px;
+    background-image: url("/images/timeout/button-back.png");
+    background-color: transparent;
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
     border: none;
     outline: none;
     cursor: pointer;
-    font-size: 24px;
+    font-size: 18px;
+    margin-top: 30px;
+}
+
+@media (min-width: 768px) {
+    .back-button {
+        font-size: 24px;
+    }
+
+    .back-icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 12px;
+    }
 }
 
 .back-button:hover {
@@ -17,7 +34,7 @@
 }
 
 .back-icon {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     margin-right: 12px;
 }

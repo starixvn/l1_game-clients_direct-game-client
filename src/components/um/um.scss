@@ -48,6 +48,14 @@
         }
     }
 
+    .return-button-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 2rem;
+    }
+
     @media only screen and (orientation: landscape) {
         font-size: 1.4rem;
 

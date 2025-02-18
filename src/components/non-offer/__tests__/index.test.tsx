@@ -1,19 +1,21 @@
 import { render, screen } from "@testing-library/react";
 import NonOffer from "../index";
-import { useTranslator } from "../../../_shared/react-hooks";
-import '@testing-library/jest-dom';
+import { useTranslator, useRedirectUrl } from "../../../_shared/react-hooks";
+import "@testing-library/jest-dom";
 
 // Mock the useTranslator hook
 jest.mock("../../../_shared/react-hooks", () => ({
-    useTranslator: jest.fn()
+    useTranslator: jest.fn(),
+    useRedirectUrl: jest.fn(),
 }));
 
 describe("NonOffer", () => {
     // Setup mock translator before each test
     beforeEach(() => {
         (useTranslator as jest.Mock).mockReturnValue({
-            t: (key: string) => `translated_${key}`
+            t: (key: string) => `translated_${key}`,
         });
+        (useRedirectUrl as jest.Mock).mockReturnValue("https://example.com");
     });
 
     // Clear all mocks after each test
@@ -47,7 +49,7 @@ describe("NonOffer", () => {
     });
 
     it("should handle translation function being called", () => {
-        const mockTranslate = jest.fn(key => `translated_${key}`);
+        const mockTranslate = jest.fn((key) => `translated_${key}`);
         (useTranslator as jest.Mock).mockReturnValue({ t: mockTranslate });
 
         render(<NonOffer />);

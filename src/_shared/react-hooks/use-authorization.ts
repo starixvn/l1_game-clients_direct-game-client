@@ -52,9 +52,9 @@ export const useAuthorization = () => {
             const queryParameters = getQueryParameters();
             const { token, appType, lang: language, operator, ref, redirectUrl } = queryParameters;
             const session = await loadSession(token, appType);
+            StorageManager.set(localStorageKeys.returnUrl, redirectUrl);
             await loadLanguage(session, language);
             if (!session || isTimeoutSession(session)) {
-                StorageManager.set(localStorageKeys.returnUrl, redirectUrl);
                 setIsSessionTimeout(true);
                 return null;
             }
