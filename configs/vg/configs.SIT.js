@@ -8,4 +8,7 @@ window.envConfig = {
     serviceDomain: "https://l2uatproxy.{host}/sit",
     env: "SIT",
     clientUrlFormat: "https://l2uatclient.{host}/sit/direct-client-{gameId}/",
+    enablePromotionTournament: true,
+    promotionDomain: "https://l2sitpromotion.{host}",
+    intervalPromotionByMinute: 15,
 };

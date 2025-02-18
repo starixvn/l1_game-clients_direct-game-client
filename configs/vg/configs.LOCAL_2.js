@@ -8,4 +8,7 @@ window.envConfig = {
     serviceDomain: "https://l2-proxy2.{host}",
     env: "LOCAL2",
     clientUrlFormat: "https://l2-proxy2.{host}/direct-client-{gameId}/",
+    enablePromotionTournament: true,
+    promotionDomain: "https://l2-promotion2.{host}",
+    intervalPromotionByMinute: 1,
 };

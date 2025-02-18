@@ -9,6 +9,7 @@ export type Listener = {
 };
 
 export const GameEvents = {
+    loading: "loading",
     isUserGesture: "isUserGesture",
     isNotPermittedToPlay: "isNotPermittedToPlay",
     isUnderMaintain: "isUnderMaintain",

@@ -5,6 +5,7 @@ import { storePlayerSetting } from "../../_shared/utils/player-setting";
 import { GameContainer } from "./styles/game-frame.style";
 import { getGameBackgroundUrl } from "../../_shared/utils/url-helper";
 import { deviceInfo } from "../../_shared/utils/device-detect-wrapper";
+import { DEFAULT_GAME_VIEWPORT, DIRECT_GAME_VIEWPORT } from "../common/viewport-setting";
 
 interface GameFrameProps {
     gameId: number;
@@ -13,30 +14,24 @@ interface GameFrameProps {
 }
 const { isMobile } = deviceInfo;
 
-// Default game window configuration
-const GAME_CONFIG = {
-    width: 828,
-    height: 1107,
-    aspectRatio: 828 / 1107,
-};
-
 export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeight = 0 }) => {
-    const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const viewport = tabHeight === 0 ? DEFAULT_GAME_VIEWPORT : DIRECT_GAME_VIEWPORT;
+
     const [dimensions, setDimensions] = useState<{
         width: number | string;
         height: number | string;
-    }>({ width: GAME_CONFIG.width, height: GAME_CONFIG.height });
+    }>({ width: viewport.width, height: viewport.height });
 
     const calculateDimensions = (isDesktop: boolean) => {
         const height = window.innerHeight - tabHeight;
-        const width = Math.floor(height * GAME_CONFIG.aspectRatio);
+        const width = Math.floor(height * viewport.aspectRatio);
         isDesktop ? setDimensions({ width, height }) : setDimensions({ width: "100%", height: "100%" });
     };
 
     const calculateDesktopView = () => {
         const currentRatio = window.innerWidth / window.innerHeight;
-        return (currentRatio > GAME_CONFIG.aspectRatio && isMobile) || !isMobile;
+        return (currentRatio > viewport.aspectRatio && isMobile) || !isMobile;
     };
 
     useEffect(() => {
@@ -47,7 +42,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
-    }, [tabHeight]);
+    }, [tabHeight, viewport]);
 
     useEffect(() => {
         let timeoutResize: NodeJS.Timeout;
@@ -74,6 +69,10 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
         };
     }, []);
 
+    useEffect(() => {
+        GameEventManager.getInstance().notify(GameEvents.loading, true);
+    }, [iframeSrc]);
+
     return (
         <GameContainer
             ref={containerRef}
@@ -81,17 +80,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
             $height={dimensions.height}
             $remoteGameBackgroundUrl={getGameBackgroundUrl(gameId)}
         >
-            <iframe
-                ref={(el) => {
-                    if (el) {
-                        wrapperIframeRef.current = el;
-                    }
-                }}
-                title={`Game ${gameId}`}
-                width={dimensions.width}
-                height={dimensions.height}
-                src={iframeSrc}
-            />
+            <iframe title={`Game ${gameId}`} width={dimensions.width} height={dimensions.height} src={iframeSrc} />
         </GameContainer>
     );
 };

@@ -18,4 +18,7 @@ export interface IAppSettings {
     isDev?: boolean;
     clientUrlFormat?: string;
     hideGameTab?: boolean;
+    enablePromotionTournament?: boolean;
+    promotionDomain?: string;
+    intervalPromotionByMinute?: number;
 }

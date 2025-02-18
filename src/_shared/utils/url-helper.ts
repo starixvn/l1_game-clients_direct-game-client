@@ -160,3 +160,35 @@ export const backToRedirectUrl = (redirectUrl: string) => {
         globalThis.location.href = Base64Util.base64Decode(redirectUrl);
     }
 };
+
+export const getPromotionTournamentUrl = () => {
+    const { promotionDomain, serviceDomain } = appSettings;
+    if (!serviceDomain || !promotionDomain) {
+        throw new Error("Promotion domain is not set");
+    }
+    return promotionDomain.replace("{host}", getRootHost(window.location.host));
+};
+
+const getPromotionTournamentQueryString = () => {
+    const sessionInfo = getSession();
+    const params = {
+        sessionId: Base64Util.base64Encode(sessionInfo.ss),
+        username: sessionInfo.username,
+        language: sessionInfo.language,
+    };
+    const searchParams = new URLSearchParams();
+    Object.keys(params).forEach((key) => params[key] !== undefined && searchParams.append(key, params[key]));
+    return searchParams.toString();
+};
+
+export const getExistPromotionTournamentUrl = () => {
+    const promotionUrl = getPromotionTournamentUrl();
+    const queryString = getPromotionTournamentQueryString();
+    return `${promotionUrl}/notification/exist-running-promotion-tournament?${queryString}`;
+};
+
+export const getPromotionTournamentIconUrl = () => {
+    const promotionUrl = getPromotionTournamentUrl();
+    const queryString = getPromotionTournamentQueryString();
+    return `${promotionUrl}/icon?${queryString}`;
+};

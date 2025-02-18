@@ -15,6 +15,7 @@ const SessionTimeoutPage = React.lazy(() => import("../timeout"));
 const UMPage = React.lazy(() => import("../um"));
 const NonOfferPage = React.lazy(() => import("../non-offer"));
 const LandscapeMode = React.lazy(() => import("../landscape-mode"));
+const PromotionTournamentContainer = React.lazy(() => import("../promotion-tournament"));
 
 // Height of the tab navigation bar in pixels
 const TAB_HEIGHT = 34;
@@ -127,6 +128,7 @@ const Lobby: React.FC = () => {
             <LobbyContainer $tabHeight={TAB_HEIGHT} $hideTab={appSettings.hideGameTab && availableGameId > 0}>
                 {renderGameContent()}
             </LobbyContainer>
+            {appSettings.enablePromotionTournament && <PromotionTournamentContainer tabHeight={TAB_HEIGHT} />}
         </>
     );
 };

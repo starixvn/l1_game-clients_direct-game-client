@@ -58,7 +58,7 @@ describe("GameFrame", () => {
         render(<GameFrame gameId={123} iframeSrc="https://example.com/game" />);
 
         const iframe = screen.getByTitle("Game 123");
-        expect(iframe).toHaveAttribute("width", "747"); // Math.floor(1000 * (828/1107))
+        expect(iframe).toHaveAttribute("width", "562"); // Math.floor(1000 * (756/1344))
         expect(iframe).toHaveAttribute("height", "1000"); // window.innerHeight - 0
     });
 });

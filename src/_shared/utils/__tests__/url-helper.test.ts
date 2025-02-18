@@ -11,6 +11,10 @@ import {
     getQueryParameters,
     URLContextModel,
     getBaseServiceUrl,
+    getRootHost,
+    getVersionsRemoteUrl,
+    fetchVersions,
+    getPromotionTournamentUrl,
 } from "../url-helper";
 
 // Mock external dependencies
@@ -328,6 +332,121 @@ describe("url-helper", () => {
             appSettings.isDev = false;
             appSettings.serviceDomain = "https://api.{host}";
             expect(getBaseServiceUrl()).toBe("https://api.example.com");
+        });
+    });
+
+    describe("getRootHost", () => {
+        it("should return original host when no subdomains exist", () => {
+            // Arrange
+            const host = "example.com";
+
+            // Act
+            const result = getRootHost(host);
+
+            // Assert
+            expect(result).toBe("example.com");
+        });
+
+        it("should strip single subdomain from host", () => {
+            // Arrange
+            const host = "game.example.com";
+
+            // Act
+            const result = getRootHost(host);
+
+            // Assert
+            expect(result).toBe("example.com");
+        });
+
+        it("should strip multiple subdomains from host", () => {
+            // Arrange
+            const host = "dev.game.example.com";
+
+            // Act
+            const result = getRootHost(host);
+
+            // Assert
+            expect(result).toBe("example.com");
+        });
+    });
+
+    describe("getVersionsRemoteUrl", () => {
+        it("should construct correct versions URL", () => {
+            // Arrange
+            const gameId = 123;
+            const expectedUrl = "https://test-domain.com/direct-client-123remote/versions.json";
+
+            // Act
+            const result = getVersionsRemoteUrl(gameId);
+
+            // Assert
+            expect(result).toBe(expectedUrl);
+        });
+    });
+
+    describe("fetchVersions", () => {
+        beforeEach(() => {
+            global.fetch = jest.fn();
+        });
+
+        it("should return version data when fetch succeeds", async () => {
+            // Arrange
+            const mockVersions = { banner: "1.0", icon: "2.0", localization: 3 };
+            (global.fetch as jest.Mock).mockResolvedValueOnce({
+                ok: true,
+                json: () => Promise.resolve(mockVersions),
+            });
+
+            // Act
+            const result = await fetchVersions(123);
+
+            // Assert
+            expect(result).toEqual(mockVersions);
+        });
+
+        it("should return default values when fetch fails", async () => {
+            // Arrange
+            (global.fetch as jest.Mock).mockRejectedValueOnce(new Error("Network error"));
+
+            // Act
+            const result = await fetchVersions(123);
+
+            // Assert
+            expect(result).toEqual({ banner: "", icon: "", localization: 0 });
+        });
+    });
+
+    describe("getPromotionTournamentUrl", () => {
+        it("should throw error when domains are not set", () => {
+            // Arrange
+            const originalSettings = { ...appSettings };
+            appSettings.promotionDomain = "";
+            appSettings.serviceDomain = "";
+
+            // Act & Assert
+            expect(() => getPromotionTournamentUrl()).toThrow("Promotion domain is not set");
+
+            // Cleanup
+            Object.assign(appSettings, originalSettings);
+        });
+
+        it("should replace host placeholder with root domain", () => {
+            // Arrange
+            const originalSettings = { ...appSettings };
+            appSettings.promotionDomain = "https://promo.{host}";
+            Object.defineProperty(window, "location", {
+                value: { host: "game.test.example.com" },
+                writable: true,
+            });
+
+            // Act
+            const result = getPromotionTournamentUrl();
+
+            // Assert
+            expect(result).toBe("https://promo.example.com");
+
+            // Cleanup
+            Object.assign(appSettings, originalSettings);
         });
     });
 });

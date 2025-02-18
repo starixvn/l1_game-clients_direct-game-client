@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import UM from "../index";
 import { UMInfo } from "sc-user-service-client/dist/auth";
@@ -8,6 +7,10 @@ import "@testing-library/jest-dom";
 // Mock the translator hook
 jest.mock("../../../_shared/react-hooks/use-translator", () => ({
     useTranslator: jest.fn(),
+}));
+jest.mock("../../common/return-to-url-button", () => ({
+    __esModule: true,
+    default: () => <div data-testid="return-to-url-button">Return to URL Button</div>,
 }));
 
 describe("UM Component", () => {
