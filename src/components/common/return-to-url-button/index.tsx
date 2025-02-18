@@ -16,7 +16,8 @@ const ReturnToURLButton: React.FC<ReturnToURLButtonProps> = ({ redirectUrl }) =>
     };
 
     return (
-        <button id="btn-back" className={"btn-back"} onClick={handleBackToReturnURL}>
+        <button onClick={handleBackToReturnURL} className="back-button">
+            <img src="/images/timeout/ic-back.png" alt="Back Icon" className="back-icon" />
             {t(`back`)}
         </button>
     );

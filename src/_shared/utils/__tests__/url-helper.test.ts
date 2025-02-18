@@ -224,7 +224,7 @@ describe("url-helper", () => {
         it("should parse and return all parameters when token exists", () => {
             // Mock window.location using a URLSearchParams object instead
             const searchParams = new URLSearchParams(
-                "token=test-token&lang=en&gameId=1&appType=2&ref=true&op=testOp&rurl=https://redirect.com"
+                "token=test-token&lang=en&gameId=1&appType=2&ref=m_direct&op=testOp&rurl=https://redirect.com"
             );
 
             // Mock globalThis.location and history
@@ -254,7 +254,7 @@ describe("url-helper", () => {
                 isDirectMode: true,
                 redirectUrl: "https://redirect.com",
                 operator: "testOp",
-                ref: "true",
+                ref: "m_direct",
             });
         });
 

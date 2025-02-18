@@ -1,14 +1,23 @@
-.btn-back {
-    height: 4.6rem;
-    width: 10%;
+.back-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    color: white;
+    background-color: #2aa2d2;
+    border-radius: 36px;
     border: none;
-    box-shadow: 0px 10px 10px rgba(95, 90, 247, 0.03);
-    background-position: center;
-    text-align: center;
-    border-radius: 4rem;
-    color: #fff;
-    background-color: #5757f5;
-    font-size: 1.6rem;
-    font-weight: 400;
-    --font-family: "Montserrat", arial, sans-serif;
+    outline: none;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.back-button:hover {
+    opacity: 0.8;
+}
+
+.back-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
 }

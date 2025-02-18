@@ -1,25 +1,32 @@
-import { render, screen } from '@testing-library/react';
-import TimeOut from '../index';
-import { clearSessionData } from '../../../_shared/utils';
-import { useTranslator } from '../../../_shared/react-hooks';
-import '@testing-library/jest-dom';
+import { render, screen } from "@testing-library/react";
+import TimeOut from "../index";
+import { clearSessionData, StorageManager, localStorageKeys } from "../../../_shared/utils";
+import { useTranslator } from "../../../_shared/react-hooks";
+import "@testing-library/jest-dom";
 
 // Disable React.StrictMode for tests
-jest.mock('react', () => ({
-    ...jest.requireActual('react'),
+jest.mock("react", () => ({
+    ...jest.requireActual("react"),
     StrictMode: ({ children }) => children,
 }));
 
 // Mock the dependencies
-jest.mock('../../../_shared/utils', () => ({
+jest.mock("../../../_shared/utils", () => ({
     clearSessionData: jest.fn(),
+    StorageManager: {
+        get: jest.fn(),
+        remove: jest.fn(),
+    },
+    localStorageKeys: {
+        returnUrl: "returnUrl",
+    },
 }));
 
-jest.mock('../../../_shared/react-hooks', () => ({
+jest.mock("../../../_shared/react-hooks", () => ({
     useTranslator: jest.fn(),
 }));
 
-describe('TimeOut Component', () => {
+describe("TimeOut Component", () => {
     // Arrange - Setup for all tests
     const mockTranslate = jest.fn((key) => `translated_${key}`);
     const mockClearSessionData = jest.fn();
@@ -35,28 +42,31 @@ describe('TimeOut Component', () => {
 
         // Setup clearSessionData mock
         (clearSessionData as jest.Mock).mockImplementation(mockClearSessionData);
+
+        (StorageManager.get as jest.Mock).mockReturnValue("https://example.com");
+        (StorageManager.remove as jest.Mock).mockImplementation(() => {});
     });
 
-    it('should render correctly with translated message', () => {
+    it("should render correctly with translated message", () => {
         // Act
         render(<TimeOut />);
 
         // Assert
         // Verify the image is rendered with correct attributes
-        const image = screen.getByAltText('SessionTimeout');
+        const image = screen.getByAltText("SessionTimeout");
         expect(image).toBeInTheDocument();
-        expect(image).toHaveAttribute('src', '/images/error-session.svg');
-        expect(image).toHaveClass('error-background');
+        expect(image).toHaveAttribute("src", "/images/error-session.svg");
+        expect(image).toHaveClass("error-background");
 
         // Verify the translated message is rendered
-        const message = screen.getByText('translated_message_session_timeout');
+        const message = screen.getByText("translated_message_session_timeout");
         expect(message).toBeInTheDocument();
-        expect(message).toHaveClass('session-timeout-title');
+        expect(message).toHaveClass("session-timeout-title");
     });
 
-    it('should call useTranslator with correct resource type', () => {
+    it("should call useTranslator with correct resource type", () => {
         // Arrange
-        const expectedResourceType = ['InstantGame'];
+        const expectedResourceType = ["InstantGame"];
         (useTranslator as jest.Mock).mockReturnValue({
             t: jest.fn(),
         });
@@ -68,7 +78,7 @@ describe('TimeOut Component', () => {
         expect(useTranslator).toHaveBeenCalledWith(expectedResourceType);
     });
 
-    it('should call clearSessionData on mount', () => {
+    it("should call clearSessionData on mount", () => {
         // Arrange
         const strictModeCalls = 2; // React 18 Strict Mode calls effects twice in development
 
@@ -79,11 +89,11 @@ describe('TimeOut Component', () => {
         expect(mockClearSessionData).toHaveBeenCalledTimes(strictModeCalls);
     });
 
-    it('should have correct className for error page container', () => {
+    it("should have correct className for error page container", () => {
         // Act
         const { container } = render(<TimeOut />);
 
         // Assert
-        expect(container.firstChild).toHaveClass('error-page');
+        expect(container.firstChild).toHaveClass("error-page");
     });
-}); 
+});
