@@ -54,6 +54,7 @@ export const useAuthorization = () => {
             const session = await loadSession(token, appType);
             await loadLanguage(session, language);
             if (!session || isTimeoutSession(session)) {
+                StorageManager.set(localStorageKeys.returnUrl, redirectUrl);
                 setIsSessionTimeout(true);
                 return null;
             }

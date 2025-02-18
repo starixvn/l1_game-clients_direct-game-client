@@ -3,7 +3,8 @@ import Base64Util from "./base64-util";
 import { getSession } from "./session-manager";
 import { getPlayerSetting } from "./player-setting";
 import { localStorageKeys, StorageManager } from "./storage-manager";
-import { locales } from "../consts";
+import { directRef, locales } from "../consts";
+import isEmpty from "lodash/isEmpty";
 
 export type VersionsModel = {
     banner: string;
@@ -142,13 +143,20 @@ export function getQueryParameters(): URLContextModel | undefined {
         const lang = params.get("lang") ?? locales.en;
         const gameId = Number(params.get("gameId") || 0);
         const appType = Number(params.get("appType") || 1);
-        const isDirectMode = !!params.get("ref");
+
+        const isDirectMode = !!params.get("ref") && directRef.includes(params.get("ref"));
         const ref = params.get("ref");
         const operator = params.get("op");
-        const redirectUrl = isDirectMode || appSettings.hideGameTab ? params.get("rurl") : "";
+        const redirectUrl = isDirectMode ? params.get("rurl") : "";
         globalThis.history.pushState(null, "", globalThis.location?.href.split("?")[0]);
         return { token, lang, gameId, appType, isDirectMode, redirectUrl, operator, ref };
     }
 
     return {};
 }
+
+export const backToRedirectUrl = (redirectUrl: string) => {
+    if (!isEmpty(redirectUrl)) {
+        globalThis.location.href = Base64Util.base64Decode(redirectUrl);
+    }
+};

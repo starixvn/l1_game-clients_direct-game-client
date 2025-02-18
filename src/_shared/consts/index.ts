@@ -27,3 +27,5 @@ export const buildVersion = process.env.BUILD_VERSION || 111;
 export const errorCodes = {
     NICKNAME_EXISTS: "SB0015",
 };
+
+export const directRef = ["d_direct", "m_direct"];
