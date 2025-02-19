@@ -10,10 +10,6 @@ jest.mock("../../../_shared/react-hooks/use-translator", () => ({
     useTranslator: jest.fn(),
 }));
 
-jest.mock("../../../_shared/react-hooks", () => ({
-    useRedirectUrl: jest.fn(),
-}));
-
 describe("UM Component", () => {
     const mockTranslate = jest.fn((key: string) => key);
 

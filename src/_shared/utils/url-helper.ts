@@ -156,7 +156,7 @@ export function getQueryParameters(): URLContextModel | undefined {
 }
 
 export const backToRedirectUrl = (redirectUrl: string) => {
-    if (!isEmpty(redirectUrl)) {
+    if (redirectUrl) {
         globalThis.location.href = Base64Util.base64Decode(redirectUrl);
     }
 };

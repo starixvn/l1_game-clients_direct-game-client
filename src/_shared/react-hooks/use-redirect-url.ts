@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { localStorageKeys, StorageManager } from "../../_shared/utils";
 
 export const useRedirectUrl = () => {
-    const [redirectUrl, setRedirectUrl] = useState<string>("");
+    let redirectUrl = "";
+    const url = StorageManager.get<string>(localStorageKeys.returnUrl);
+    if (url !== "undefined" && url !== "") {
+        redirectUrl = url;
+    }
 
     useEffect(() => {
-        const url = StorageManager.get<string>(localStorageKeys.returnUrl);
-        if (url !== "undefined") {
-            setRedirectUrl(url);
-        }
         StorageManager.remove(localStorageKeys.returnUrl);
     }, []);
 

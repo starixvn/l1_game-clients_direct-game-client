@@ -1,15 +1,16 @@
 import React from "react";
 import "./styles.scss";
-import { useTranslator } from "../../../_shared/react-hooks";
+import { useRedirectUrl, useTranslator } from "../../../_shared/react-hooks";
 import { ResourceTypes } from "../../../_shared/consts";
 import { backToRedirectUrl } from "../../../_shared/utils";
 
-type ReturnToURLButtonProps = {
-    redirectUrl: string;
-};
-
-const ReturnToURLButton: React.FC<ReturnToURLButtonProps> = ({ redirectUrl }) => {
+const ReturnToURLButton: React.FC = () => {
     const { t } = useTranslator([ResourceTypes.COMMON]);
+
+    const redirectUrl = useRedirectUrl();
+    if (!redirectUrl) {
+        return null;
+    }
 
     const handleBackToReturnURL = () => {
         backToRedirectUrl(redirectUrl);

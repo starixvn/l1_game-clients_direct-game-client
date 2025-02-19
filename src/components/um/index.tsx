@@ -5,7 +5,6 @@ import { useTranslator } from "../../_shared/react-hooks/use-translator";
 import { ResourceTypes } from "../../_shared/consts";
 import { UMInfo } from "sc-user-service-client/dist/auth";
 import ReturnToURLButton from "../common/return-to-url-button";
-import { useRedirectUrl } from "../../_shared/react-hooks";
 
 interface UMProps {
     umInfo: UMInfo;
@@ -13,7 +12,6 @@ interface UMProps {
 
 const UM: React.FC<UMProps> = ({ umInfo }) => {
     const { t } = useTranslator([ResourceTypes.COMMON]);
-    const redirectUrl = useRedirectUrl();
     const convertToGMT8 = (date: Date): string => {
         return dayjs(
             new Date(date).toLocaleString("en-US", {
@@ -42,7 +40,9 @@ const UM: React.FC<UMProps> = ({ umInfo }) => {
                             </div>
                         )}
                     </div>
-                    <div className="return-button-container">{redirectUrl && <ReturnToURLButton redirectUrl={redirectUrl} />}</div>
+                    <div className="return-button-container">
+                        <ReturnToURLButton />
+                    </div>
                 </div>
             )}
         </div>

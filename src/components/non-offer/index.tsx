@@ -1,12 +1,11 @@
 import React from "react";
 import "./styles.scss";
 import { ResourceTypes } from "../../_shared/consts";
-import { useRedirectUrl, useTranslator } from "../../_shared/react-hooks";
+import { useTranslator } from "../../_shared/react-hooks";
 import ReturnToURLButton from "../common/return-to-url-button";
 
 const NonOffer = () => {
     const { t } = useTranslator([ResourceTypes.COMMON]);
-    const redirectUrl = useRedirectUrl();
 
     return (
         <div className="non-offer-page" data-testid="non-offer-page">
@@ -15,7 +14,7 @@ const NonOffer = () => {
                 <div className="non-offer-icon-wrapper" data-testid="non-offer-icon-wrapper"></div>
                 <p className="non-offer-title">{t("message_no_game_offer")}</p>
             </div>
-            {redirectUrl && <ReturnToURLButton redirectUrl={redirectUrl} />}
+            <ReturnToURLButton />
         </div>
     );
 };

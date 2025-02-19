@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import ReturnToURLButton from "../index";
 import { backToRedirectUrl } from "../../../../_shared/utils";
-import { useTranslator } from "../../../../_shared/react-hooks";
+import { useTranslator, useRedirectUrl } from "../../../../_shared/react-hooks";
 
 jest.mock("../../../../_shared/utils", () => ({
     backToRedirectUrl: jest.fn(),
@@ -11,6 +11,7 @@ jest.mock("../../../../_shared/utils", () => ({
 
 jest.mock("../../../../_shared/react-hooks", () => ({
     useTranslator: jest.fn(),
+    useRedirectUrl: jest.fn(),
 }));
 
 describe("ReturnToURLButton", () => {
@@ -29,19 +30,34 @@ describe("ReturnToURLButton", () => {
 
         // Setup backToRedirectUrl mock
         (backToRedirectUrl as jest.Mock).mockImplementation(mockBackToRedirectUrl);
+
+        // Setup useRedirectUrl mock
+        (useRedirectUrl as jest.Mock).mockReturnValue(redirectUrl);
+    });
+
+    it("should not render if there is no redirect URL", () => {
+        // Arrange
+        (useRedirectUrl as jest.Mock).mockReturnValue(null);
+
+        // Act
+        const { container } = render(<ReturnToURLButton />);
+
+        // Assert
+        expect(container.firstChild).toBeNull();
     });
 
     it("should render correctly with translated message", () => {
+        // Arrange
+        (useRedirectUrl as jest.Mock).mockReturnValue(redirectUrl);
+
         // Act
-        render(<ReturnToURLButton redirectUrl={redirectUrl} />);
+        render(<ReturnToURLButton />);
 
         // Assert
-        // Verify the button is rendered with correct attributes
         const button = screen.getByRole("button");
         expect(button).toBeInTheDocument();
         expect(button).toHaveClass("back-button");
 
-        // Verify the image is rendered with correct attributes
         const image = screen.getByAltText("Back Icon");
         expect(image).toBeInTheDocument();
         expect(image).toHaveAttribute("src", "/images/timeout/ic-back.png");
@@ -49,8 +65,11 @@ describe("ReturnToURLButton", () => {
     });
 
     it("should call backToRedirectUrl with the correct URL when clicked", () => {
+        // Arrange
+        (useRedirectUrl as jest.Mock).mockReturnValue(redirectUrl);
+
         // Act
-        render(<ReturnToURLButton redirectUrl={redirectUrl} />);
+        render(<ReturnToURLButton />);
         fireEvent.click(screen.getByRole("button"));
 
         // Assert
@@ -58,8 +77,11 @@ describe("ReturnToURLButton", () => {
     });
 
     it("should call the translation function with the correct key", () => {
+        // Arrange
+        (useRedirectUrl as jest.Mock).mockReturnValue(redirectUrl);
+
         // Act
-        render(<ReturnToURLButton redirectUrl={redirectUrl} />);
+        render(<ReturnToURLButton />);
 
         // Assert
         expect(mockTranslate).toHaveBeenCalledWith("back");
