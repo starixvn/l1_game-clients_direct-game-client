@@ -54,9 +54,5 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         width: 23px;
         height: 23px;
         margin-right: 8px;
-
-        &.inactive {
-            filter: grayscale(100%);
-        }
     }
 `;
