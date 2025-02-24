@@ -66,6 +66,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
     }, []);
 
     useEffect(() => {
+        
         const fetchIconUrls = async () => {
             const urls = await Promise.all(
                 gameOfferIds.map(async (gameId) => {
@@ -77,7 +78,21 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
             setIconUrls(iconUrls);
         };
         fetchIconUrls();
+        
     }, [gameOfferIds]);
+
+    
+    useEffect(() => { 
+        if (tabRefs.current[activeKey]) {
+            setTimeout(() => {
+                tabRefs.current[activeKey]?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest',
+                    inline: 'center',
+                }); 
+            }, 100);
+        }
+    },[activeKey])
 
     return (
         <Tabs activeKey={activeKey} onSelect={(k) => k && handleTabSelect(+k)}>
