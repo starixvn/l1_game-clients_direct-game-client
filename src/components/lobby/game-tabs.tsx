@@ -102,9 +102,17 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
                     <Tab
                         eventKey={index}
                         title={
-                            <div ref={(el) => (tabRefs.current[index] = el)} className={`tab-title ${isActive ? "active" : ""}`}>
-                                <img src={iconUrls[gameId]} alt={`game-${gameId}`} className={`tab-icon ${!isActive ? "inactive" : ""}`} />
-                                {gameNames[gameId]}
+                            <div ref={(el) => (tabRefs.current[index] = el)} className={`tab-title ${isActive && iconUrls[gameId] ? "active" : ""}`}>
+                               {
+                                iconUrls[gameId] ? <>
+                                    <img src={iconUrls[gameId]} alt={`game-${gameId}`} className={`tab-icon ${!isActive ? "inactive" : ""}`} />
+                                    {gameNames[gameId]}
+                                 </> : <div className="skeleton">
+                                    <div className="skeleton-img"/>
+                                    <div className="skeleton-text"/>
+                                </div>
+                                
+                               }
                             </div>
                         }
                         key={gameId}

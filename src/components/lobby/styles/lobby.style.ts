@@ -55,4 +55,21 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         height: 23px;
         margin-right: 8px;
     }
+
+    .skeleton{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        &-img{
+            width : 24px;
+            height : 24px;
+            border-radius : 20px;
+            background : #ddd;
+        }
+        &-text{
+            width : 68px;
+            height : 8px;
+            background : #ddd;
+        }
+    }
 `;
