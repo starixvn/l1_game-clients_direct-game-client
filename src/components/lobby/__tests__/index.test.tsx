@@ -152,24 +152,6 @@ describe("Lobby Component", () => {
         });
     });
 
-    describe("Initial Loading State", () => {
-        it("should display loading component when authorization is in progress", async () => {
-            // Arrange
-            mockUseAuthorization.mockReturnValue({
-                ...defaultAuthState,
-                isLoading: true,
-            });
-
-            // Act
-            await act(async () => {
-                render(<Lobby />);
-            });
-
-            // Assert
-            expect(screen.getByTestId("loading")).toBeInTheDocument();
-        });
-    });
-
     describe("Session Management", () => {
         it("should display timeout page when session expires", async () => {
             // Arrange

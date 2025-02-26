@@ -6,7 +6,6 @@ import { languageMapping, locales } from "../consts";
 import { tolgee } from "../../tolgee";
 
 export const useAuthorization = () => {
-    const [isLoading, setIsLoading] = useState(true);
     const [isSessionTimeout, setIsSessionTimeout] = useState(false);
     const [umInfo, setUMInfo] = useState<UMInfo | null>(null);
 
@@ -75,13 +74,10 @@ export const useAuthorization = () => {
         } catch (error) {
             console.log("Authorization error: ", error);
             return null;
-        } finally {
-            setIsLoading(false);
         }
     };
 
     return {
-        isLoading,
         umInfo,
         setUMInfo,
         isSessionTimeout,

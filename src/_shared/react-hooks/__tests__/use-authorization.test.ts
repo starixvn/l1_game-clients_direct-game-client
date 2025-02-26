@@ -97,7 +97,6 @@ describe("useAuthorization", () => {
                 await result.current.initialize();
             });
 
-            expect(result.current.isLoading).toBe(false);
             expect(result.current.isSessionTimeout).toBe(false);
             expect(result.current.umInfo).toBeNull();
             expect(authService.sso).toHaveBeenCalledWith(mockToken, mockAppType);
@@ -126,7 +125,6 @@ describe("useAuthorization", () => {
                 await result.current.initialize();
             });
 
-            expect(result.current.isLoading).toBe(false);
             expect(result.current.umInfo).toEqual(mockUMInfo);
             expect(result.current.isSessionTimeout).toBe(false);
         });
@@ -145,7 +143,6 @@ describe("useAuthorization", () => {
                 await result.current.initialize();
             });
 
-            expect(result.current.isLoading).toBe(false);
             expect(result.current.isSessionTimeout).toBe(true);
         });
 
@@ -171,7 +168,6 @@ describe("useAuthorization", () => {
                 await result.current.initialize();
             });
 
-            expect(result.current.isLoading).toBe(false);
             expect(result.current.isSessionTimeout).toBe(false);
             expect(authService.autoCreateNickname).toHaveBeenCalledWith(mockSession);
         });
@@ -198,21 +194,7 @@ describe("useAuthorization", () => {
                 await result.current.initialize();
             });
 
-            expect(result.current.isLoading).toBe(false);
             expect(result.current.isSessionTimeout).toBe(true);
-        });
-
-        it("should handle error during initialization", async () => {
-            (authService.sso as jest.Mock).mockRejectedValue(new Error("Test error"));
-
-            const { result } = renderHook(() => useAuthorization());
-
-            await act(async () => {
-                const response = await result.current.initialize();
-                expect(response).toBeNull();
-            });
-
-            expect(result.current.isLoading).toBe(false);
         });
 
         it("should verify session when no token is provided", async () => {
@@ -235,7 +217,6 @@ describe("useAuthorization", () => {
             });
 
             expect(authService.verifySession).toHaveBeenCalled();
-            expect(result.current.isLoading).toBe(false);
         });
 
         it("should handle language loading correctly", async () => {

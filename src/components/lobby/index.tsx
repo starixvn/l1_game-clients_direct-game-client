@@ -24,8 +24,8 @@ const Lobby: React.FC = () => {
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
     const [availableGameId, setAvailableGameId] = useState<number>(0);
     const [isTimeout, setIsTimeout] = useState(false);
-    const { isLoading, umInfo, setUMInfo, isSessionTimeout, initialize } = useAuthorization();
-    const [isAuthorized, setIsAuthorized] = useState(false);
+    const { umInfo, setUMInfo, isSessionTimeout, initialize } = useAuthorization();
+    const [isLoading, setIsLoading] = useState(true);
     const [queryGameId, setQueryGameId] = useState(() => {
         const params = new URLSearchParams(window.location.search);
         const gameId = params.get("gameId");
@@ -45,6 +45,7 @@ const Lobby: React.FC = () => {
     });
 
     const authenticate = async () => {
+        setIsLoading(true);
         const response = await initialize();
         if (response?.authorized) {
             const offeredGameIds = await getOfferedGameIds(response);
@@ -52,8 +53,8 @@ const Lobby: React.FC = () => {
             const selectedGameId =
                 queryGameId && offeredGameIds.includes(queryGameId) ? queryGameId : getAvailableGameId(offeredGameIds, response) || 0;
             setAvailableGameId(selectedGameId);
-            setIsAuthorized(true);
         }
+        setIsLoading(false);
     };
 
     useEffect(() => {
@@ -99,9 +100,6 @@ const Lobby: React.FC = () => {
     }, [handleOpenOtherGame]);
 
     const renderGameContent = () => {
-        if (!isAuthorized) {
-            return <Loading />;
-        }
         if (appSettings.hideGameTab && queryGameId > 0) {
             return <GameFrame gameId={queryGameId} iframeSrc={getGameUrl(queryGameId, [])} />;
         }

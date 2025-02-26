@@ -4,7 +4,6 @@ import { getSession } from "./session-manager";
 import { getPlayerSetting } from "./player-setting";
 import { localStorageKeys, StorageManager } from "./storage-manager";
 import { directRef, locales } from "../consts";
-import isEmpty from "lodash/isEmpty";
 
 export type VersionsModel = {
     banner: string;
