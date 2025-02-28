@@ -11,7 +11,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         overflow-x: auto;
         scrollbar-width: none;
         border: none;
-
+        background : #fff;
         button {
             padding: 5px 8px 6px 8px;
             border: none;
