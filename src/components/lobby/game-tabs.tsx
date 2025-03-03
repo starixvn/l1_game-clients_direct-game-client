@@ -22,7 +22,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
     const [startX, setStartX] = useState<number>(0);
     const [scrollLeft, setScrollLeft] = useState<number>(0);
 
-
     const setSelectedGameId = (gameId: number) => {
         setActiveKey(gameOfferIds.indexOf(gameId));
         StorageManager.set(localStorageKeys.selectedGameId, gameId);
@@ -70,7 +69,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
     }, []);
 
     useEffect(() => {
-        
         const fetchIconUrls = async () => {
             const urls = await Promise.all(
                 gameOfferIds.map(async (gameId) => {
@@ -82,34 +80,34 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
             setIconUrls(iconUrls);
         };
         fetchIconUrls();
-        
     }, [gameOfferIds]);
 
-    
-    useEffect(() => { 
+    useEffect(() => {
         if (tabRefs.current[activeKey]) {
             setTimeout(() => {
                 tabRefs.current[activeKey]?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest',
-                    inline: 'center',
-                }); 
+                    behavior: "smooth",
+                    block: "nearest",
+                    inline: "center",
+                });
             }, 100);
         }
-    },[activeKey])
+    }, [activeKey]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
-        const parentElement = document.querySelector(".parent-tabs") as HTMLElement;
+        const parentElement = document.querySelector(".parent-tabs");
         if (parentElement) {
-          setIsDragging(true);
-          setStartX(e.clientX);
-          setScrollLeft(parentElement.scrollLeft);
-          e.preventDefault();
+            setIsDragging(true);
+            setStartX(e.clientX);
+            setScrollLeft(parentElement.scrollLeft);
+            e.preventDefault();
         }
-      };
+    };
     const handleMouseMove = (e: MouseEvent) => {
-        if (!isDragging) return;
-        const parentElement = document.querySelector(".parent-tabs") as HTMLElement;
+        if (!isDragging) {
+            return;
+        }
+        const parentElement = document.querySelector(".parent-tabs");
         if (parentElement) {
             const x = e.clientX - startX;
             parentElement.scrollLeft = scrollLeft - x;
@@ -132,29 +130,32 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
         };
     }, [isDragging]);
     return (
-        <Tabs 
-            activeKey={activeKey} 
-            onSelect={(k) => k && handleTabSelect(+k)}
-            onMouseDown={handleMouseDown}
-            className="parent-tabs"
-        >
+        <Tabs activeKey={activeKey} onSelect={(k) => k && handleTabSelect(+k)} onMouseDown={handleMouseDown} className="parent-tabs">
             {gameOfferIds.map((gameId, index) => {
                 const isActive = activeKey === index;
                 return (
                     <Tab
                         eventKey={index}
                         title={
-                            <div ref={(el) => (tabRefs.current[index] = el)} className={`tab-title ${isActive && iconUrls[gameId] ? "active" : ""}`}>
-                            {
-                                iconUrls[gameId] ? <>
-                                    <img src={iconUrls[gameId]} alt={`game-${gameId}`} className={`tab-icon ${!isActive ? "inactive" : ""}`} />
-                                    {gameNames[gameId]}
-                                </> : <div className="skeleton">
-                                    <div className="skeleton-img"/>
-                                    <div className="skeleton-text"/>
-                                </div>
-                                
-                            }
+                            <div
+                                ref={(el) => (tabRefs.current[index] = el)}
+                                className={`tab-title ${isActive && iconUrls[gameId] ? "active" : ""}`}
+                            >
+                                {iconUrls[gameId] ? (
+                                    <div>
+                                        <img
+                                            src={iconUrls[gameId]}
+                                            alt={`game-${gameId}`}
+                                            className={`tab-icon ${!isActive ? "inactive" : ""}`}
+                                        />
+                                        {gameNames[gameId]}
+                                    </div>
+                                ) : (
+                                    <div className="skeleton">
+                                        <div className="skeleton-img" />
+                                        <div className="skeleton-text" />
+                                    </div>
+                                )}
                             </div>
                         }
                         key={gameId}
@@ -165,7 +166,5 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
                 );
             })}
         </Tabs>
-        
-        
     );
 };

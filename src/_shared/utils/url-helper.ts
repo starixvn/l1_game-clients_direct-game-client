@@ -113,6 +113,7 @@ const buildSessionParams = (offeredGamesId: number[]) => {
         isUserGesture: false,
         op: operator,
         supportedGamesId: offeredGamesId,
+        isPortrait: true,
     };
     const searchParams = new URLSearchParams();
     Object.keys(params).forEach((key) => params[key] !== undefined && searchParams.append(key, params[key]));
