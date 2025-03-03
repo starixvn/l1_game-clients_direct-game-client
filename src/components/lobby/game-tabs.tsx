@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { MouseEvent, useEffect, useRef, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import { useTolgee } from "@tolgee/react";
 import { getGameLocalizationUrl, getGameUrl, getIconGameTabUrl, localStorageKeys, StorageManager } from "../../_shared/utils";
@@ -16,8 +16,12 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
     const [iframeSrc, setIframeSrc] = useState<string>();
     const [gameNames, setGameNames] = useState<Record<number, string>>({});
     const [iconUrls, setIconUrls] = useState<Record<number, string>>({});
-
     const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+    const [isDragging, setIsDragging] = useState<boolean>(false);
+    const [startX, setStartX] = useState<number>(0);
+    const [scrollLeft, setScrollLeft] = useState<number>(0);
+
 
     const setSelectedGameId = (gameId: number) => {
         setActiveKey(gameOfferIds.indexOf(gameId));
@@ -94,8 +98,46 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
         }
     },[activeKey])
 
+    const handleMouseDown = (e: React.MouseEvent) => {
+        const parentElement = document.querySelector(".parent-tabs") as HTMLElement;
+        if (parentElement) {
+          setIsDragging(true);
+          setStartX(e.clientX);
+          setScrollLeft(parentElement.scrollLeft);
+          e.preventDefault();
+        }
+      };
+    const handleMouseMove = (e: MouseEvent) => {
+        if (!isDragging) return;
+        const parentElement = document.querySelector(".parent-tabs") as HTMLElement;
+        if (parentElement) {
+            const x = e.clientX - startX;
+            parentElement.scrollLeft = scrollLeft - x;
+        }
+    };
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    useEffect(() => {
+        const moveListener = (e: MouseEvent) => handleMouseMove(e);
+        const upListener = () => handleMouseUp();
+
+        document.addEventListener("mousemove", moveListener as unknown as EventListener);
+        document.addEventListener("mouseup", upListener as unknown as EventListener);
+
+        return () => {
+            document.removeEventListener("mousemove", moveListener as unknown as EventListener);
+            document.removeEventListener("mouseup", upListener as unknown as EventListener);
+        };
+    }, [isDragging]);
     return (
-        <Tabs activeKey={activeKey} onSelect={(k) => k && handleTabSelect(+k)}>
+        <Tabs 
+            activeKey={activeKey} 
+            onSelect={(k) => k && handleTabSelect(+k)}
+            onMouseDown={handleMouseDown}
+            className="parent-tabs"
+        >
             {gameOfferIds.map((gameId, index) => {
                 const isActive = activeKey === index;
                 return (
@@ -103,16 +145,16 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
                         eventKey={index}
                         title={
                             <div ref={(el) => (tabRefs.current[index] = el)} className={`tab-title ${isActive && iconUrls[gameId] ? "active" : ""}`}>
-                               {
+                            {
                                 iconUrls[gameId] ? <>
                                     <img src={iconUrls[gameId]} alt={`game-${gameId}`} className={`tab-icon ${!isActive ? "inactive" : ""}`} />
                                     {gameNames[gameId]}
-                                 </> : <div className="skeleton">
+                                </> : <div className="skeleton">
                                     <div className="skeleton-img"/>
                                     <div className="skeleton-text"/>
                                 </div>
                                 
-                               }
+                            }
                             </div>
                         }
                         key={gameId}
@@ -123,5 +165,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
                 );
             })}
         </Tabs>
+        
+        
     );
 };
