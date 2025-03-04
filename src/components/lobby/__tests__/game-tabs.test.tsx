@@ -40,6 +40,7 @@ describe("GameTabs", () => {
         gameOfferIds: mockGameOfferIds,
         availableGameId: undefined,
         tabHeight: 800,
+        setAvailableGameId: jest.fn(),
     };
 
     beforeEach(() => {
@@ -104,7 +105,8 @@ describe("GameTabs", () => {
 
     test("should switch tabs when clicking on a different game tab", async () => {
         // Arrange
-        render(<GameTabs {...defaultProps} />);
+        const mockSetAvailableGameId = jest.fn();
+        render(<GameTabs {...defaultProps} setAvailableGameId={mockSetAvailableGameId} />);
         await waitFor(() => screen.getByText("Test Game 1"));
 
         // Act
@@ -114,6 +116,7 @@ describe("GameTabs", () => {
         // Assert
         await waitFor(() => {
             expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", 2);
+            expect(mockSetAvailableGameId).toHaveBeenCalledWith(2);
         });
     });
 
@@ -164,7 +167,8 @@ describe("GameTabs", () => {
 
     test("should update iframe source when switching tabs", async () => {
         // Arrange
-        render(<GameTabs {...defaultProps} />);
+        const mockSetAvailableGameId = jest.fn();
+        render(<GameTabs {...defaultProps} setAvailableGameId={mockSetAvailableGameId} />);
         await waitFor(() => screen.getByText("Test Game 1"));
 
         // Act
@@ -176,6 +180,7 @@ describe("GameTabs", () => {
         await waitFor(() => {
             expect(gameFrame).toBeInTheDocument();
             expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", 2);
+            expect(mockSetAvailableGameId).toHaveBeenCalledWith(2);
         });
     });
 

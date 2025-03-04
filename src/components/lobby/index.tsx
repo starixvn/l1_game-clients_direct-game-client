@@ -104,7 +104,14 @@ const Lobby: React.FC = () => {
             return <GameFrame gameId={queryGameId} iframeSrc={getGameUrl(queryGameId, [])} />;
         }
 
-        return <GameTabs gameOfferIds={gameOfferIds} availableGameId={availableGameId} tabHeight={TAB_HEIGHT} />;
+        return (
+            <GameTabs
+                gameOfferIds={gameOfferIds}
+                availableGameId={availableGameId}
+                setAvailableGameId={setAvailableGameId}
+                tabHeight={TAB_HEIGHT}
+            />
+        );
     };
 
     if (isLoading) {

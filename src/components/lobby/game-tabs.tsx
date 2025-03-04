@@ -8,9 +8,10 @@ interface GameTabsProps {
     gameOfferIds: number[];
     availableGameId: number | undefined;
     tabHeight: number;
+    setAvailableGameId: Function;
 }
 
-export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameId, tabHeight }) => {
+export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameId, setAvailableGameId, tabHeight }) => {
     const currentLanguage = useTolgee().getLanguage();
     const [activeKey, setActiveKey] = useState(0);
     const [iframeSrc, setIframeSrc] = useState<string>();
@@ -26,7 +27,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
         setActiveKey(gameOfferIds.indexOf(gameId));
         StorageManager.set(localStorageKeys.selectedGameId, gameId);
         setIframeSrc(getGameUrl(gameId, gameOfferIds));
-
+        setAvailableGameId(gameId);
         const index = gameOfferIds.indexOf(gameId);
         tabRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     };
