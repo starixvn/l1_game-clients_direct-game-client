@@ -170,7 +170,7 @@ describe("url-helper", () => {
         it("should return complete game URL with encoded parameters", () => {
             const result = getGameUrl(1, [1, 2, 3]);
             expect(result).toContain(
-                "https://test-domain.com/direct-client-1?params=encoded_ss=test-session&uname=testuser&lang=en&appType=1&purl=encoded_https%3A%2F%2Ftest-domain.com%2F&ref=&rurl=&musicEnable=true&sfxEnable=true&isUserGesture=false&op=testOperator&supportedGamesId=2%2C3&isPortrait=true"
+                "https://test-domain.com/direct-client-1?params=encoded_ss=test-session&uname=testuser&lang=en&appType=1&purl=encoded_https%3A%2F%2Ftest-domain.com%2F&ref=&rurl=&musicEnable=true&sfxEnable=true&isUserGesture=false&op=testOperator&supportedGamesId=2%2C3"
             );
             expect(Base64Util.base64Encode).toHaveBeenCalled();
         });
@@ -189,7 +189,7 @@ describe("url-helper", () => {
             (StorageManager.get as jest.Mock).mockReturnValue(null);
             const result = getGameUrl(1, [1, 2, 3]);
             expect(result).toContain(
-                "https://test-domain.com/direct-client-1?params=encoded_ss=test-session&uname=testuser&lang=en&appType=1&purl=encoded_https%3A%2F%2Ftest-domain.com%2F&ref=&rurl=&musicEnable=true&sfxEnable=true&isUserGesture=false&op=null&supportedGamesId=2%2C3&isPortrait=true"
+                "https://test-domain.com/direct-client-1?params=encoded_ss=test-session&uname=testuser&lang=en&appType=1&purl=encoded_https%3A%2F%2Ftest-domain.com%2F&ref=&rurl=&musicEnable=true&sfxEnable=true&isUserGesture=false&op=null&supportedGamesId=2%2C3"
             );
             expect(Base64Util.base64Encode).toHaveBeenCalledWith(expect.not.stringContaining("op="));
         });
