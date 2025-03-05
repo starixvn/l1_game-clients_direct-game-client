@@ -110,7 +110,7 @@ const buildSessionParams = (offeredGamesId: number[]) => {
         rurl: returnUrl,
         musicEnable: playerSetting.musicEnable,
         sfxEnable: playerSetting.sfxEnable,
-        isUserGesture: false,
+        isUserGesture: playerSetting.isUserGesture,
         op: operator,
         supportedGamesId: offeredGamesId,
     };

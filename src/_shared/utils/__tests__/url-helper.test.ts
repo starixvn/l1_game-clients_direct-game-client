@@ -158,6 +158,7 @@ describe("url-helper", () => {
             (PlayerSetting.getPlayerSetting as jest.Mock).mockReturnValue({
                 musicEnable: true,
                 sfxEnable: true,
+                isUserGesture: false,
             });
             (StorageManager.get as jest.Mock).mockImplementation((key) => {
                 if (key === localStorageKeys.operator) {
