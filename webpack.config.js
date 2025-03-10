@@ -2,6 +2,8 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin"); // For JS minification
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin"); // For CSS minification
+const CopyPlugin = require("copy-webpack-plugin");
+const webpack = require("webpack");
 
 // Determine if the environment is production or development
 const isProduction = process.env.NODE_ENV === "production";
@@ -16,10 +18,11 @@ module.exports = {
     },
     devServer: {
         static: {
-            directory: path.resolve(__dirname, "dist"),
+            directory: path.join(__dirname, "public"),
         },
         open: true,
         hot: true,
+        port: 7457,
     },
     resolve: {
         extensions: [".tsx", ".ts", ".js"],
@@ -29,15 +32,37 @@ module.exports = {
             {
                 test: /\.(ts|tsx)$/,
                 use: "babel-loader",
-                exclude: /node_modules/,
+                exclude: [/node_modules/, /\.test\.(ts|tsx)$/, /\.spec\.(ts|tsx)$/, /__tests__/, /__mocks__/],
             },
             {
                 test: /\.scss$/,
-                use: ["style-loader", "css-loader", "sass-loader"],
+                use: [
+                    "style-loader",
+                    {
+                        loader: "css-loader",
+                        options: {
+                            modules: false, // Disable CSS modules for global styles
+                            url: false,
+                        },
+                    },
+                    "sass-loader",
+                ],
             },
             {
                 test: /\.css$/,
                 use: ["style-loader", "css-loader"],
+            },
+            {
+                test: /\.(png|jpe?g|gif|svg)$/i,
+                dependency: { not: ["url"] },
+                use: [
+                    {
+                        loader: "url-loader",
+                        options: {
+                            limit: 8192,
+                        },
+                    },
+                ],
             },
         ],
     },
@@ -65,7 +90,7 @@ module.exports = {
         : {},
     plugins: [
         new HtmlWebpackPlugin({
-            template: "./public/index.html",
+            template: "./public/index.ejs",
             minify: isProduction
                 ? {
                       removeComments: true, // Remove comments from HTML
@@ -73,6 +98,29 @@ module.exports = {
                       removeRedundantAttributes: true, // Remove redundant attributes
                   }
                 : false,
+        }),
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: "public/images",
+                    to: "images",
+                },
+                {
+                    from: "public/i18n",
+                    to: "i18n",
+                },
+                {
+                    from: "public/c.js",
+                    to: "c.js",
+                },
+                {
+                    from: "public/favicon.ico",
+                    to: "favicon.ico",
+                },
+            ],
+        }),
+        new webpack.DefinePlugin({
+            "process.env.BUILD_VERSION": JSON.stringify(new Date().getTime()),
         }),
     ],
 };

@@ -1,12 +1,21 @@
-import React from "react";
-import ExampleComponent from "./components/ExampleComponent";
+import React, { useEffect } from "react";
+import Lobby from "./components/lobby";
+import { TolgeeProvider } from "@tolgee/react";
+import { tolgee } from "./tolgee";
+import { GameEventManager } from "./_shared/utils/game-event-manager";
 
 const App: React.FC = () => {
+    useEffect(() => {
+        GameEventManager.getInstance();
+
+        return () => {
+            GameEventManager.destroy();
+        };
+    }, []);
     return (
-        <div>
-            <h1>Lobby ReactJS</h1>
-            <ExampleComponent />
-        </div>
+        <TolgeeProvider tolgee={tolgee}>
+            <Lobby />
+        </TolgeeProvider>
     );
 };
 

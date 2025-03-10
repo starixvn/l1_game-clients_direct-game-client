@@ -1,0 +1,74 @@
+.um {
+    position: relative;
+    background-image: url("./images/um/maintain-bg.png");
+    background-size: cover;
+    height: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 1.6rem;
+
+    > div {
+        margin: 0;
+        position: absolute;
+        top: 47%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        width: max-content;
+
+        .logo {
+            width: auto;
+            height: auto;
+            max-width: 50vw;
+        }
+        .image {
+            width: auto;
+            height: auto;
+            max-width: 65vw;
+            margin-top: 4rem;
+        }
+        .title {
+            text-transform: uppercase;
+            font-size: 2rem;
+            font-weight: 500;
+        }
+
+        .time {
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: end;
+            margin-top: 2rem;
+
+            div {
+                span {
+                    color: #f89c26;
+                }
+            }
+        }
+    }
+
+    .return-button-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    @media only screen and (orientation: landscape) {
+        font-size: 1.4rem;
+
+        > div {
+            .title {
+                font-size: 1.6rem;
+            }
+            .image {
+                margin-top: 1rem;
+                max-width: 35vh;
+            }
+            .time {
+                margin-top: 1rem;
+            }
+        }
+    }
+}
