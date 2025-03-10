@@ -5,6 +5,7 @@
     bottom: 8rem;
     width: 4rem;
     height: 4rem;
+
     img {
         width: 100%;
         height: 100%;
@@ -31,23 +32,29 @@
             background-position: center top;
             background-size: contain;
             background-repeat: no-repeat;
+
             &.sp {
                 height: 12vh;
                 background-image: url("/images/logo/logo_sp.webp");
             }
+
             &.vg {
                 background-image: url("/images/logo/logo_vg.webp");
             }
+
             &.sg {
                 background-image: url("/images/logo/logo_sg.webp");
             }
+
             &.tip88 {
                 background-image: url("/images/logo/logo_tip88.webp");
             }
         }
+
         .text {
             margin-top: 1.5rem;
             max-width: 70vw;
+
             &.text-sp {
                 margin-top: 3rem;
                 filter: brightness(5);

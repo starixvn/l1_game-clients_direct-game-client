@@ -24,12 +24,12 @@ const Loading = () => {
         return lang || StorageManager.get<string>(localStorageKeys.language);
     });
     const language = getLanguage();
-
     return (
         <div className="loading-page" data-testid="loading-page">
             <div className="bg" data-testid="bg"></div>
             <div className="logo">
                 {operator && <div className={`logo-img ${operatorAlias[operator.toLowerCase()]}`}></div>}
+                <div className={`logo-img ${operatorAlias[operator.toLowerCase()]}`}></div>
                 <img
                     data-testid="text-logo"
                     className={`text text-${operatorAlias[operator.toLowerCase()]}`}
