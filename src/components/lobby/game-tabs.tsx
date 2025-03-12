@@ -105,18 +105,29 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
         }
     };
     const handleMouseMove = (e: MouseEvent) => {
+
         if (!isDragging) {
+            document.querySelectorAll("button").forEach((el) => {
+                (el as HTMLElement).style.pointerEvents = "";
+            });
             return;
         }
         const parentElement = document.querySelector(".parent-tabs");
         if (parentElement) {
             const x = e.clientX - startX;
             parentElement.scrollLeft = scrollLeft - x;
+            document.querySelectorAll("button").forEach((el) => {
+                (el as HTMLElement).style.pointerEvents = "none";
+            });
         }
     };
     const handleMouseUp = () => {
         setIsDragging(false);
     };
+
+    const handleMouseLeave = () => {
+        setIsDragging(false);
+    }
 
     useEffect(() => {
         const moveListener = (e: MouseEvent) => handleMouseMove(e);
@@ -131,7 +142,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
         };
     }, [isDragging]);
     return (
-        <Tabs activeKey={activeKey} onSelect={(k) => k && handleTabSelect(+k)} onMouseDown={handleMouseDown} className="parent-tabs">
+        <Tabs activeKey={activeKey} onSelect={(k) => k && handleTabSelect(+k)} onMouseLeave={handleMouseLeave} onMouseDown={handleMouseDown} className="parent-tabs">
             {gameOfferIds.map((gameId, index) => {
                 const isActive = activeKey === index;
                 return (
