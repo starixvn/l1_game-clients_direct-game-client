@@ -51,7 +51,10 @@ const Lobby: React.FC = () => {
                 queryGameId && offeredGameIds.includes(queryGameId) ? queryGameId : getAvailableGameId(offeredGameIds, response) || 0;
             setAvailableGameId(selectedGameId);
 
-            await handleRedirect(cacheParams);
+            const isRedirect = await handleRedirect(cacheParams);
+            if (isRedirect) {
+                return;
+            }
         }
         setIsLoading(false);
     };
@@ -60,8 +63,11 @@ const Lobby: React.FC = () => {
             const lobbyGameIds = await getLobbyGameIds();
             if (!lobbyGameIds.includes(queryGameId)) {
                 redirectToGame(queryGameId, cacheParams);
+
+                return true;
             }
         }
+        return false;
     };
 
     const redirectToGame = (gameId: number, cacheParams: URLSearchParams) => {
