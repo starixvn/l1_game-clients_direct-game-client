@@ -8,6 +8,7 @@ import { tolgee } from "../../tolgee";
 export const useAuthorization = () => {
     const [isSessionTimeout, setIsSessionTimeout] = useState(false);
     const [umInfo, setUMInfo] = useState<UMInfo | null>(null);
+    const [session, setSession] = useState<SSOResponse | null>(null);
 
     const loadSession = async (token: string | undefined, appType: number) => {
         return token ? sso(token, appType) : verifySession();
@@ -51,6 +52,7 @@ export const useAuthorization = () => {
             const queryParameters = getQueryParameters();
             const { token, appType, lang: language, operator, ref, redirectUrl } = queryParameters;
             const session = await loadSession(token, appType);
+            setSession(session);
             StorageManager.set(localStorageKeys.returnUrl, redirectUrl);
             await loadLanguage(session, language);
             if (!session || isTimeoutSession(session)) {
@@ -79,8 +81,9 @@ export const useAuthorization = () => {
 
     return {
         umInfo,
-        setUMInfo,
         isSessionTimeout,
+        session,
+        setUMInfo,
         initialize,
     };
 };

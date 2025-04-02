@@ -108,6 +108,9 @@ describe("Lobby Component", () => {
         setUMInfo: jest.fn(),
         isSessionTimeout: false,
         initialize: jest.fn().mockResolvedValue({ authorized: true }),
+        session: {
+            system: 7,
+        } as any,
     };
 
     beforeEach(() => {
@@ -269,6 +272,9 @@ describe("Lobby", () => {
             setUMInfo: jest.fn(),
             isSessionTimeout: false,
             initialize: jest.fn().mockResolvedValue({ authorized: true }),
+            session: {
+                system: 7,
+            },
         });
         mockGetOfferedGameIds.mockReturnValue([1, 2, 3]);
         mockGetAvailableGameId.mockReturnValue(1);
@@ -339,6 +345,9 @@ describe("Lobby", () => {
             setUMInfo: jest.fn(),
             isSessionTimeout: false,
             initialize: mockInitialize,
+            session: {
+                system: 7,
+            },
         });
 
         render(<Lobby />);
@@ -367,6 +376,9 @@ describe("Lobby", () => {
             setUMInfo: jest.fn(),
             isSessionTimeout: false,
             initialize: mockInitialize,
+            session: {
+                system: 7,
+            },
         });
 
         render(<Lobby />);

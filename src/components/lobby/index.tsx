@@ -10,6 +10,7 @@ import Loading from "../common/loading";
 import { GameFrame } from "./game-frame";
 import { GameTabs } from "./game-tabs";
 import { LobbyContainer } from "./styles/lobby.style";
+import { AppTypes } from "../../_shared/consts";
 
 const SessionTimeoutPage = React.lazy(() => import("../timeout"));
 const UMPage = React.lazy(() => import("../um"));
@@ -24,7 +25,7 @@ const Lobby: React.FC = () => {
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
     const [availableGameId, setAvailableGameId] = useState<number>(0);
     const [isTimeout, setIsTimeout] = useState(false);
-    const { umInfo, setUMInfo, isSessionTimeout, initialize } = useAuthorization();
+    const { umInfo, isSessionTimeout, session, setUMInfo, initialize } = useAuthorization();
     const [isLoading, setIsLoading] = useState(true);
     const [queryGameId, setQueryGameId] = useState(() => {
         const params = new URLSearchParams(window.location.search);
@@ -70,7 +71,7 @@ const Lobby: React.FC = () => {
             if (!gameOfferIds.includes(gameId)) {
                 return;
             }
-            if (appSettings.hideGameTab) {
+            if (appSettings.hideGameTab || session?.system !== AppTypes.DIRECT) {
                 setQueryGameId(gameId);
             } else {
                 StorageManager.remove(localStorageKeys.selectedGameId);
@@ -100,7 +101,7 @@ const Lobby: React.FC = () => {
     }, [handleOpenOtherGame]);
 
     const renderGameContent = () => {
-        if (appSettings.hideGameTab && queryGameId > 0) {
+        if ((appSettings.hideGameTab || session?.system !== AppTypes.DIRECT) && queryGameId > 0) {
             return <GameFrame gameId={queryGameId} iframeSrc={getGameUrl(queryGameId, [])} />;
         }
 
@@ -130,7 +131,10 @@ const Lobby: React.FC = () => {
     return (
         <>
             <LandscapeMode />
-            <LobbyContainer $tabHeight={TAB_HEIGHT} $hideTab={appSettings.hideGameTab && availableGameId > 0}>
+            <LobbyContainer
+                $tabHeight={TAB_HEIGHT}
+                $hideTab={(appSettings.hideGameTab || session?.system !== AppTypes.DIRECT) && availableGameId > 0}
+            >
                 {renderGameContent()}
             </LobbyContainer>
             {appSettings.enablePromotionTournament && <PromotionTournamentContainer tabHeight={TAB_HEIGHT} />}

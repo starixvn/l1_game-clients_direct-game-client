@@ -16,6 +16,11 @@ export const MAX_AVATAR_ID = 40;
 
 export type LanguageKey = keyof typeof languageMapping;
 
+export const AppTypes = {
+    LOBBY: 1,
+    DIRECT: 7,
+};
+
 export const ResourceTypes = {
     COMMON: "Common",
     MESSAGES: "messages",
