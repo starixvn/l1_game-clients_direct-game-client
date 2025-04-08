@@ -19,6 +19,7 @@ export const GameEvents = {
     backLobby: "backLobby",
     replaceUrl: "replaceUrl",
     splashEnabled: "splashEnabled",
+    copyToClipboard: "copyToClipboard",
 };
 
 export class GameEventManager {
