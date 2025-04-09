@@ -2,107 +2,62 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Loading from "../index";
-import { StorageManager } from "../../../../_shared/utils";
-import { useTolgee } from "@tolgee/react";
+import { AppTypes } from "../../../../_shared/consts";
 
-// Mock dependencies
-jest.mock("@tolgee/react", () => ({
-    useTolgee: jest.fn(),
-}));
-
+// Mock the getSession utility
 jest.mock("../../../../_shared/utils", () => ({
-    StorageManager: {
-        get: jest.fn(),
-    },
-    localStorageKeys: {
-        operator: "operator",
-        language: "language",
-    },
+    getSession: jest.fn(),
 }));
 
 describe("Loading Component", () => {
     beforeEach(() => {
-        // Reset all mocks before each test
-        jest.clearAllMocks();
-
-        // Default Tolgee mock implementation
-        (useTolgee as jest.Mock).mockImplementation(() => ({
-            getLanguage: () => "en",
-        }));
+        // Clear URL parameters before each test
+        window.history.pushState({}, "", "/");
     });
 
-    test("renders basic loading page structure", () => {
+    test("should render fake-tab-menu when appType is DIRECT from URL params", () => {
         // Arrange
-        (StorageManager.get as jest.Mock).mockReturnValue("");
+        window.history.pushState({}, "", `?appType=${AppTypes.DIRECT}`);
 
         // Act
         render(<Loading />);
 
         // Assert
-        expect(screen.getByTestId("loading-page")).toBeInTheDocument();
-        expect(screen.getByTestId("bg")).toBeInTheDocument();
-        expect(screen.getByTestId("loading-icon")).toHaveAttribute("src", "/images/icon-loading.gif");
+        expect(screen.getByTestId("fake-tab-menu")).toBeInTheDocument();
     });
 
-    test("displays operator logo when operator is provided via URL params", () => {
+    test("should render fake-tab-menu when appType is DIRECT from session", () => {
         // Arrange
-        const mockURL = "?op=sp";
-        delete window.location;
-        window.location = new URL(`http://dummy.com${mockURL}`) as any;
+        const mockSession = { system: AppTypes.DIRECT };
+        jest.requireMock("../../../../_shared/utils").getSession.mockReturnValue(mockSession);
 
         // Act
         render(<Loading />);
 
         // Assert
-        const logoImg = screen.getByTestId("loading-page").querySelector(".logo-img");
-        expect(logoImg).toHaveClass("sp");
+        expect(screen.getByTestId("fake-tab-menu")).toBeInTheDocument();
     });
 
-    test("displays operator logo when operator is provided via storage", () => {
+    test("should not render fake-tab-menu when appType is not DIRECT", () => {
         // Arrange
-        delete window.location;
-        window.location = new URL("http://dummy.com") as any;
-        (StorageManager.get as jest.Mock).mockImplementation((key) => (key === "operator" ? "vg" : null));
+        const mockSession = { system: AppTypes.LOBBY };
+        jest.requireMock("../../../../_shared/utils").getSession.mockReturnValue(mockSession);
 
         // Act
         render(<Loading />);
 
         // Assert
-        const logoImg = screen.getByTestId("loading-page").querySelector(".logo-img");
-        expect(logoImg).toHaveClass("vg");
+        expect(screen.queryByTestId("fake-tab-menu")).not.toBeInTheDocument();
     });
 
-    test("uses correct language for logo text from URL params", () => {
+    test("should default to appType 0 when no type is provided in URL or session", () => {
         // Arrange
-        delete window.location;
-        window.location = new URL("http://dummy.com?lang=zh-CN") as any;
-        (StorageManager.get as jest.Mock).mockReturnValue("");
-        (useTolgee as jest.Mock).mockImplementation(() => ({
-            getLanguage: () => "en",
-        }));
+        jest.requireMock("../../../../_shared/utils").getSession.mockReturnValue(null);
 
         // Act
         render(<Loading />);
 
         // Assert
-        const textLogo = screen.getByTestId("text-logo");
-        expect(textLogo).toHaveAttribute("src", "/images/logo/text_zh_cn.webp");
-    });
-
-    test("falls back to Tolgee language when no language param or storage value exists", () => {
-        // Arrange
-        delete window.location;
-        window.location = new URL("http://dummy.com") as any;
-        (StorageManager.get as jest.Mock).mockReturnValue("");
-        (useTolgee as jest.Mock).mockImplementation(() => ({
-            getLanguage: () => "en",
-        }));
-
-        // Act
-        render(<Loading />);
-
-        // Assert
-        const textLogo = screen.getByTestId("text-logo");
-        expect(textLogo).toHaveAttribute("src", "/images/logo/text_en.webp");
+        expect(screen.queryByTestId("fake-tab-menu")).not.toBeInTheDocument();
     });
 });
