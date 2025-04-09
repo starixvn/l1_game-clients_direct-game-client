@@ -97,7 +97,17 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
             $height={dimensions.height}
             $remoteGameBackgroundUrl={getGameBackgroundUrl(gameId)}
         >
-            <iframe title={`Game ${gameId}`} width={dimensions.width} height={dimensions.height} src={iframeSrc} />
+            <iframe
+                ref={(el) => {
+                    if (el) {
+                        wrapperIframeRef.current = el;
+                    }
+                }}
+                title={`Game ${gameId}`}
+                width={dimensions.width}
+                height={dimensions.height}
+                src={iframeSrc}
+            />
         </GameContainer>
     );
 };
