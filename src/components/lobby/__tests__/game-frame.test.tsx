@@ -8,6 +8,9 @@ jest.mock("../../../_shared/utils/url-helper", () => ({
     getGameBackgroundUrl: jest.fn(() => "/background/game-background.webp"),
 }));
 
+// Mock FunctionUtil.copyText
+jest.spyOn(FunctionUtil, 'copyText').mockImplementation(() => Promise.resolve(true));
+
 describe("GameFrame", () => {
     const defaultProps = {
         gameId: 123,
@@ -21,6 +24,14 @@ describe("GameFrame", () => {
             writable: true,
             configurable: true,
             value: 1000,
+        });
+
+        // Mock navigator.clipboard
+        Object.defineProperty(navigator, 'clipboard', {
+            value: {
+                writeText: jest.fn().mockResolvedValue(undefined)
+            },
+            writable: true
         });
     });
 
@@ -64,7 +75,7 @@ describe("GameFrame", () => {
         expect(iframe).toHaveAttribute("height", "1000"); // window.innerHeight - 0
     });
     
-    it("posts message to iframe contentWindow", () => {
+    it("posts message to iframe contentWindow", async () => {
         render(<GameFrame {...defaultProps} />);
         
         const iframe = screen.getByTitle("Game 123");
@@ -79,7 +90,7 @@ describe("GameFrame", () => {
         });
 
         // Trigger postMessage by simulating copyToClipboard event
-        act(() => {
+        await act(async () => {
             GameEventManager.getInstance().notify(GameEvents.copyToClipboard, {
                 copyToClipboard: "test text"
             });
