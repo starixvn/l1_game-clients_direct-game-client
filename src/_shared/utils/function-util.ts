@@ -1,6 +1,6 @@
 export default class FunctionUtil {
     public static isAndroidWebView(): boolean {
-        const userAgent = (navigator?.userAgent || navigator?.vendor || window?.opera || '').toString();
+        const userAgent = (navigator?.userAgent || window?.opera || "").toString();
 
         // Check for Android user agent
         const isAndroid = /Android/i.test(userAgent);

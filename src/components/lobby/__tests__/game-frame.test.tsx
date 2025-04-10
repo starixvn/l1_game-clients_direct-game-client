@@ -1,5 +1,7 @@
-import { render, screen, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { act, render, screen } from "@testing-library/react";
+import { GameEventManager, GameEvents } from "../../../_shared/utils";
+import FunctionUtil from "../../../_shared/utils/function-util";
 import { GameFrame } from "../game-frame";
 
 jest.mock("../../../_shared/utils/url-helper", () => ({
@@ -60,5 +62,101 @@ describe("GameFrame", () => {
         const iframe = screen.getByTitle("Game 123");
         expect(iframe).toHaveAttribute("width", "562"); // Math.floor(1000 * (756/1344))
         expect(iframe).toHaveAttribute("height", "1000"); // window.innerHeight - 0
+    });
+    
+    it("posts message to iframe contentWindow", () => {
+        render(<GameFrame {...defaultProps} />);
+        
+        const iframe = screen.getByTitle("Game 123");
+        const mockContentWindow = {
+            postMessage: jest.fn()
+        };
+
+        // Mock the iframe contentWindow
+        Object.defineProperty(iframe, 'contentWindow', {
+            value: mockContentWindow,
+            writable: true
+        });
+
+        // Trigger postMessage by simulating copyToClipboard event
+        act(() => {
+            GameEventManager.getInstance().notify(GameEvents.copyToClipboard, {
+                copyToClipboard: "test text"
+            });
+        });
+
+        // Verify postMessage was called with correct data
+        expect(mockContentWindow.postMessage).toHaveBeenCalledWith(
+            { copySuccessfully: true },
+            "https://example.com/game"
+        );
+    });
+
+    it("handles copyToClipboard failure", async () => {
+        render(<GameFrame {...defaultProps} />);
+        
+        const iframe = screen.getByTitle("Game 123");
+        const mockContentWindow = {
+            postMessage: jest.fn()
+        };
+
+        // Mock the iframe contentWindow
+        Object.defineProperty(iframe, 'contentWindow', {
+            value: mockContentWindow,
+            writable: true
+        });
+
+        // Mock FunctionUtil.copyText to return false
+        jest.spyOn(FunctionUtil, 'copyText').mockResolvedValue(false);
+
+        // Trigger postMessage by simulating copyToClipboard event
+        await act(async () => {
+            GameEventManager.getInstance().notify(GameEvents.copyToClipboard, {
+                copyToClipboard: "test text"
+            });
+        });
+
+        // Verify copyText was called with correct text
+        expect(FunctionUtil.copyText).toHaveBeenCalledWith("test text");
+
+        // Verify postMessage was called with failure result
+        expect(mockContentWindow.postMessage).toHaveBeenCalledWith(
+            { copySuccessfully: false },
+            "https://example.com/game"
+        );
+    });
+
+    it("handles copyToClipboard success", async () => {
+        render(<GameFrame {...defaultProps} />);
+        
+        const iframe = screen.getByTitle("Game 123");
+        const mockContentWindow = {
+            postMessage: jest.fn()
+        };
+
+        // Mock the iframe contentWindow
+        Object.defineProperty(iframe, 'contentWindow', {
+            value: mockContentWindow,
+            writable: true
+        });
+
+        // Mock FunctionUtil.copyText to return true
+        jest.spyOn(FunctionUtil, 'copyText').mockResolvedValue(true);
+
+        // Trigger postMessage by simulating copyToClipboard event
+        await act(async () => {
+            GameEventManager.getInstance().notify(GameEvents.copyToClipboard, {
+                copyToClipboard: "test text"
+            });
+        });
+
+        // Verify copyText was called with correct text
+        expect(FunctionUtil.copyText).toHaveBeenCalledWith("test text");
+
+        // Verify postMessage was called with success result
+        expect(mockContentWindow.postMessage).toHaveBeenCalledWith(
+            { copySuccessfully: true },
+            "https://example.com/game"
+        );
     });
 });
