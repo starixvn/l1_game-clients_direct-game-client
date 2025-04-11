@@ -1,9 +1,9 @@
 import "@testing-library/jest-dom";
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { GameTabs } from "../game-tabs";
-import { GameEventManager, StorageManager } from "../../../_shared/utils";
+import { StorageManager } from "../../../_shared/utils";
 import { useTolgee } from "@tolgee/react";
+import * as useGameResourcesHook from "../../../_shared/react-hooks/use-game-resources";
 
 // Mock dependencies
 jest.mock("@tolgee/react", () => ({
@@ -19,8 +19,6 @@ jest.mock("../../../_shared/utils", () => ({
         selectedGameId: "selectedGameId",
     },
     getGameUrl: jest.fn((gameId) => `http://game-${gameId}/`),
-    getGameLocalizationUrl: jest.fn((gameId) => `http://game-${gameId}/localization.json`),
-    getIconGameTabUrl: jest.fn((gameId) => `http://game-${gameId}/icon.png`),
     GameEvents: { backLobby: "backLobby" },
     GameEventManager: { getInstance: () => ({ subscribe: mockSubscribe, unsubscribe: jest.fn() }) },
 }));
@@ -42,22 +40,23 @@ describe("GameTabs", () => {
         tabHeight: 800,
         setAvailableGameId: jest.fn(),
     };
-
+    const mockUseGameNames = jest.spyOn(useGameResourcesHook, "useGameNames");
+    const mockUseGameIcons = jest.spyOn(useGameResourcesHook, "useGameIcons");
+    const gameNames = {
+        1: "Game One",
+        2: "Game Two",
+        3: "Game Three",
+    };
+    const gameIcons = {
+        1: "http://game-1/icon.png",
+        2: "http://game-2/icon.png",
+        3: "http://game-3/icon.png",
+    };
     beforeEach(() => {
         jest.clearAllMocks();
         (useTolgee as jest.Mock).mockReturnValue({ getLanguage: () => "en" });
-        (global.fetch as jest.Mock).mockImplementation((url) => {
-            const gameId = url.split("game-")[1][0];
-            return Promise.resolve({
-                ok: true,
-                json: () =>
-                    Promise.resolve({
-                        gameNames: {
-                            en: `Test Game ${gameId}`,
-                        },
-                    }),
-            });
-        });
+        mockUseGameNames.mockImplementation(() => gameNames);
+        mockUseGameIcons.mockImplementation(() => gameIcons);
     });
 
     test("should initialize with first game when no previously selected game exists", async () => {
@@ -107,7 +106,7 @@ describe("GameTabs", () => {
         // Arrange
         const mockSetAvailableGameId = jest.fn();
         render(<GameTabs {...defaultProps} setAvailableGameId={mockSetAvailableGameId} />);
-        await waitFor(() => screen.getByText("Test Game 1"));
+        await waitFor(() => screen.getByText("Game One"));
 
         // Act
         const secondTab = screen.getAllByRole("tab")[1];
@@ -120,40 +119,7 @@ describe("GameTabs", () => {
         });
     });
 
-    test("should display fallback game name when API request fails", async () => {
-        // Arrange
-        (global.fetch as jest.Mock).mockRejectedValue(new Error("Network error"));
-
-        // Act
-        render(<GameTabs {...defaultProps} />);
-
-        // Assert
-        await waitFor(() => {
-            expect(screen.getByText("game-1")).toBeInTheDocument();
-        });
-    });
-
     test("should fetch and display game names for all tabs", async () => {
-        // Arrange
-        const gameNames = {
-            1: "Game One",
-            2: "Game Two",
-            3: "Game Three",
-        };
-
-        (global.fetch as jest.Mock).mockImplementation((url) => {
-            const gameId = url.split("game-")[1][0];
-            return Promise.resolve({
-                ok: true,
-                json: () =>
-                    Promise.resolve({
-                        gameNames: {
-                            en: gameNames[gameId],
-                        },
-                    }),
-            });
-        });
-
         // Act
         render(<GameTabs {...defaultProps} />);
 
@@ -169,7 +135,7 @@ describe("GameTabs", () => {
         // Arrange
         const mockSetAvailableGameId = jest.fn();
         render(<GameTabs {...defaultProps} setAvailableGameId={mockSetAvailableGameId} />);
-        await waitFor(() => screen.getByText("Test Game 1"));
+        await waitFor(() => screen.getByText("Game One"));
 
         // Act
         const secondTab = screen.getAllByRole("tab")[1];

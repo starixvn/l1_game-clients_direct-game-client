@@ -1,9 +1,9 @@
 import React, { MouseEvent, useEffect, useRef, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import { useTolgee } from "@tolgee/react";
-import { getGameLocalizationUrl, getGameUrl, getIconGameTabUrl, localStorageKeys, StorageManager } from "../../_shared/utils";
+import { getGameUrl, localStorageKeys, StorageManager } from "../../_shared/utils";
 import { GameFrame } from "./game-frame";
 import { isMobile } from "react-device-detect";
+import { useGameNames, useGameIcons } from "../../_shared/react-hooks/use-game-resources";
 
 interface GameTabsProps {
     gameOfferIds: number[];
@@ -13,25 +13,19 @@ interface GameTabsProps {
 }
 
 export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameId, setAvailableGameId, tabHeight }) => {
-    const currentLanguage = useTolgee().getLanguage();
+    const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [activeKey, setActiveKey] = useState(0);
     const [iframeSrc, setIframeSrc] = useState<string>();
-    const [gameNames, setGameNames] = useState<Record<number, string>>({});
-    const [iconUrls, setIconUrls] = useState<Record<number, string>>({});
-    const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
-
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [startX, setStartX] = useState<number>(0);
     const [scrollLeft, setScrollLeft] = useState<number>(0);
-
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-
+    const gameNames = useGameNames(gameOfferIds);
+    const iconUrls = useGameIcons(gameOfferIds);
 
     const handleMenuClick = () => {
         setIsMenuOpen(!isMenuOpen);
-    }
-
-
+    };
 
     const setSelectedGameId = (gameId: number) => {
         setActiveKey(gameOfferIds.indexOf(gameId));
@@ -56,43 +50,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
         setSelectedGameId(gameId);
         setIsMenuOpen(false);
     };
-
-    const getGameName = async (gameId: number) => {
-        const url = getGameLocalizationUrl(gameId);
-        try {
-            const response = await fetch(url);
-            if (response.ok) {
-                const data = await response.json();
-                return { [gameId]: data.gameNames?.[currentLanguage] || `game-${gameId}` };
-            }
-        } catch (error) {
-            console.error(`Error fetching game name for game ${gameId}:`, error);
-        }
-        return { [gameId]: `game-${gameId}` };
-    };
-
-    useEffect(() => {
-        const fetchGameNames = async () => {
-            const names = await Promise.all(gameOfferIds.map((gameId) => getGameName(gameId)));
-            const gameNames = names.reduce((result, gameName) => ({ ...result, ...gameName }), {});
-            setGameNames(gameNames);
-        };
-        fetchGameNames();
-    }, []);
-
-    useEffect(() => {
-        const fetchIconUrls = async () => {
-            const urls = await Promise.all(
-                gameOfferIds.map(async (gameId) => {
-                    const url = await getIconGameTabUrl(gameId);
-                    return { [gameId]: url };
-                })
-            );
-            const iconUrls = urls.reduce((result, iconUrl) => ({ ...result, ...iconUrl }), {});
-            setIconUrls(iconUrls);
-        };
-        fetchIconUrls();
-    }, [gameOfferIds]);
 
     useEffect(() => {
         if (tabRefs.current[activeKey]) {
@@ -137,11 +94,11 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
 
     const handleMouseLeave = () => {
         setIsDragging(false);
-    }
+    };
 
     const handleTouchStart = () => {
         setIsMenuOpen(false);
-    }
+    };
 
     useEffect(() => {
         const moveListener = (e: MouseEvent) => handleMouseMove(e);
@@ -155,10 +112,16 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
             document.removeEventListener("mouseup", upListener as unknown as EventListener);
         };
     }, [isDragging]);
+
+    const renderIconGame = (gameId: number, isActive: boolean) => {
+        return <img src={iconUrls[gameId]} alt={`game-${gameId}`} className={`tab-icon ${!isActive ? "inactive" : ""}`} />;
+    };
+
     return (
         <>
             <Tabs
-                activeKey={activeKey} onSelect={(k) => k && handleTabSelect(+k)}
+                activeKey={activeKey}
+                onSelect={(k) => k && handleTabSelect(+k)}
                 onMouseLeave={handleMouseLeave}
                 onMouseDown={handleMouseDown}
                 className={`parent-tabs ${isMobile ? "menu-tab-mobile" : ""}`}
@@ -176,11 +139,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
                                 >
                                     {iconUrls[gameId] ? (
                                         <div>
-                                            <img
-                                                src={iconUrls[gameId]}
-                                                alt={`game-${gameId}`}
-                                                className={`tab-icon ${!isActive ? "inactive" : ""}`}
-                                            />
+                                            {renderIconGame(gameId, isActive)}
                                             {gameNames[gameId]}
                                         </div>
                                     ) : (
@@ -200,40 +159,36 @@ export const GameTabs: React.FC<GameTabsProps> = ({ gameOfferIds, availableGameI
                 })}
             </Tabs>
 
-            {
-                isMobile && <div className="btn-collapse-menu" onClick={handleMenuClick}>
+            {isMobile && (
+                <div className="btn-collapse-menu" onClick={handleMenuClick}>
                     <span />
                     <span />
                     <span />
                 </div>
-            }
+            )}
 
-            {isMenuOpen && isMobile && <>
-                <ul className="mobile-game-list">
-                    {
-                        gameOfferIds.map((gameId, index) => {
+            {isMenuOpen && isMobile && (
+                <>
+                    <ul className="mobile-game-list">
+                        {gameOfferIds.map((gameId, index) => {
                             const isActive = activeKey === index;
                             return (
-
-                                <li key={gameId} className={`${isActive && iconUrls[gameId] ? "active" : ""}`} onClick={() => handleTabSelect(index)}>
+                                <li
+                                    key={gameId}
+                                    className={`${isActive && iconUrls[gameId] ? "active" : ""}`}
+                                    onClick={() => handleTabSelect(index)}
+                                >
                                     <div className="mask-name">
-                                        <div className="mask-img">
-                                            <img
-                                                src={iconUrls[gameId]}
-                                                alt={`game-${gameId}`}
-                                                className={`tab-icon ${!isActive ? "inactive" : ""}`}
-                                            />
-                                        </div>
+                                        <div className="mask-img">{renderIconGame(gameId, isActive)}</div>
                                         {gameNames[gameId]}
                                     </div>
                                 </li>
-                            )
-                        })
-                    }
-                </ul>
-                <div className="overlay-menu" onClick={handleMenuClick}></div>
-            </>
-            }
+                            );
+                        })}
+                    </ul>
+                    <div className="overlay-menu" onClick={handleMenuClick}></div>
+                </>
+            )}
         </>
     );
 };
