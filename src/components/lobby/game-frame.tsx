@@ -7,6 +7,12 @@ import { getGameBackgroundUrl } from "../../_shared/utils/url-helper";
 import { DEFAULT_GAME_VIEWPORT, DIRECT_GAME_VIEWPORT } from "../common/viewport-setting";
 import { GameContainer } from "./styles/game-frame.style";
 
+declare global {
+    interface Window {
+        resetMetaViewport: Function;
+    }
+}
+
 interface GameFrameProps {
     gameId: number;
     iframeSrc: string;
@@ -89,6 +95,10 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
     useEffect(() => {
         GameEventManager.getInstance().notify(GameEvents.loading, true);
     }, [iframeSrc]);
+
+    useEffect(() => {
+        window.resetMetaViewport?.();
+    }, []);
 
     return (
         <GameContainer

@@ -8,7 +8,6 @@ export const useGameNames = (gameOfferIds: number[]) => {
 
     useEffect(() => {
         const fetchGameNames = async () => {
-            console.log(gameOfferIds, currentLanguage);
             const names = await Promise.all(gameOfferIds.map((gameId) => getGameName(gameId)));
             const gameNames = names.reduce((result, gameName) => ({ ...result, ...gameName }), {});
             setGameNames(gameNames);
