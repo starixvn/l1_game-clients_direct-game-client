@@ -1,10 +1,10 @@
-import React from "react";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Lobby from "../index";
 import * as useAuthHook from "../../../_shared/react-hooks/use-authorization";
 import { StorageManager } from "../../../_shared/utils";
 import * as gameSettingUtils from "../../../_shared/utils/game-setting";
+import { LobbyConfig } from "../../../_shared/utils/game-setting";
 
 // Mock Clipboard API
 Object.defineProperty(window.navigator, "clipboard", {
@@ -48,7 +48,9 @@ jest.mock("../../non-offer", () => ({
 }));
 
 jest.mock("../game-tabs", () => ({
-    GameTabs: ({ gameOfferIds }: { gameOfferIds: number[] }) => <div data-testid="game-tabs">Game Tabs: {gameOfferIds.join(",")}</div>,
+    GameTabs: ({ offerGames }: { offerGames: LobbyConfig[] }) => (
+        <div data-testid="game-tabs">Game Tabs: {offerGames.map((offer) => offer.gameId).join(",")}</div>
+    ),
 }));
 
 jest.mock("../../common/loading", () => ({
@@ -99,7 +101,7 @@ jest.mock("../../../_shared/utils/game-event-manager", () => ({
 }));
 
 describe("Lobby Component", () => {
-    const mockGetOfferedGameIds = jest.spyOn(gameSettingUtils, "getOfferedGameIds");
+    const mockGetOfferedGames = jest.spyOn(gameSettingUtils, "getOfferedGames");
     const mockGetAvailableGameId = jest.spyOn(gameSettingUtils, "getAvailableGameId");
     const mockUseAuthorization = jest.spyOn(useAuthHook, "useAuthorization");
     const defaultAuthState = {
@@ -116,7 +118,11 @@ describe("Lobby Component", () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockUseAuthorization.mockImplementation(() => defaultAuthState);
-        mockGetOfferedGameIds.mockResolvedValue([1, 2, 3]);
+        mockGetOfferedGames.mockResolvedValue([
+            { gameId: 1, isNew: false },
+            { gameId: 2, isNew: true },
+            { gameId: 3, isNew: false },
+        ]);
         mockGetAvailableGameId.mockReturnValue(1);
     });
 
@@ -129,7 +135,11 @@ describe("Lobby Component", () => {
             // Arrange
             const availableGames = [1, 2, 3];
             mockUseAuthorization.mockImplementation(() => defaultAuthState);
-            mockGetOfferedGameIds.mockResolvedValue([1, 2, 3]);
+            mockGetOfferedGames.mockResolvedValue([
+                { gameId: 1, isNew: false },
+                { gameId: 2, isNew: true },
+                { gameId: 3, isNew: false },
+            ]);
 
             // Act
             await act(async () => {
@@ -143,7 +153,7 @@ describe("Lobby Component", () => {
 
         it("should display non-offer page when no games are available", async () => {
             // Arrange
-            mockGetOfferedGameIds.mockResolvedValue([]);
+            mockGetOfferedGames.mockResolvedValue([]);
 
             // Act
             await act(async () => {
@@ -258,7 +268,7 @@ describe("Lobby Component", () => {
 
 describe("Lobby", () => {
     const mockUseAuthorization = useAuthHook.useAuthorization as jest.Mock;
-    const mockGetOfferedGameIds = gameSettingUtils.getOfferedGameIds as jest.Mock;
+    const mockGetOfferedGames = gameSettingUtils.getOfferedGames as jest.Mock;
     const mockGetAvailableGameId = gameSettingUtils.getAvailableGameId as jest.Mock;
 
     beforeEach(() => {
@@ -276,7 +286,20 @@ describe("Lobby", () => {
                 system: 7,
             },
         });
-        mockGetOfferedGameIds.mockReturnValue([1, 2, 3]);
+        mockGetOfferedGames.mockReturnValue([
+            {
+                gameId: 1,
+                isNew: false,
+            },
+            {
+                gameId: 2,
+                isNew: true,
+            },
+            {
+                gameId: 3,
+                isNew: false,
+            },
+        ]);
         mockGetAvailableGameId.mockReturnValue(1);
     });
 
@@ -289,7 +312,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGames).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs
@@ -309,7 +332,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGames).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs
@@ -324,7 +347,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGames).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs
@@ -357,7 +380,7 @@ describe("Lobby", () => {
 
         // Wait for the effect to complete
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGames).toHaveBeenCalled();
         });
 
         // Restore original location
@@ -366,7 +389,7 @@ describe("Lobby", () => {
 
     it("should set gameId to 0 when no game is available", async () => {
         // Mock no available games
-        mockGetOfferedGameIds.mockReturnValue([]);
+        mockGetOfferedGames.mockReturnValue([]);
         mockGetAvailableGameId.mockReturnValue(undefined);
 
         const mockInitialize = jest.fn().mockResolvedValue({ authorized: true });
@@ -384,7 +407,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGames).toHaveBeenCalled();
         });
 
         // Should render NonOfferPage when no games are available
@@ -400,7 +423,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGames).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs
@@ -424,7 +447,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGames).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs
@@ -449,7 +472,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGames).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs
@@ -474,7 +497,7 @@ describe("Lobby", () => {
         render(<Lobby />);
 
         await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
+            expect(mockGetOfferedGames).toHaveBeenCalled();
         });
 
         // Check for the game tabs content with the correct game IDs

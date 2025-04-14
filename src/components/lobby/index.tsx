@@ -4,7 +4,7 @@ import { appSettings } from "../../_shared/game-setting";
 import { useAuthorization } from "../../_shared/react-hooks/use-authorization";
 import { localStorageKeys, StorageManager } from "../../_shared/utils";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
-import { getAvailableGameId, getOfferedGameIds } from "../../_shared/utils/game-setting";
+import { getAvailableGameId, getOfferedGames, LobbyConfig } from "../../_shared/utils/game-setting";
 import { getGameUrl } from "../../_shared/utils/url-helper";
 import Loading from "../common/loading";
 import { GameFrame } from "./game-frame";
@@ -22,7 +22,7 @@ const PromotionTournamentContainer = React.lazy(() => import("../promotion-tourn
 const TAB_HEIGHT = 34;
 
 const Lobby: React.FC = () => {
-    const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
+    const [offerGames, setOfferGames] = useState<LobbyConfig[]>([]);
     const [availableGameId, setAvailableGameId] = useState<number>(0);
     const [isTimeout, setIsTimeout] = useState(false);
     const { umInfo, isSessionTimeout, session, setUMInfo, initialize } = useAuthorization();
@@ -49,10 +49,15 @@ const Lobby: React.FC = () => {
         setIsLoading(true);
         const response = await initialize();
         if (response?.authorized) {
-            const offeredGameIds = await getOfferedGameIds(response);
-            setGameOfferIds(offeredGameIds);
+            const offeredGames = await getOfferedGames(response);
+            setOfferGames(offeredGames);
             const selectedGameId =
-                queryGameId && offeredGameIds.includes(queryGameId) ? queryGameId : getAvailableGameId(offeredGameIds, response) || 0;
+                queryGameId && offeredGames.some((offer) => offer.gameId === queryGameId)
+                    ? queryGameId
+                    : getAvailableGameId(
+                          offeredGames.map((offer) => offer.gameId),
+                          response
+                      ) || 0;
             setAvailableGameId(selectedGameId);
         }
         setIsLoading(false);
@@ -68,7 +73,7 @@ const Lobby: React.FC = () => {
 
     const handleOpenOtherGame = useCallback(
         (gameId: number) => {
-            if (!gameOfferIds.includes(gameId)) {
+            if (!offerGames.some((offer) => offer.gameId === gameId)) {
                 return;
             }
             if (appSettings.hideGameTab || session?.system !== AppTypes.DIRECT) {
@@ -78,7 +83,7 @@ const Lobby: React.FC = () => {
                 setAvailableGameId(gameId);
             }
         },
-        [gameOfferIds]
+        [offerGames]
     );
 
     useEffect(() => {
@@ -107,7 +112,7 @@ const Lobby: React.FC = () => {
 
         return (
             <GameTabs
-                gameOfferIds={gameOfferIds}
+                offerGames={offerGames}
                 availableGameId={availableGameId}
                 setAvailableGameId={setAvailableGameId}
                 tabHeight={TAB_HEIGHT}
@@ -124,7 +129,7 @@ const Lobby: React.FC = () => {
     if (umInfo) {
         return <UMPage umInfo={umInfo} />;
     }
-    if (gameOfferIds.length === 0 || (appSettings.hideGameTab && !gameOfferIds.includes(queryGameId))) {
+    if (offerGames.length === 0 || (appSettings.hideGameTab && !offerGames.some((offer) => offer.gameId === queryGameId))) {
         return <NonOfferPage />;
     }
 

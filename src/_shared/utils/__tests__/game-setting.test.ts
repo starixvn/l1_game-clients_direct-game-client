@@ -1,4 +1,4 @@
-import { getOfferedGameIds, getAvailableGameId } from "../game-setting";
+import { getOfferedGames, getAvailableGameId } from "../game-setting";
 import { getLobbyConfigs } from "../../services/lobby-service";
 import { getSession } from "../session-manager";
 import { appSettings } from "../../game-setting";
@@ -15,28 +15,81 @@ jest.mock("../../utils/url-helper", () => ({
     getBaseServiceUrl: jest.fn().mockReturnValue("https://example.com"),
 }));
 
-describe("getOfferedGameIds", () => {
+describe("getOfferedGames", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
+    describe("when hideGameTab is false", () => {
 
-    test("returns filtered game IDs when hideGameTab is false", async () => {
-        // Arrange
-        const mockAuthorizeInfo: any = {
-            user: {
-                offerGames: [{ gameId: "1" }, { gameId: "2" }, { gameId: "3" }],
-            },
-        };
-        const mockSession = { ss: "testSession", username: "testUser" };
-        (getSession as jest.Mock).mockReturnValue(mockSession);
-        (getLobbyConfigs as jest.Mock).mockResolvedValue({ gameIds: [1, 2] });
+        beforeEach(() => {
+            jest.clearAllMocks();
+            (appSettings.hideGameTab as boolean) = false;
+            (getSession as jest.Mock).mockReturnValue({ ss: "testSession", username: "testUser" });
+        });
 
-        // Act
-        const result = await getOfferedGameIds(mockAuthorizeInfo);
+        test("and newGames is not empty, returns filtered correct lobby config", async () => {
+            // Arrange
+            const mockAuthorizeInfo: any = {
+                user: {
+                    offerGames: [{ gameId: "1" }, { gameId: "2" }],
+                },
+            };
+            const mockLobbyGames = {
+                gameIds: [1, 2, 3, 4],
+                newGames: [2],
+            };
 
-        // Assert
-        expect(result).toEqual([1, 2]);
-        expect(getLobbyConfigs).toHaveBeenCalledWith("testSession", "testUser");
+            (getLobbyConfigs as jest.Mock).mockResolvedValue(mockLobbyGames);
+
+            // Act
+            const result = await getOfferedGames(mockAuthorizeInfo);
+
+            // Assert
+            expect(result).toEqual([
+                { gameId: 1, isNew: false },
+                { gameId: 2, isNew: true },
+            ]);
+            expect(getLobbyConfigs).toHaveBeenCalledWith("testSession", "testUser");
+        });
+
+        test("and newGames is empty, returns filtered correct lobby config", async () => {
+            // Arrange
+            const mockAuthorizeInfo: any = {
+                user: {
+                    offerGames: [{ gameId: "1" }, { gameId: "2" }],
+                },
+            };  
+            const mockLobbyGames = {
+                gameIds: [1, 2, 3, 4],
+                newGames: [],
+            };
+            (getLobbyConfigs as jest.Mock).mockResolvedValue(mockLobbyGames);
+
+            // Act
+            const result = await getOfferedGames(mockAuthorizeInfo);
+
+            // Assert
+            expect(result).toEqual([
+                { gameId: 1, isNew: false },
+                { gameId: 2, isNew: false },
+            ]);            
+        });
+
+        test("returns empty array when no lobby games", async () => {
+            // Arrange
+            const mockAuthorizeInfo: any = {
+                user: {
+                    offerGames: [{ gameId: "1" }, { gameId: "2" }],
+                },
+            };
+            (getLobbyConfigs as jest.Mock).mockResolvedValue({ gameIds: [] });
+
+            // Act
+            const result = await getOfferedGames(mockAuthorizeInfo);
+
+            // Assert
+            expect(result).toEqual([]);
+        });
     });
 
     test("returns only offered games when hideGameTab is true", async () => {
@@ -46,13 +99,23 @@ describe("getOfferedGameIds", () => {
                 offerGames: [{ gameId: "1" }, { gameId: "2" }],
             },
         };
+        const mockLobbyGames = {
+            gameIds: [1, 2, 3],
+            newGames: [2],
+        };
+        (getLobbyConfigs as jest.Mock).mockResolvedValue(mockLobbyGames);
+        (getSession as jest.Mock).mockReturnValue({ ss: "session", username: "user" });
+
         (appSettings.hideGameTab as boolean) = true;
 
         // Act
-        const result = await getOfferedGameIds(mockAuthorizeInfo);
+        const result = await getOfferedGames(mockAuthorizeInfo);
 
         // Assert
-        expect(result).toEqual([1, 2]);
+        expect(result).toEqual([
+            { gameId: 1, isNew: false },
+            { gameId: 2, isNew: false },
+        ]);
         expect(getLobbyConfigs).not.toHaveBeenCalled();
     });
 
@@ -68,7 +131,7 @@ describe("getOfferedGameIds", () => {
         (getLobbyConfigs as jest.Mock).mockResolvedValue({ gameIds: [1, 2, 3] });
 
         // Act
-        const result = await getOfferedGameIds(mockAuthorizeInfo);
+        const result = await getOfferedGames(mockAuthorizeInfo);
 
         // Assert
         expect(result).toEqual([]);

@@ -101,9 +101,10 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         list-style: none;
         gap: 8px;
         li{
-           overflow: hidden;
-           padding : 8px 12px 8px 12px;
-           border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            padding : 8px 12px 8px 12px;
+            border-radius: 10px;
             border: 1px solid #C0C0C0;
             background: #FFF;
            .mask-name{
@@ -164,4 +165,16 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         z-index: 0;
         height: 100%;
     }
+    .new-tag{
+        width: 3.8rem;
+        height: 1.9rem;
+        position: relative;
+        top: -5px;
+        &.menu-open{
+            position: absolute;
+            top: 2px;
+            right: 2px
+        }
+    }
+    
 `;

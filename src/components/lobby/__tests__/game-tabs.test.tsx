@@ -33,9 +33,13 @@ global.fetch = jest.fn();
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 describe("GameTabs", () => {
-    const mockGameOfferIds = [1, 2, 3];
+    const mockOfferGames = [
+        { gameId: 1, isNew: false },
+        { gameId: 2, isNew: true },
+        { gameId: 3, isNew: false },
+    ];
     const defaultProps = {
-        gameOfferIds: mockGameOfferIds,
+        offerGames: mockOfferGames,
         availableGameId: undefined,
         tabHeight: 800,
         setAvailableGameId: jest.fn(),
@@ -156,11 +160,57 @@ describe("GameTabs", () => {
 
         // Assert
         await waitFor(() => {
-            mockGameOfferIds.forEach((gameId) => {
-                const icon = screen.getByAltText(`game-${gameId}`);
+            mockOfferGames.forEach((game) => {
+                const icon = screen.getByAltText(`game-${game.gameId}`);
                 expect(icon).toBeInTheDocument();
-                expect(icon).toHaveAttribute("src", `http://game-${gameId}/icon.png`);
+                expect(icon).toHaveAttribute("src", `http://game-${game.gameId}/icon.png`);
             });
+        });
+    });
+
+    test.each([
+        ['en', '/images/new-tag/en.png'],
+        ['vi', '/images/new-tag/vi.png'],
+        ['th', '/images/new-tag/th.png'],
+        ['zh_cn', '/images/new-tag/zh_cn.png'],
+        ['zh_tw', '/images/new-tag/zh_tw.png'],
+    ])('should show correct new-tag image for %s language', async (language, expectedImagePath) => {
+        // Arrange
+        (useTolgee as jest.Mock).mockImplementation(() => ({
+            getLanguage: () => language
+        }));
+
+        // Act
+        render(<GameTabs {...defaultProps} />);
+
+        // Assert
+        await waitFor(() => {
+            const newTag = screen.getByAltText("new-tag");
+            expect(newTag).toHaveAttribute("src", expectedImagePath);
+        });
+    });
+
+    test("should display 'NEW' tag for new game", async () => {
+        // Arrange
+        render(<GameTabs {...defaultProps} />);
+
+        // Assert
+        await waitFor(() => {
+            const newGameTab = screen.getAllByRole("tab")[1]; // Game 2 is marked as new
+            const newTag = newGameTab.querySelector('img[alt="new-tag"]');
+            expect(newTag).toBeInTheDocument();
+        });
+    });
+
+    test("should not display 'NEW' tag for non-new games", async () => {
+        // Arrange
+        render(<GameTabs {...defaultProps} />);
+
+        // Assert
+        await waitFor(() => {
+            const regularGameTab = screen.getAllByRole("tab")[0]; // Game 1 is not new
+            const newTag = regularGameTab.querySelector('img[alt="new-tag"]');
+            expect(newTag).not.toBeInTheDocument();
         });
     });
 });

@@ -3,22 +3,30 @@ import { getLobbyConfigs } from "../services/lobby-service";
 import { appSettings } from "../game-setting";
 import { getSession } from "./session-manager";
 import { AppTypes } from "../consts";
+export type LobbyConfig = {
+    gameId: number;
+    isNew: boolean;
+};
 
-export const getOfferedGameIds = async (authorizeInfo: AuthorizeResponse) => {
+export const getOfferedGames = async (authorizeInfo: AuthorizeResponse): Promise<LobbyConfig[]> => {
     const session = getSession();
     const appType = session?.system;
     const offeredGameIds = authorizeInfo?.user?.offerGames?.map((game: any) => +game?.gameId);
     if (appSettings.hideGameTab || appType === AppTypes.LOBBY) {
-        return offeredGameIds;
+        return offeredGameIds.map((gameId) => ({ gameId, isNew: false }));
     } else {
-        const lobbyGameIds = await getLobbyGameIds();
-        return lobbyGameIds.filter((gameId) => offeredGameIds.includes(gameId));
+        const lobbyGames = await getLobbyGames();
+        return lobbyGames.filter((game) => offeredGameIds.includes(game.gameId));
     }
 };
 
-const getLobbyGameIds = async () => {
+const getLobbyGames = async (): Promise<LobbyConfig[]> => {
     const session = getSession();
-    return (await getLobbyConfigs(session.ss, session.username))?.gameIds || [];
+    const lobbyGames = await getLobbyConfigs(session.ss, session.username);
+    if (lobbyGames?.gameIds?.length > 0) {
+        return lobbyGames.gameIds.map((gameId) => ({ gameId, isNew: lobbyGames.newGames?.includes(gameId) }));
+    }
+    return [];
 };
 
 export const getAvailableGameId = (offeredGameIds: number[], authorizeInfo: AuthorizeResponse): number | undefined => {
