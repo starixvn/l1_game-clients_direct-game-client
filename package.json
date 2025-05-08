@@ -28,7 +28,7 @@
         "react-bootstrap": "^2.10.4",
         "react-device-detect": "^2.2.3",
         "react-dom": "^18.3.1",
-        "sc-user-service-client": "1.8.3-beta.2",
+        "sc-user-service-client": "1.9.0",
         "styled-components": "^6.1.14",
         "unique-names-generator": "^4.7.1",
         "uuid": "^9.0.1"
