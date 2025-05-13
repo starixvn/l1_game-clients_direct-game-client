@@ -53,7 +53,6 @@ export const useAuthorization = () => {
             const { token, appType, lang: language, operator, ref, redirectUrl } = queryParameters;
             const session = await loadSession(token, appType);
             setSession(session);
-            StorageManager.set(localStorageKeys.returnUrl, redirectUrl);
             await loadLanguage(session, language);
             if (!session || isTimeoutSession(session)) {
                 setIsSessionTimeout(true);
@@ -67,10 +66,12 @@ export const useAuthorization = () => {
                 return null;
             }
 
-            token && removeOldStorage();
             operator && StorageManager.set(localStorageKeys.operator, operator);
-            ref && StorageManager.set(localStorageKeys.ref, ref);
-            redirectUrl && StorageManager.set(localStorageKeys.returnUrl, redirectUrl);
+            if (token) {
+                removeOldStorage();
+                StorageManager.set(localStorageKeys.ref, ref);
+                StorageManager.set(localStorageKeys.returnUrl, redirectUrl);
+            }
             const authorizeInfo = (await authorize(session)) as AuthorizeResponse;
             return await handleAuthorization(session, authorizeInfo);
         } catch (error) {

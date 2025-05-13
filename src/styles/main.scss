@@ -5,6 +5,7 @@ html {
     -webkit-tap-highlight-color: transparent;
     --font-family: "Roboto", sans-serif;
     --black-background: #000;
+    font-display: swap;
 
     // spacing size
     --spacing-size-1: 0.4rem;
@@ -33,6 +34,7 @@ body {
     margin: 0;
     background-color: #000;
     font: 500 1.4rem/1.5 var(--font-family);
+    font-display: swap;
     color: var(--text-color);
     overscroll-behavior: contain;
     touch-action: pan-y;
