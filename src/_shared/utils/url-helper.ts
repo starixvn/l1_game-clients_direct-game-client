@@ -5,6 +5,8 @@ import { getPlayerSetting } from "./player-setting";
 import { localStorageKeys, StorageManager } from "./storage-manager";
 import { directRef, locales } from "../consts";
 
+const v2GameIds = [1, 3, 7, 9, 10, 25, 45];
+
 export type VersionsModel = {
     banner: string;
     icon: string;
@@ -48,15 +50,31 @@ export const getBaseServiceUrl = (): string => {
 };
 
 export const getBaseGameUrl = (gameId: number) => {
-    if (appSettings.clientUrlFormat === null || appSettings.clientUrlFormat === "") {
+    if (appSettings.clientUrlFormatV3 === null || appSettings.clientUrlFormatV3 === "" 
+        || appSettings.clientUrlFormatV2 === null || appSettings.clientUrlFormatV2 === "") {
         throw new Error("Domain URL format is not set");
     }
-
+    
+    let baseUrl = "";
     if (appSettings.isDev) {
-        return appSettings.clientUrlFormat.replace("{gameId}", gameId.toString());
+        if(isGameV2(gameId)){
+            baseUrl =  appSettings.clientUrlFormatV2;
+            }
+            else{
+                baseUrl =  appSettings.clientUrlFormatV3.replace("{gameId}", gameId.toString());
+            }
+    }
+    else
+    {
+        if(isGameV2(gameId)){
+            baseUrl =  appSettings.clientUrlFormatV2.replace("{host}", getRootHost(window.location.host));
+            }
+            else{
+                baseUrl =  appSettings.clientUrlFormatV3.replace("{gameId}", gameId.toString()).replace("{host}", getRootHost(window.location.host));
+            }
     }
 
-    return appSettings.clientUrlFormat.replace("{gameId}", gameId.toString()).replace("{host}", getRootHost(window.location.host));
+    return baseUrl;
 };
 
 export const getVersionsRemoteUrl = (gameId: number) => {
@@ -91,7 +109,11 @@ export const getGameLocalizationUrl = (gameId: number) => {
 
 export const getGameUrl = (gameId: number, offeredGamesId: number[]) => {
     const baseUrl = getBaseGameUrl(gameId);
-    return `${baseUrl}?${buildSessionParams(offeredGamesId.filter((id) => id !== gameId))}`;
+    return `${baseUrl}?gameId=${gameId}&${buildSessionParams(offeredGamesId.filter((id) => id !== gameId))}`;
+};
+
+export const isGameV2 = (gameId: number): boolean => {   
+    return v2GameIds.includes(gameId);
 };
 
 const buildSessionParams = (offeredGamesId: number[]) => {

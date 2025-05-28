@@ -10,7 +10,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         font-weight: bold;
         overflow-x: auto;
         border: none;
-        background : #fff;
+        background : #000;
         position: relative;
         z-index: 2;
         button {

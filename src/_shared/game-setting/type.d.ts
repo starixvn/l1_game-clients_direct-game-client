@@ -16,7 +16,8 @@ export interface IAppSettings {
     env: string;
     subDirectory?: string;
     isDev?: boolean;
-    clientUrlFormat?: string;
+    clientUrlFormatV3?: string;
+    clientUrlFormatV2?: string;
     hideGameTab?: boolean;
     enablePromotionTournament?: boolean;
     promotionDomain?: string;

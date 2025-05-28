@@ -3,8 +3,8 @@ import { deviceInfo } from "../../_shared/utils/device-detect-wrapper";
 import FunctionUtil from "../../_shared/utils/function-util";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import { storePlayerSetting } from "../../_shared/utils/player-setting";
-import { getGameBackgroundUrl } from "../../_shared/utils/url-helper";
-import { DEFAULT_GAME_VIEWPORT, DIRECT_GAME_VIEWPORT } from "../common/viewport-setting";
+import { getGameBackgroundUrl, isGameV2 } from "../../_shared/utils/url-helper";
+import { INSTANT_LANDSCAPE_GAME_VIEWPORT, INSTANT_PORTRAIT_GAME_VIEWPORT } from "../common/viewport-setting";
 import { GameContainer } from "./styles/game-frame.style";
 
 declare global {
@@ -23,7 +23,7 @@ const { isMobile } = deviceInfo;
 export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeight = 0 }) => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const viewport = tabHeight === 0 ? DEFAULT_GAME_VIEWPORT : DIRECT_GAME_VIEWPORT;
+    const viewport = tabHeight !== 0 ? INSTANT_LANDSCAPE_GAME_VIEWPORT : INSTANT_PORTRAIT_GAME_VIEWPORT;
 
     const [dimensions, setDimensions] = useState<{
         width: number | string;
@@ -101,12 +101,14 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
     }, []);
 
     return (
-        <GameContainer
-            ref={containerRef}
-            $gameId={gameId}
-            $height={dimensions.height}
-            $remoteGameBackgroundUrl={getGameBackgroundUrl(gameId)}
-        >
+        
+            <GameContainer
+                ref={containerRef}
+                $gameId={gameId}
+                $height={dimensions.height}
+                $remoteGameBackgroundUrl={getGameBackgroundUrl(gameId)}
+                $isGameV2={isGameV2(gameId)}
+        > 
             <iframe
                 ref={(el) => {
                     if (el) {

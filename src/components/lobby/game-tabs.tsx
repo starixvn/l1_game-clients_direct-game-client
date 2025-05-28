@@ -1,11 +1,12 @@
 import React, { MouseEvent, useEffect, useRef, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import { getGameUrl, localStorageKeys, StorageManager } from "../../_shared/utils";
+import { GameEventManager, GameEvents, getGameUrl, getPlayerSetting, localStorageKeys, StorageManager, storePlayerSetting } from "../../_shared/utils";
 import { GameFrame } from "./game-frame";
 import { isMobile } from "react-device-detect";
 import { useGameNames, useGameIcons } from "../../_shared/react-hooks/use-game-resources";
 import { LobbyConfig } from "../../_shared/utils/game-setting";
 import { useTolgee } from "@tolgee/react";
+import styled from "styled-components";
 
 interface GameTabsProps {
     offerGames: LobbyConfig[];
@@ -42,6 +43,13 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
         setAvailableGameId(gameId);
         const index = offerGames.findIndex((game) => game.gameId === gameId);
         tabRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    };
+
+    const isLandscape = () => {
+        if (typeof window !== 'undefined') {
+            return window.innerWidth > window.innerHeight;
+        }
+        return false;
     };
 
     useEffect(() => {
@@ -133,50 +141,147 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
         return <img src={`/images/new-tag/${currentLanguage}.png`} className={`new-tag ${isMenuOpen ? "menu-open" : ""}`} alt="new-tag" />;
     };
 
+    const SoundToggle = () => {
+        const handleSoundToggle = (e: React.MouseEvent) => {
+            e.preventDefault();
+            try {
+                const oldEnableSound = getPlayerSetting().sfxEnable ?? false;
+                const newEnableSound = !oldEnableSound;
+                storePlayerSetting({ sfxEnable: newEnableSound, musicEnable: newEnableSound });
+
+                const iframe = document.querySelector('iframe');
+                if (iframe?.contentWindow) {
+                    const targetOrigin = new URL(iframe.src).origin;
+                    iframe.contentWindow.postMessage({ 
+                        sfxEnable: newEnableSound,
+                        musicEnable: newEnableSound 
+                    }, targetOrigin);
+                }
+
+                const soundToggleImg = document.querySelector('.sound-toggle img');
+                if (soundToggleImg) {
+                    soundToggleImg.setAttribute('src', `/images/icon_sound${newEnableSound ? '' : '_off'}.png`);
+                }
+            } catch(error) {
+                console.error('Failed to toggle sound:', error);
+            }
+        };
+
+        return (
+            <button 
+                type="button" 
+                onClick={handleSoundToggle}
+                className="sound-toggle"
+                style={{ background: 'none', border: 'none', padding: 0 }}
+            >
+                <img 
+                    src={`/images/icon_sound${getPlayerSetting().sfxEnable ? '' : '_off'}.png`}
+                    alt="Toggle Sound"
+                    width={32}
+                    height={32}
+                />
+            </button>
+        );
+    };
+
+    const GameGuideButton = () => {
+        const handleGameGuide = (e: React.MouseEvent) => {
+            e.preventDefault();
+            try {
+                const iframe = document.querySelector('iframe');
+                if (iframe?.contentWindow) {
+                    const targetOrigin = new URL(iframe.src).origin;
+                    iframe.contentWindow.postMessage({ 
+                        openGameGuide: true
+                    }, targetOrigin);
+                }
+            } catch(error) {
+                console.error('Failed to open game guide:', error);
+            }
+        };
+
+        return (
+            <button
+                type="button"
+                onClick={handleGameGuide}
+                className="game-guide"
+                style={{ background: 'none', border: 'none', padding: 0 }}
+            >
+               <img 
+                    src="/images/icon_guide.png" 
+                    alt="Toggle Sound"
+                    width={32}
+                    height={32}
+                />
+            </button>
+        );
+    };
+
+    const GameControls = styled.div`
+        display: flex;
+        gap: 5px;
+    `;
+
     return (
         <>
-            <Tabs
-                activeKey={activeKey}
-                onSelect={(k) => k && handleTabSelect(+k)}
-                onMouseLeave={handleMouseLeave}
-                onMouseDown={handleMouseDown}
-                className={`parent-tabs ${isMobile ? "menu-tab-mobile" : ""}`}
-                onTouchStart={handleTouchStart}
-            >
-                {offerGames.map((game, index) => {
-                    const isActive = activeKey === index;
-                    const gameId = game.gameId;
-                    const isNew = game.isNew;
-                    return (
-                        <Tab
-                            eventKey={index}
-                            title={
-                                <div
-                                    ref={(el) => (tabRefs.current[index] = el)}
-                                    className={`tab-title ${isActive && iconUrls[gameId] ? "active" : ""}`}
+            <div style={{ display: 'flex', flexDirection: 'column'}}>
+
+                <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                    <Tabs
+                        activeKey={activeKey}
+                        onSelect={(k) => k && handleTabSelect(+k)}
+                        onMouseLeave={handleMouseLeave}
+                        onMouseDown={handleMouseDown}
+                        className={`parent-tabs ${isMobile ? "menu-tab-mobile" : ""}`}
+                        onTouchStart={handleTouchStart}
+                        style={{ flex: 1 }}
+                    >
+                        {offerGames.map((game, index) => {
+                            const isActive = activeKey === index;
+                            const gameId = game.gameId;
+                            const isNew = game.isNew;
+                            return (
+                                <Tab
+                                    eventKey={index}
+                                    title={
+                                        <div
+                                            ref={(el) => (tabRefs.current[index] = el)}
+                                            className={`tab-title ${isActive && iconUrls[gameId] ? "active" : ""}`}
+                                        >
+                                            {iconUrls[gameId] ? (
+                                                <div>
+                                                    {/* {renderIconGame(gameId, isActive)} */}
+                                                    {gameNames[gameId]}
+                                                    {renderNewTag(isNew)}
+                                                </div>
+                                            ) : (
+                                                <div className="skeleton">
+                                                    <div className="skeleton-img" />
+                                                    <div className="skeleton-text" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    }
+                                    key={gameId}
+                                    unmountOnExit={true}
                                 >
-                                    {iconUrls[gameId] ? (
-                                        <div>
-                                            {renderIconGame(gameId, isActive)}
-                                            {gameNames[gameId]}
-                                            {renderNewTag(isNew)}
-                                        </div>
-                                    ) : (
-                                        <div className="skeleton">
-                                            <div className="skeleton-img" />
-                                            <div className="skeleton-text" />
-                                        </div>
-                                    )}
-                                </div>
-                            }
-                            key={gameId}
-                            unmountOnExit={true}
-                        >
-                            {isActive && <GameFrame gameId={gameId} iframeSrc={iframeSrc} tabHeight={tabHeight} />}
-                        </Tab>
-                    );
-                })}
-            </Tabs>
+                                    
+                                </Tab>
+                                
+                            );
+                        })}
+                    </Tabs>
+                    {isLandscape() && (
+                        <GameControls style={{ margin: 2, flexShrink: 0 }}>
+                            <SoundToggle />
+                            <GameGuideButton />
+                        </GameControls>
+                    )}
+                </div>            
+                
+                <GameFrame gameId={offerGames[activeKey].gameId} iframeSrc={iframeSrc} tabHeight={tabHeight} />
+                
+            </div>
 
             {isMobile && (
                 <div className="btn-collapse-menu" onClick={handleMenuClick}>

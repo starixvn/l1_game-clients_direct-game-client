@@ -24,10 +24,55 @@ const getLobbyGames = async (): Promise<LobbyConfig[]> => {
     const session = getSession();
     const lobbyGames = await getLobbyConfigs(session.ss, session.username);
     if (lobbyGames?.gameIds?.length > 0) {
-        return lobbyGames.gameIds.map((gameId) => ({ gameId, isNew: lobbyGames.newGames?.includes(gameId) }));
+        //return lobbyGames.gameIds.map((gameId) => ({ gameId, isNew: lobbyGames.newGames?.includes(gameId) }));
+        return getFakeLobbyGames;
     }
     return [];
 };
+
+const getFakeLobbyGames = [
+    {
+        gameId: 93,
+        isNew: false,
+    },
+    {
+        gameId: 103,
+        isNew: true,
+    },
+    {
+        gameId: 80,
+        isNew: false,
+    },
+    {
+        gameId: 71,
+        isNew: false,
+    },
+    {
+        gameId: 3,
+        isNew: false,
+    },
+    {
+        gameId: 7,
+        isNew: true,
+    },
+    {
+        gameId: 9,
+        isNew: false,
+    },
+    {
+        gameId: 10,
+        isNew: false,
+    },
+    {
+        gameId: 25,
+        isNew: false,
+    },
+    {
+        gameId: 45,
+        isNew: false,
+    },
+];
+
 
 export const getAvailableGameId = (offeredGameIds: number[], authorizeInfo: AuthorizeResponse): number | undefined => {
     const enabledGameIds = authorizeInfo?.user?.enabledGameIds || [];
