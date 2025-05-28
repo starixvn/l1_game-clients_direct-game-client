@@ -48,6 +48,10 @@ const getFakeLobbyGames = [
         isNew: false,
     },
     {
+        gameId: 1,
+        isNew: false,
+    },
+    {
         gameId: 3,
         isNew: false,
     },

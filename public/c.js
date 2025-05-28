@@ -9,8 +9,8 @@ window.envConfig = {
     env: "LOCAL",
     isDev: true,
     clientUrlFormatV3: "https://l2-proxy.lumigame.com/site-instant-{gameId}/",
-    clientUrlFormatV2: "http://localhost:7456/",
+    //clientUrlFormatV2: "http://localhost:7456/",
     //clientUrlFormatV2: "https://l2-mini.lumigame.com/",
-    //clientUrlFormatV2: "https://l2-proxy.lumigame.com/site-instant-v2/",
+    clientUrlFormatV2: "https://l2-proxy.lumigame.com/site-instant-v2/",
     hideGameTab: false,
 };

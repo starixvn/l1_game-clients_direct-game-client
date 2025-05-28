@@ -107,7 +107,6 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
                 $gameId={gameId}
                 $height={dimensions.height}
                 $remoteGameBackgroundUrl={getGameBackgroundUrl(gameId)}
-                $isGameV2={isGameV2(gameId)}
         > 
             <iframe
                 ref={(el) => {
