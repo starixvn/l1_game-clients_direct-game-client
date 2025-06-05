@@ -152,9 +152,9 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                 const iframe = document.querySelector('iframe');
                 if (iframe?.contentWindow) {
                     const targetOrigin = new URL(iframe.src).origin;
-                    iframe.contentWindow.postMessage({ 
+                    iframe.contentWindow.postMessage({
                         sfxEnable: newEnableSound,
-                        musicEnable: newEnableSound 
+                        musicEnable: newEnableSound
                     }, targetOrigin);
                 }
 
@@ -168,17 +168,17 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
         };
 
         return (
-            <button 
-                type="button" 
+            <button
+                type="button"
                 onClick={handleSoundToggle}
                 className="sound-toggle"
                 style={{ background: 'none', border: 'none', padding: 0 }}
             >
-                <img 
+                <img
                     src={`/images/icon_sound${getPlayerSetting().sfxEnable ? '' : '_off'}.png`}
                     alt="Toggle Sound"
-                    width={32}
-                    height={32}
+                    width={36}
+                    height={36}
                 />
             </button>
         );
@@ -191,7 +191,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                 const iframe = document.querySelector('iframe');
                 if (iframe?.contentWindow) {
                     const targetOrigin = new URL(iframe.src).origin;
-                    iframe.contentWindow.postMessage({ 
+                    iframe.contentWindow.postMessage({
                         openGameGuide: true
                     }, targetOrigin);
                 }
@@ -207,11 +207,11 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                 className="game-guide"
                 style={{ background: 'none', border: 'none', padding: 0 }}
             >
-               <img 
-                    src="/images/icon_guide.png" 
+               <img
+                    src="/images/icon_guide.png"
                     alt="Toggle Sound"
-                    width={32}
-                    height={32}
+                    width={36}
+                    height={36}
                 />
             </button>
         );
@@ -219,14 +219,13 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
 
     const GameControls = styled.div`
         display: flex;
-        gap: 5px;
+        gap: 12px;
     `;
 
     return (
         <>
             <div style={{ display: 'flex', flexDirection: 'column'}}>
-
-                <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                <div className={`menu-container ${isLandscape() ? "menu-container-landscape" : "menu-container-portrait"}`}>
                     <Tabs
                         activeKey={activeKey}
                         onSelect={(k) => k && handleTabSelect(+k)}
@@ -249,11 +248,11 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                                             className={`tab-title ${isActive && iconUrls[gameId] ? "active" : ""}`}
                                         >
                                             {iconUrls[gameId] ? (
-                                                <div>
+                                                <>
                                                     {/* {renderIconGame(gameId, isActive)} */}
                                                     {gameNames[gameId]}
-                                                    {renderNewTag(isNew)}
-                                                </div>
+                                                    {/* {renderNewTag(isNew)} */}
+                                                </>
                                             ) : (
                                                 <div className="skeleton">
                                                     <div className="skeleton-img" />
@@ -265,22 +264,19 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                                     key={gameId}
                                     unmountOnExit={true}
                                 >
-                                    
                                 </Tab>
-                                
                             );
                         })}
                     </Tabs>
                     {isLandscape() && (
-                        <GameControls style={{ margin: 2, flexShrink: 0 }}>
+                        <GameControls className="game-controls">
                             <SoundToggle />
                             <GameGuideButton />
                         </GameControls>
                     )}
-                </div>            
-                
+                </div>
                 <GameFrame gameId={offerGames[activeKey].gameId} iframeSrc={iframeSrc} tabHeight={tabHeight} />
-                
+
             </div>
 
             {isMobile && (
