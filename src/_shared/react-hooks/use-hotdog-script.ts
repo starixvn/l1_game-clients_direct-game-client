@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { localStorageKeys, StorageManager } from "../utils";
 
 interface HotdogScriptParams {
     hdg_code?: string;
@@ -18,10 +19,18 @@ const DEFAULT_CONFIG: HotdogConfig = {
     defaultParams: {},
 };
 
+const sxdGameId = 1000;
+
 export const useHotdogScript = (config: HotdogConfig = DEFAULT_CONFIG) => {
     const { baseUrl, defaultParams } = config;
 
     useEffect(() => {
+        const storedGameId = StorageManager.get<number>(localStorageKeys.portraitGameId);
+
+        if (storedGameId >= sxdGameId) {
+            return;
+        }
+
         // Helper to get all params from localStorage
         const getStorageParams = (): HotdogScriptParams => {
             try {

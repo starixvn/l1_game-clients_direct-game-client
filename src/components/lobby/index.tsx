@@ -22,11 +22,6 @@ const PromotionTournamentContainer = React.lazy(() => import("../promotion-tourn
 const TAB_HEIGHT = 34;
 
 const Lobby: React.FC = () => {
-    if (appSettings.hotdogScript && appSettings.hotdogScript.baseUrl) {
-        useHotdogScript({
-            baseUrl: appSettings.hotdogScript.baseUrl,
-        });
-    }
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
     const [availableGameId, setAvailableGameId] = useState<number>(0);
     const [isTimeout, setIsTimeout] = useState(false);
@@ -45,6 +40,12 @@ const Lobby: React.FC = () => {
 
         return storedGameId || 0;
     });
+
+    if (appSettings.hotdogScript && appSettings.hotdogScript.baseUrl) {
+        useHotdogScript({
+            baseUrl: appSettings.hotdogScript.baseUrl,
+        });
+    }
 
     const authenticate = async () => {
         setIsLoading(true);
