@@ -11,6 +11,7 @@ import { GameFrame } from "./game-frame";
 import { GameTabs } from "./game-tabs";
 import { LobbyContainer } from "./styles/lobby.style";
 import { getLobbyGameIds } from "../../_shared/utils/game-setting";
+import { useHotdogScript } from "../../_shared/react-hooks";
 const SessionTimeoutPage = React.lazy(() => import("../timeout"));
 const UMPage = React.lazy(() => import("../um"));
 const NonOfferPage = React.lazy(() => import("../non-offer"));
@@ -21,6 +22,11 @@ const PromotionTournamentContainer = React.lazy(() => import("../promotion-tourn
 const TAB_HEIGHT = 34;
 
 const Lobby: React.FC = () => {
+    if (appSettings.hotdogScript && appSettings.hotdogScript.baseUrl) {
+        useHotdogScript({
+            baseUrl: appSettings.hotdogScript.baseUrl,
+        });
+    }
     const [gameOfferIds, setGameOfferIds] = useState<number[]>([]);
     const [availableGameId, setAvailableGameId] = useState<number>(0);
     const [isTimeout, setIsTimeout] = useState(false);

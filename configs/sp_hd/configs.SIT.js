@@ -10,4 +10,7 @@ window.envConfig = {
     clientUrlFormat: "https://hdsitproxy.{host}/sit/portrait-client-{gameId}/",
     hideGameTab: true,
     xdGameUrl: "https://hdsit.{host}/",
+    hotdogScript: {
+        baseUrl: "https://res.hotdog-gaming.com/ingame-lobby-client/index.min.js",
+    },
 };

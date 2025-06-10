@@ -17,4 +17,7 @@ export interface IAppSettings {
     enablePromotionTournament?: boolean;
     promotionDomain?: string;
     intervalPromotionByMinute?: number;
+    hotdogScript: {
+        baseUrl: string;
+    };
 }
