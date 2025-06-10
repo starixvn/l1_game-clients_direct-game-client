@@ -35,9 +35,9 @@ const Lobby: React.FC = () => {
             StorageManager.set(localStorageKeys.queryGameId, parsedGameId || 0);
             return isNaN(parsedGameId) ? 0 : parsedGameId;
         }
-
-        const token = params.get("token");
-        if (token) {
+   
+        if (params.get("token")) {
+            StorageManager.set(localStorageKeys.params, params.toString());
             return 0;
         }
 

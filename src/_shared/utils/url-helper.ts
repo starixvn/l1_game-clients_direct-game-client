@@ -109,6 +109,12 @@ export const getGameLocalizationUrl = (gameId: number) => {
 
 export const getGameUrl = (gameId: number, offeredGamesId: number[]) => {
     const baseUrl = getBaseGameUrl(gameId);
+    if (isGameV2(gameId))
+    {
+        const params = StorageManager.get(localStorageKeys.params);
+        return `${baseUrl}?gameId=${gameId}&${params}`;
+    }
+
     return `${baseUrl}?gameId=${gameId}&${buildSessionParams(offeredGamesId.filter((id) => id !== gameId))}`;
 };
 

@@ -107,6 +107,7 @@ export const localStorageKeys = {
     returnUrl: buildLocalStorageKey("returnUrl"),
     ref: buildLocalStorageKey("ref"),
     enableSound: buildLocalStorageKey("enableSound"),
+    params: buildLocalStorageKey("params"),
 };
 
 export function buildLocalStorageKey(key: string) {
