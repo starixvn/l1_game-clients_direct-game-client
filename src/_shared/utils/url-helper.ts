@@ -108,15 +108,16 @@ export const getGameLocalizationUrl = (gameId: number) => {
 
 export const getGameUrl = (gameId: number, offeredGamesId: number[]) => {
     const baseUrl = getBaseGameUrl(gameId);
+    const gameUrl = `${baseUrl}?gameId=${gameId}&${buildSessionParams(offeredGamesId.filter((id) => id !== gameId))}`;
+
     if (FunctionUtil.isGameV2(gameId))
     {
         const params = StorageManager.get(localStorageKeys.params);
-        return `${baseUrl}?gameId=${gameId}&${params}`;
+        return `${gameUrl}&${JSON.stringify(params)}`;
     }
 
-    return `${baseUrl}?gameId=${gameId}&${buildSessionParams(offeredGamesId.filter((id) => id !== gameId))}`;
+    return gameUrl;
 };
-
 
 
 const buildSessionParams = (offeredGamesId: number[]) => {
