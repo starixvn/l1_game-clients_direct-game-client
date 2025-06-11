@@ -32,7 +32,7 @@ const getLobbyGames = async (): Promise<LobbyConfig[]> => {
 
 const getFakeLobbyGames = [
     {
-        gameId: 93,
+        gameId: 9,
         isNew: false,
     },
     {
@@ -40,11 +40,7 @@ const getFakeLobbyGames = [
         isNew: true,
     },
     {
-        gameId: 80,
-        isNew: false,
-    },
-    {
-        gameId: 71,
+        gameId: 93,
         isNew: false,
     },
     {
@@ -52,15 +48,15 @@ const getFakeLobbyGames = [
         isNew: false,
     },
     {
-        gameId: 3,
-        isNew: false,
-    },
-    {
         gameId: 7,
         isNew: true,
     },
     {
-        gameId: 9,
+        gameId: 3,
+        isNew: false,
+    },
+    {
+        gameId: 45,
         isNew: false,
     },
     {
@@ -72,9 +68,14 @@ const getFakeLobbyGames = [
         isNew: false,
     },
     {
-        gameId: 45,
+        gameId: 71,
         isNew: false,
     },
+    
+    {
+        gameId: 80,
+        isNew: false,
+    }
 ];
 
 

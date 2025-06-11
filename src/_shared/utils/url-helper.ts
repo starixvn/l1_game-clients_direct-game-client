@@ -4,8 +4,7 @@ import { getSession } from "./session-manager";
 import { getPlayerSetting } from "./player-setting";
 import { localStorageKeys, StorageManager } from "./storage-manager";
 import { directRef, locales } from "../consts";
-
-const v2GameIds = [1, 3, 7, 9, 10, 25, 45];
+import FunctionUtil from "./function-util";
 
 export type VersionsModel = {
     banner: string;
@@ -57,7 +56,7 @@ export const getBaseGameUrl = (gameId: number) => {
     
     let baseUrl = "";
     if (appSettings.isDev) {
-        if(isGameV2(gameId)){
+        if(FunctionUtil.isGameV2(gameId)){
             baseUrl =  appSettings.clientUrlFormatV2;
             }
             else{
@@ -66,7 +65,7 @@ export const getBaseGameUrl = (gameId: number) => {
     }
     else
     {
-        if(isGameV2(gameId)){
+        if(FunctionUtil.isGameV2(gameId)){
             baseUrl =  appSettings.clientUrlFormatV2.replace("{host}", getRootHost(window.location.host));
             }
             else{
@@ -109,7 +108,7 @@ export const getGameLocalizationUrl = (gameId: number) => {
 
 export const getGameUrl = (gameId: number, offeredGamesId: number[]) => {
     const baseUrl = getBaseGameUrl(gameId);
-    if (isGameV2(gameId))
+    if (FunctionUtil.isGameV2(gameId))
     {
         const params = StorageManager.get(localStorageKeys.params);
         return `${baseUrl}?gameId=${gameId}&${params}`;
@@ -118,9 +117,7 @@ export const getGameUrl = (gameId: number, offeredGamesId: number[]) => {
     return `${baseUrl}?gameId=${gameId}&${buildSessionParams(offeredGamesId.filter((id) => id !== gameId))}`;
 };
 
-export const isGameV2 = (gameId: number): boolean => {   
-    return v2GameIds.includes(gameId);
-};
+
 
 const buildSessionParams = (offeredGamesId: number[]) => {
     const sessionInfo = getSession();

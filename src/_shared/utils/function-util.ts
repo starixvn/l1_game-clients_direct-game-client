@@ -1,4 +1,11 @@
+const v2GameIds = [1, 3, 7, 9, 10, 25, 45];
+
 export default class FunctionUtil {
+    
+    public static isGameV2 = (gameId: number): boolean => {   
+        return v2GameIds.includes(gameId);
+    };
+
     public static isAndroidWebView(): boolean {
         const userAgent = (navigator?.userAgent || window?.opera || "").toString();
 
