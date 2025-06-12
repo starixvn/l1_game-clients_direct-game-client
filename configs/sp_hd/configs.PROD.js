@@ -1,6 +1,6 @@
 window.envConfig = {
     sentry: {
-        dsn: "https://08d902b128ea45b6a11639833224f481@scsentry.sgamesuat.com/25",
+        dsn: "https://aec64e89fed64d25a73926e63f2500f7@sentry.sabagame.com/179",
         environment: "PROD",
     },
     system: "HD",
