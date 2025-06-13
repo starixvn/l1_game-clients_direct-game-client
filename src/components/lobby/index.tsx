@@ -135,9 +135,9 @@ const Lobby: React.FC = () => {
 
     return (
         <>
-            <LandscapeMode />
-            <LobbyContainer
-                $tabHeight={TAB_HEIGHT}
+                <LandscapeMode />
+                <LobbyContainer
+                    $tabHeight={TAB_HEIGHT}
                 $hideTab={(appSettings.hideGameTab || session?.system !== AppTypes.DIRECT) && availableGameId > 0}
             >
                 {renderGameContent()}

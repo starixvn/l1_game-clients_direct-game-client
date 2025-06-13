@@ -36,12 +36,12 @@ const LandscapeMode = () => {
         return null;
     }
 
-    return (
-        <div className="landscape-mode" data-testid="landscape-mode-component">
-            <img src="/images/landscape-icon.svg" alt="landscape-icon" />
-            <p className="info">{t("rotateDevice")}</p>
-        </div>
-    );
+    // return (
+    //     <div className="landscape-mode" data-testid="landscape-mode-component">
+    //         <img src="/images/landscape-icon.svg" alt="landscape-icon" />
+    //         <p className="info">{t("rotateDevice")}</p>
+    //     </div>
+    // );
 };
 
 export default LandscapeMode;

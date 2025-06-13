@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean }>`
-    height: ${(props) => (props.$hideTab ? "100%" : `calc(100% - ${props.$tabHeight}px)`)};
+    height: 100%;
     position: relative;
     overflow: hidden;
 

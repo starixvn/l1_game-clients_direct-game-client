@@ -100,24 +100,45 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
         window.resetMetaViewport?.();
     }, []);
 
+    const isLoaded = true;
     return (
             <GameContainer
                 ref={containerRef}
                 $gameId={gameId}
-                $height={dimensions.height}
                 $remoteGameBackgroundUrl={getGameBackgroundUrl(gameId)}
         >
-            <iframe
-                ref={(el) => {
-                    if (el) {
-                        wrapperIframeRef.current = el;
-                    }
-                }}
-                title={`Game ${gameId}`}
-                width={dimensions.width}
-                height={dimensions.height}
-                src={iframeSrc}
-            />
+            <div style={{ position: 'relative', width: dimensions.width, height: dimensions.height }}>
+                <iframe
+                    ref={(el) => {
+                        if (el) {
+                            wrapperIframeRef.current = el;
+                        }
+                    }}
+                    title={`Game ${gameId}`}
+                    width="100%"
+                    height="100%"
+                    src={iframeSrc}
+                    style={{ 
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                    }}
+                />
+                <iframe 
+                    src="https://l2-proxy.lumigame.com/shared-resources/splashes/pages/index.html"
+                    style={{ 
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%", 
+                        display: isLoaded ? 'none' : 'block',
+                        zIndex: 1
+                    }}
+                >
+                    </iframe>
+            </div>
+            
         </GameContainer>
     );
 };

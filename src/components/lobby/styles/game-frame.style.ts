@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const GameContainer = styled.div<{ $remoteGameBackgroundUrl: string, $gameId: number; $height: number | string }>`
+export const GameContainer = styled.div<{ $remoteGameBackgroundUrl: string, $gameId: number;}>`
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -8,5 +8,5 @@ export const GameContainer = styled.div<{ $remoteGameBackgroundUrl: string, $gam
     background-size: cover;
     background-position: center;
     width: 100%;
-    height: ${(props) => props.$height};
+    height: 100%;
 `;

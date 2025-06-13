@@ -220,11 +220,12 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
     const GameControls = styled.div`
         display: flex;
         gap: 12px;
+        height: 100%;
     `;
 
     return (
         <>
-            <div style={{ display: 'flex', flexDirection: 'column'}}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%'}}>
                 <div className={`menu-container ${isLandscape() ? "menu-container-landscape" : "menu-container-portrait"}`}>
                     <Tabs
                         activeKey={activeKey}
