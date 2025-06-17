@@ -26,6 +26,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
     const gameNames = useGameNames(offerGames.map((game) => game.gameId));
     const iconUrls = useGameIcons(offerGames.map((game) => game.gameId));
+    console.log("tabHeight", tabHeight);
 
     const handleMenuClick = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -286,32 +287,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                     <span />
                     <span />
                 </div>
-            )}
-
-            {isMenuOpen && isMobile && (
-                <>
-                    <ul className="mobile-game-list">
-                        {offerGames.map((game, index) => {
-                            const isActive = activeKey === index;
-                            const gameId = game.gameId;
-                            const isNew = game.isNew;
-                            return (
-                                <li
-                                    key={gameId}
-                                    className={`${isActive && iconUrls[gameId] ? "active" : ""} `}
-                                    onClick={() => handleTabSelect(index)}
-                                >
-                                    <div className="mask-name">
-                                        <div className="mask-img">{renderIconGame(gameId, isActive)}</div>
-                                        {gameNames[gameId]}
-                                    </div>
-                                    {renderNewTag(isNew, isMenuOpen)}
-                                </li>
-                            );
-                        })}
-                    </ul>
-                    <div className="overlay-menu" onClick={handleMenuClick}></div>
-                </>
             )}
         </>
     );

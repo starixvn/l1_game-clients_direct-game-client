@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean }>`
     height: 100%;
     position: relative;
-    overflow: hidden;
+    /* overflow: hidden; */
 
     .menu-container {
         display: flex;
@@ -16,14 +16,13 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         &:after {
             content: "";
             position: absolute;
-            bottom: 0;
+            bottom: -1px;
             left: 0;
             width: 100%;
         }
     }
 
     .menu-container-landscape {
-        height: 46px;
 
         &:after {
             height: 3px;
@@ -43,8 +42,6 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
     }
 
     .menu-container-portrait {
-        height: 36px;
-
         &:after {
             height: 2px;
             background: repeating-linear-gradient(
@@ -61,7 +58,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
 
             &.active{
                 &::after {
-                    bottom: -7px;
+                    bottom: -4px;
                 }
             }
         }
@@ -159,7 +156,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         &::after {
             content: "";
             position: absolute;
-            bottom: -3px;
+            bottom: -2px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;

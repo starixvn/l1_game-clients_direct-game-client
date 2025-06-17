@@ -18,8 +18,14 @@ const NonOfferPage = React.lazy(() => import("../non-offer"));
 const LandscapeMode = React.lazy(() => import("../landscape-mode"));
 const PromotionTournamentContainer = React.lazy(() => import("../promotion-tournament"));
 
-// Height of the tab navigation bar in pixels
-const TAB_HEIGHT = 34;
+const getTabHeight = (): number => {
+    const tabHeightLandscape = 45;
+    const tabHeightPortrait = 36;
+    if (typeof window !== 'undefined') {
+        return window.innerWidth > window.innerHeight ? tabHeightLandscape : tabHeightPortrait;
+    }
+    return tabHeightPortrait;
+};
 
 const Lobby: React.FC = () => {
     const [offerGames, setOfferGames] = useState<LobbyConfig[]>([]);
@@ -35,7 +41,7 @@ const Lobby: React.FC = () => {
             StorageManager.set(localStorageKeys.queryGameId, parsedGameId || 0);
             return isNaN(parsedGameId) ? 0 : parsedGameId;
         }
-   
+
         if (params.get("token")) {
             StorageManager.set(localStorageKeys.params, params.toString());
             return 0;
@@ -115,7 +121,7 @@ const Lobby: React.FC = () => {
                 offerGames={offerGames}
                 availableGameId={availableGameId}
                 setAvailableGameId={setAvailableGameId}
-                tabHeight={TAB_HEIGHT}
+                tabHeight={getTabHeight()}
             />
         );
     };
@@ -135,14 +141,14 @@ const Lobby: React.FC = () => {
 
     return (
         <>
-                <LandscapeMode />
-                <LobbyContainer
-                    $tabHeight={TAB_HEIGHT}
+            <LandscapeMode />
+            <LobbyContainer
+                $tabHeight={getTabHeight()}
                 $hideTab={(appSettings.hideGameTab || session?.system !== AppTypes.DIRECT) && availableGameId > 0}
             >
                 {renderGameContent()}
             </LobbyContainer>
-            {appSettings.enablePromotionTournament && <PromotionTournamentContainer tabHeight={TAB_HEIGHT} />}
+            {appSettings.enablePromotionTournament && <PromotionTournamentContainer tabHeight={getTabHeight()} />}
         </>
     );
 };
