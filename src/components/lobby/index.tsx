@@ -148,7 +148,6 @@ const Lobby: React.FC = () => {
             >
                 {renderGameContent()}
             </LobbyContainer>
-            {appSettings.enablePromotionTournament && <PromotionTournamentContainer tabHeight={getTabHeight()} />}
         </>
     );
 };
