@@ -23,6 +23,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
     }
 
     .menu-container-landscape {
+        height: 45px;
 
         &:after {
             height: 3px;
@@ -42,6 +43,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
     }
 
     .menu-container-portrait {
+        height: 36px;
         &:after {
             height: 2px;
             background: repeating-linear-gradient(
@@ -58,7 +60,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
 
             &.active{
                 &::after {
-                    bottom: -4px;
+                    bottom: -6px;
                 }
             }
         }
@@ -67,7 +69,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
     .game-controls {
         padding: 0 15px;
         height: 100%;
-        padding-bottom: 5px;
+        padding-bottom: 1px;
     }
 
     .nav-tabs {
@@ -243,30 +245,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         }
     }
 
-    .btn-collapse-menu{
-        position: absolute;
-        top: 0;
-        right: 0;
-        height: 34px;
-        width: 40px;
-        background: linear-gradient(90deg, #FFF 0%, #FFF 100%);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 2px;
-        flex-direction: column;
-        z-index: 3;
-        mask-image: linear-gradient(-90deg, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%);
-        span{
-            display: block;
-            width: 100%;
-            height: 4px;
-            width: 4px;
-            background: #5E85C5;
-            border-radius: 100px;
-        }
-    }
+    
     .overlay-menu{
         position: absolute;
         top: 0;

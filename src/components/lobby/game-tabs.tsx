@@ -280,14 +280,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                 <GameFrame gameId={offerGames[activeKey].gameId} iframeSrc={iframeSrc} tabHeight={tabHeight} />
 
             </div>
-
-            {isMobile && (
-                <div className="btn-collapse-menu" onClick={handleMenuClick}>
-                    <span />
-                    <span />
-                    <span />
-                </div>
-            )}
         </>
     );
 };
