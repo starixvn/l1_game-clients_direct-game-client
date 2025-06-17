@@ -60,7 +60,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
 
             &.active{
                 &::after {
-                    bottom: -6px;
+                    bottom: -7px;
                 }
             }
         }
@@ -158,7 +158,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         &::after {
             content: "";
             position: absolute;
-            bottom: -2px;
+            bottom: -3px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
