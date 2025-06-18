@@ -43,7 +43,7 @@ const Lobby: React.FC = () => {
         }
 
         if (params.get("token")) {
-            StorageManager.set(localStorageKeys.params, params.toString());
+            StorageManager.set(localStorageKeys.urlParams, params.toString());
             return 0;
         }
 

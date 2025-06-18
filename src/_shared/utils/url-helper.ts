@@ -112,8 +112,8 @@ export const getGameUrl = (gameId: number, offeredGamesId: number[]) => {
 
     if (FunctionUtil.isGameV2(gameId))
     {
-        const params = StorageManager.get(localStorageKeys.params);
-        return `${baseUrl}?gameId=${gameId}&sfxEnable=${playerSetting.sfxEnable}&${params}`; 
+        const urlParams = StorageManager.get(localStorageKeys.urlParams);
+        return `${baseUrl}?gameId=${gameId}&sfxEnable=${playerSetting.sfxEnable}&${urlParams}`; 
     }
 
     return `${baseUrl}?gameId=${gameId}&${buildSessionParams(offeredGamesId.filter((id) => id !== gameId))}`;
@@ -140,6 +140,7 @@ const buildSessionParams = (offeredGamesId: number[]) => {
         op: operator,
         supportedGamesId: offeredGamesId,
     };
+
     const searchParams = new URLSearchParams();
     Object.keys(params).forEach((key) => params[key] !== undefined && searchParams.append(key, params[key]));
     const encodedQueryString = Base64Util.base64Encode(searchParams.toString());
