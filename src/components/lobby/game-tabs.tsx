@@ -26,7 +26,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
     const gameNames = useGameNames(offerGames.map((game) => game.gameId));
     const iconUrls = useGameIcons(offerGames.map((game) => game.gameId));
-    console.log("tabHeight", tabHeight);
 
     const handleMenuClick = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -224,7 +223,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
         height: 100%;
     `;
 
-    return (
+    return (  
         <>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%'}}>
                 <div className={`menu-container ${isLandscape() ? "menu-container-landscape" : "menu-container-portrait"}`}>

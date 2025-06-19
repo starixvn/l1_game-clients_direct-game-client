@@ -10,7 +10,6 @@ import Loading from "../common/loading";
 import { GameFrame } from "./game-frame";
 import { GameTabs } from "./game-tabs";
 import { LobbyContainer } from "./styles/lobby.style";
-import { AppTypes } from "../../_shared/consts";
 
 const SessionTimeoutPage = React.lazy(() => import("../timeout"));
 const UMPage = React.lazy(() => import("../um"));
@@ -82,7 +81,7 @@ const Lobby: React.FC = () => {
             if (!offerGames.some((offer) => offer.gameId === gameId)) {
                 return;
             }
-            if (appSettings.hideGameTab || session?.system !== AppTypes.DIRECT) {
+            if (appSettings.hideGameTab) {
                 setQueryGameId(gameId);
             } else {
                 StorageManager.remove(localStorageKeys.selectedGameId);
@@ -112,7 +111,7 @@ const Lobby: React.FC = () => {
     }, [handleOpenOtherGame]);
 
     const renderGameContent = () => {
-        if ((appSettings.hideGameTab || session?.system !== AppTypes.DIRECT) && queryGameId > 0) {
+        if ((appSettings.hideGameTab) && queryGameId > 0) {
             return <GameFrame gameId={queryGameId} iframeSrc={getGameUrl(queryGameId, [])} />;
         }
 
@@ -125,7 +124,6 @@ const Lobby: React.FC = () => {
             />
         );
     };
-
     if (isLoading) {
         return <Loading />;
     }
@@ -138,13 +136,13 @@ const Lobby: React.FC = () => {
     if (offerGames.length === 0 || (appSettings.hideGameTab && !offerGames.some((offer) => offer.gameId === queryGameId))) {
         return <NonOfferPage />;
     }
-
+    
     return (
         <>
             <LandscapeMode />
             <LobbyContainer
                 $tabHeight={getTabHeight()}
-                $hideTab={(appSettings.hideGameTab || session?.system !== AppTypes.DIRECT) && availableGameId > 0}
+                $hideTab={(appSettings.hideGameTab) && availableGameId > 0}
             >
                 {renderGameContent()}
             </LobbyContainer>

@@ -126,6 +126,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
     }, []);
 
     const isLoaded = true;
+
     return (
             <GameContainer
                 ref={containerRef}
