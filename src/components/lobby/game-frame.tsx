@@ -20,6 +20,10 @@ interface GameFrameProps {
 }
 const { isMobile } = deviceInfo;
 
+const isPortrait = (): boolean => {
+    return window.innerWidth < window.innerHeight;
+};
+
 export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeight }) => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -30,26 +34,47 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
         height: number | string;
     }>({ width: viewport.width, height: viewport.height });
 
-    const calculateDimensions = (isDesktop: boolean) => {
+    const calculateDimensions = (isPortraitMode: boolean) => {
         const height = window.innerHeight - tabHeight;
         const width = Math.floor(height * viewport.aspectRatio);
-        isDesktop ? setDimensions({ width, height }) : setDimensions({ width: "100%", height: "100%" });
+        isPortraitMode ? setDimensions({ width, height }) : setDimensions({ width: "100%", height: "100%" });
     };
 
     const calculateDesktopView = () => {
         const currentRatio = window.innerWidth / window.innerHeight;
+        console.log("currentRatio", (currentRatio > viewport.aspectRatio && isMobile) || !isMobile);
         return (currentRatio > viewport.aspectRatio && isMobile) || !isMobile;
     };
 
     useEffect(() => {
         const handleResize = () => {
+            const isPortraitMode = isPortrait();
             const isDesktop = calculateDesktopView();
-            calculateDimensions(isDesktop);
+            calculateDimensions(isPortraitMode);
         };
+
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, [tabHeight, viewport]);
+
+    const cssIframeStyle = () => {
+        const isPortraitMode = isPortrait();
+        const width = typeof dimensions.width === 'number' ? dimensions.width * 2 : dimensions.width;
+        const height = typeof dimensions.height === 'number' ? dimensions.height * 2 : dimensions.height;
+
+        return {
+            width,
+            height,
+            ...(isPortraitMode && {
+                transform: "scale(0.5)",
+                transformOrigin: "bottom left",
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+            })
+        } as React.CSSProperties;
+    };
 
     const postMessageToMicroSite = useCallback(
         (data: any) => {
@@ -115,17 +140,10 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
                         }
                     }}
                     title={`Game ${gameId}`}
-                    width="100%"
-                    height="100%"
                     src={iframeSrc}
-                    style={{ 
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                    }}
+                    style={cssIframeStyle()}
                 />
             </div>
-            
         </GameContainer>
     );
 };
