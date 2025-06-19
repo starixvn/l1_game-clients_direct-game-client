@@ -7,5 +7,6 @@ window.envConfig = {
     ssl: true,
     serviceDomain: "https://l1-proxy3.{host}",
     env: "LOCAL3",
-    clientUrlFormat: "https://l1-proxy3.{host}/direct-client-{gameId}/",
+    clientUrlFormatV3: "https://l1-proxy3.{host}/site-instant-{gameId}/",
+    clientUrlFormatV2: "https://l1-proxy3.{host}/site-instant-v2/",
 };

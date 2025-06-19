@@ -7,5 +7,6 @@ window.envConfig = {
     ssl: true,
     serviceDomain: "https://l2drproxy.{host}/",
     env: "AWSDR",
-    clientUrlFormat: "https://l2drproxy.{host}/direct-client-{gameId}/",
+    clientUrlFormatV3: "https://l2drproxy.{host}/site-instant-{gameId}/",
+    clientUrlFormatV2: "https://l2drproxy.{host}/site-instant-v2/",
 };

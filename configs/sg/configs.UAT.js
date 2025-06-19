@@ -7,5 +7,6 @@ window.envConfig = {
     ssl: true,
     serviceDomain: "https://l1uatproxy.{host}/uat",
     env: "UAT",
-    clientUrlFormat: "https://l1uatclient.{host}/uat/direct-client-{gameId}/",
+    clientUrlFormatV3: "https://l1uatclient.{host}/uat/site-instant-{gameId}/",
+    clientUrlFormatV2: "https://ll1uatclient.{host}/uat/site-instant-v2/",
 };
