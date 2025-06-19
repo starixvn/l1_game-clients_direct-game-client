@@ -20,10 +20,10 @@ interface GameFrameProps {
 }
 const { isMobile } = deviceInfo;
 
-export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeight = 0 }) => {
+export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeight }) => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const viewport = tabHeight !== 0 ? INSTANT_LANDSCAPE_GAME_VIEWPORT : INSTANT_PORTRAIT_GAME_VIEWPORT;
+    const viewport = tabHeight === 45 ? INSTANT_LANDSCAPE_GAME_VIEWPORT : INSTANT_PORTRAIT_GAME_VIEWPORT;
 
     const [dimensions, setDimensions] = useState<{
         width: number | string;
