@@ -110,11 +110,11 @@ export const getGameUrl = (gameId: number, offeredGamesId: number[]) => {
     const baseUrl = getBaseGameUrl(gameId);
     const playerSetting = getPlayerSetting();
 
-    if (FunctionUtil.isGameV2(gameId))
-    {
-        const urlParams = StorageManager.get(localStorageKeys.urlParams);
-        return `${baseUrl}?gameId=${gameId}&sfxEnable=${playerSetting.sfxEnable}&${urlParams}`; 
-    }
+    // if (FunctionUtil.isGameV2(gameId))
+    // {
+    //     const urlParams = StorageManager.get(localStorageKeys.urlParams);
+    //     return `${baseUrl}?gameId=${gameId}&sfxEnable=${playerSetting.sfxEnable}&${urlParams}`; 
+    // }
 
     return `${baseUrl}?gameId=${gameId}&${buildSessionParams(offeredGamesId.filter((id) => id !== gameId))}`;
 };
