@@ -7,6 +7,7 @@ import { useGameNames, useGameIcons } from "../../_shared/react-hooks/use-game-r
 import { LobbyConfig } from "../../_shared/utils/game-setting";
 import { useTolgee } from "@tolgee/react";
 import styled from "styled-components";
+import FunctionUtil from "../../_shared/utils/function-util";
 
 interface GameTabsProps {
     offerGames: LobbyConfig[];
@@ -31,15 +32,30 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
         setIsMenuOpen(!isMenuOpen);
     };
 
+    const isV2ToV2Game = (oldGameId: number | undefined, gameId: number): boolean => {
+        return (oldGameId ? FunctionUtil.isGameV2(oldGameId) : false) && FunctionUtil.isGameV2(gameId);
+    };
+
     const setSelectedGameId = (gameId: number) => {
         setActiveKey(offerGames.findIndex((game) => game.gameId === gameId));
+        const oldGameId = StorageManager.get<number | undefined>(localStorageKeys.selectedGameId);
         StorageManager.set(localStorageKeys.selectedGameId, gameId);
-        setIframeSrc(
-            getGameUrl(
-                gameId,
-                offerGames.map((game) => game.gameId)
-            )
-        );
+        if (isV2ToV2Game(oldGameId, gameId)) {
+            const iframe = document.querySelector('iframe');
+                if (iframe?.contentWindow) {
+                    const targetOrigin = new URL(iframe.src).origin;
+                    iframe.contentWindow.postMessage({
+                        gameId: gameId
+                    }, targetOrigin);
+                }
+        } else {
+            setIframeSrc(
+                getGameUrl(
+                    gameId,
+                    offerGames.map((game) => game.gameId)
+                )
+            );
+        }
         setAvailableGameId(gameId);
         const index = offerGames.findIndex((game) => game.gameId === gameId);
         tabRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
