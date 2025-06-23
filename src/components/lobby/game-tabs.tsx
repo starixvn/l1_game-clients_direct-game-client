@@ -40,7 +40,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
         setActiveKey(offerGames.findIndex((game) => game.gameId === gameId));
         const oldGameId = StorageManager.get<number | undefined>(localStorageKeys.selectedGameId);
         StorageManager.set(localStorageKeys.selectedGameId, gameId);
-        if (isV2ToV2Game(oldGameId, gameId)) {
+        if (oldGameId !== gameId && isV2ToV2Game(oldGameId, gameId)) {
             const iframe = document.querySelector('iframe');
                 if (iframe?.contentWindow) {
                     const targetOrigin = new URL(iframe.src).origin;
