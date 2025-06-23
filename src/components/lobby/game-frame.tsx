@@ -131,7 +131,6 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
             <GameContainer
                 ref={containerRef}
                 $gameId={gameId}
-                $remoteGameBackgroundUrl={getGameBackgroundUrl(gameId)}
         >
             <div style={{ position: 'relative', width: dimensions.width, height: dimensions.height }}>
                 <iframe
