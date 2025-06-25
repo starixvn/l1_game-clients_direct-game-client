@@ -5,5 +5,5 @@ export const GameContainer = styled.div<{$gameId: number}>`
     justify-content: center;
     align-items: flex-start;
     width: 100%;
-    height: 100%;
+    flex:1;
 `;
