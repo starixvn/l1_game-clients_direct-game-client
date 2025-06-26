@@ -41,7 +41,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
         const oldGameId = StorageManager.get<number | undefined>(localStorageKeys.selectedGameId);
         StorageManager.set(localStorageKeys.selectedGameId, gameId);
         if (oldGameId !== gameId && isV2ToV2Game(oldGameId, gameId)) {
-            console.log('isV2ToV2Game', gameId);
                 const iframe = document.getElementById('game-iframe') as HTMLIFrameElement;
                 if (iframe?.contentWindow) {
                     const targetOrigin = new URL(iframe.src).origin;
@@ -57,7 +56,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                 )
             );
         }
-        setAvailableGameId(gameId);
+        //// setAvailableGameId(gameId);
         const index = offerGames.findIndex((game) => game.gameId === gameId);
         tabRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     };

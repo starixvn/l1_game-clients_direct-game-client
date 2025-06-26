@@ -16,7 +16,7 @@ export const useGameNames = (offerGameIds: number[]) => {
     // Memoize the fetch function to prevent recreating it on every render
     const getGameNameV3 = useCallback(
         async (gameId: number) => {
-            const url = getGameLocalizationUrl(gameId);
+            const url = await getGameLocalizationUrl(gameId);
             try {
                 const response = await fetch(url);
                 if (response.ok) {
@@ -34,7 +34,7 @@ export const useGameNames = (offerGameIds: number[]) => {
     const getGameNameV2 = useCallback(
         async (gameIds: number[]) => {
             // Use first gameId to get localization URL since content will be same for all V2 games
-            const url = getGameLocalizationUrl(1); 
+            const url = await getGameLocalizationUrl(1); 
             try {
                 const response = await fetch(url);
                 if (response.ok) {

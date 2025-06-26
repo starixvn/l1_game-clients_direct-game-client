@@ -102,20 +102,14 @@ export const getGameBackgroundUrl = (gameId: number) => {
     return `${getBaseGameUrl(gameId)}remote/background/game-background.webp`;
 };
 
-export const getGameLocalizationUrl = (gameId: number) => {
-    return `${getBaseGameUrl(gameId)}remote/localization.json`;
+export const getGameLocalizationUrl =  async (gameId: number) => {
+    const versions = await fetchVersions(gameId);
+    const versionsLocalization = versions.localization;
+    return `${getBaseGameUrl(gameId)}remote/localization.json?v=${versionsLocalization}`;
 };
 
 export const getGameUrl = (gameId: number, offeredGamesId: number[]) => {
     const baseUrl = getBaseGameUrl(gameId);
-    const playerSetting = getPlayerSetting();
-
-    // if (FunctionUtil.isGameV2(gameId))
-    // {
-    //     const urlParams = StorageManager.get(localStorageKeys.urlParams);
-    //     return `${baseUrl}?gameId=${gameId}&sfxEnable=${playerSetting.sfxEnable}&${urlParams}`; 
-    // }
-
     return `${baseUrl}?gameId=${gameId}&${buildSessionParams(offeredGamesId.filter((id) => id !== gameId))}`;
 };
 

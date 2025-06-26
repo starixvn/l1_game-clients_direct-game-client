@@ -42,7 +42,6 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
 
     const calculateDesktopView = () => {
         const currentRatio = window.innerWidth / window.innerHeight;
-        console.log("currentRatio", (currentRatio > viewport.aspectRatio && isMobile) || !isMobile);
         return (currentRatio > viewport.aspectRatio && isMobile) || !isMobile;
     };
 
