@@ -5,8 +5,8 @@ window.envConfig = {
     },
     system: "SG",
     ssl: true,
-    serviceDomain: "https://l1-proxy.{host}",
+    serviceDomain: "https://l1-proxy.lumigame.com",
     env: "LOCAL",
-    clientUrlFormatV3: "https://l1-client.{host}/site-instant-{gameId}/",
-    clientUrlFormatV2: "https://l1-client.{host}/site-instant-v2/",
+    clientUrlFormatV3: "https://l1-client.lumigame.com/site-instant-{gameId}/",
+    clientUrlFormatV2: "https://l1-client.lumigame.com/site-instant-v2/",
 };

@@ -6,7 +6,7 @@ window.envConfig = {
     system: "VG",
     ssl: true,
     serviceDomain: "https://l2-proxy.{host}",
-    env: "LOCAL2",
+    env: "LOCAL",
     clientUrlFormatV3: "https://l2-proxy.{host}/site-instant-{gameId}/",
     clientUrlFormatV2: "https://l2-proxy.{host}/site-instant-v2/",
     enablePromotionTournament: true,
