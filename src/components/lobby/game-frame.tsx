@@ -133,7 +133,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
                 $gameId={gameId}
         >
             <div style={{ position: 'relative', width: dimensions.width, height: dimensions.height }}>
-                <iframe
+                <iframe id="game-iframe"
                     ref={(el) => {
                         if (el) {
                             wrapperIframeRef.current = el;
