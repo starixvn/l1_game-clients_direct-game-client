@@ -7,6 +7,6 @@ window.envConfig = {
     ssl: true,
     serviceDomain: "https://proxy.{host}",
     env: "PROD",
-    clientUrlFormatV3: "https://vg-client.{host}/site-instant-{gameId}/",
-    clientUrlFormatV2: "https://vg-client.{host}/site-instant-v2/",
+    clientUrlFormatV3: "https://client.{host}/site-instant-{gameId}/",
+    clientUrlFormatV2: "https://client.{host}/site-instant-v2/",
 };
