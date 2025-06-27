@@ -192,8 +192,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                 <img
                     src={`/images/icon_sound${getPlayerSetting().sfxEnable ? '' : '_off'}.png`}
                     alt="Toggle Sound"
-                    width={36}
-                    height={36}
                 />
             </button>
         );
@@ -225,8 +223,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                <img
                     src="/images/icon_guide.png"
                     alt="Toggle Sound"
-                    width={36}
-                    height={36}
                 />
             </button>
         );

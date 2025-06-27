@@ -40,6 +40,10 @@
     @media (min-width: 1025px) {
         height: 30rem;
     }
+
+    @media screen and (orientation: landscape) and (max-width: 768px) {
+        height: 10rem;
+    }
 }
 .timeout-title {
     font-size: 1.8rem;

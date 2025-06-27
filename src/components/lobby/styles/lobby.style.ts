@@ -29,7 +29,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
     }
 
     .menu-container-landscape {
-        height: 9.8vh;
+        height: 9.9vh;
 
         &:after {
             height: 3px;
@@ -75,11 +75,24 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
 
     .game-controls {
         display: flex;
-        gap: 12px;        
-
-        padding: 0 15px;
+        gap: 2.66vh;
+        padding: 0 3.28vh;
         height: 100%;
-        padding-bottom: 1px;
+        align-items: center;
+        padding-bottom: 2px;
+    }
+
+    .sound-toggle, .game-guide {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 7.89vh;
+        height: 7.89vh;
+
+        > img {
+            width: 100%;
+            height: 100%;
+        }
     }
 
     .nav-tabs {
@@ -277,4 +290,25 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
             right: 2px
         }
     }
+
+    @media screen and (orientation: landscape) and (max-width: 768px) {
+        .menu-container-landscape:after {
+            height: 1px;
+        }
+
+        .tab-title.active::after {
+            bottom: -3px;
+        }
+
+        .game-controls {
+           padding-bottom: 0;
+        }
+
+        .sound-toggle, .game-guide {
+            width: 6.89vh;
+            height: 6.89vh;
+        }
+    }
+
+
 `;
