@@ -67,6 +67,9 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
     }
 
     .game-controls {
+        display: flex;
+        gap: 12px;        
+
         padding: 0 15px;
         height: 100%;
         padding-bottom: 1px;

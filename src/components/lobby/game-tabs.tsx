@@ -233,11 +233,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
         );
     };
 
-    const GameControls = styled.div`
-        display: flex;
-        gap: 12px;
-        height: 100%;
-    `;
 
     return (  
         <>
@@ -286,10 +281,10 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                         })}
                     </Tabs>
                     {isLandscape() && (
-                        <GameControls className="game-controls">
+                        <div className="game-controls">
                             <SoundToggle />
                             <GameGuideButton />
-                        </GameControls>
+                        </div>
                     )}
                 </div>
                 <GameFrame gameId={offerGames[activeKey].gameId} iframeSrc={iframeSrc} tabHeight={tabHeight} />
