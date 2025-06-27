@@ -234,9 +234,9 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
     };
 
 
-    return (  
+    return (
         <>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%'}}>
+            <div className="game-container">
                 <div className={`menu-container ${isLandscape() ? "menu-container-landscape" : "menu-container-portrait"}`}>
                     <Tabs
                         activeKey={activeKey}

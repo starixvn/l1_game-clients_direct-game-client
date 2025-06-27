@@ -5,6 +5,12 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
     position: relative;
     /* overflow: hidden; */
 
+    .game-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
     .menu-container {
         display: flex;
         align-items: center;
@@ -23,7 +29,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
     }
 
     .menu-container-landscape {
-        height: 45px;
+        height: 9.8vh;
 
         &:after {
             height: 3px;
@@ -38,12 +44,13 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         }
 
         .tab-title {
-           font-size: 27px;
+           font-size: 5.9vh;
         }
     }
 
     .menu-container-portrait {
-        height: 36px;
+        height: 9.729vh;
+
         &:after {
             height: 2px;
             background: repeating-linear-gradient(
@@ -56,11 +63,11 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
             );
         }
         .tab-title {
-            font-size: 14px;
+            font-size: 3.783vh;
 
             &.active{
                 &::after {
-                    bottom: -7px;
+                    bottom: 0;
                 }
             }
         }
@@ -97,7 +104,8 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         }
 
         .nav-link {
-            padding: 5px 10px 3px 10px;
+            height: 100%;
+            padding: 0 10px;
         }
 
         .nav-link.active {
@@ -161,7 +169,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         &::after {
             content: "";
             position: absolute;
-            bottom: -3px;
+            bottom: 2px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
@@ -248,7 +256,7 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         }
     }
 
-    
+
     .overlay-menu{
         position: absolute;
         top: 0;
