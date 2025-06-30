@@ -1,7 +1,7 @@
 import { useTolgee } from "@tolgee/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getGameLocalizationUrl, getIconGameTabUrl } from "../utils/url-helper";
 import FunctionUtil from "../utils/function-util";
+import { getGameLocalizationUrl, getIconGameTabUrl } from "../utils/url-helper";
 
 export const useGameNames = (offerGameIds: number[]) => {
     const currentLanguage = useTolgee().getLanguage();

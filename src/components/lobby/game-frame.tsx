@@ -3,7 +3,6 @@ import { deviceInfo } from "../../_shared/utils/device-detect-wrapper";
 import FunctionUtil from "../../_shared/utils/function-util";
 import { GameEventManager, GameEvents } from "../../_shared/utils/game-event-manager";
 import { storePlayerSetting } from "../../_shared/utils/player-setting";
-import { getGameBackgroundUrl } from "../../_shared/utils/url-helper";
 import { INSTANT_LANDSCAPE_GAME_VIEWPORT, INSTANT_PORTRAIT_GAME_VIEWPORT } from "../common/viewport-setting";
 import { GameContainer } from "./styles/game-frame.style";
 
@@ -119,8 +118,6 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
     useEffect(() => {
         window.resetMetaViewport?.();
     }, []);
-
-    const isLoaded = true;
 
     return (
             <GameContainer

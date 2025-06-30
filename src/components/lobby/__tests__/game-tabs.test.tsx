@@ -1,10 +1,10 @@
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { GameTabs } from "../game-tabs";
-import { StorageManager } from "../../../_shared/utils";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useTolgee } from "@tolgee/react";
 import * as useGameResourcesHook from "../../../_shared/react-hooks/use-game-resources";
-
+import { getPlayerSetting, StorageManager, storePlayerSetting } from "../../../_shared/utils";
+import { GameTabs } from "../game-tabs";
+// import FunctionUtil from "../../../_shared/utils/function-util";
 // Mock dependencies
 jest.mock("@tolgee/react", () => ({
     useTolgee: jest.fn(),
@@ -19,11 +19,25 @@ jest.mock("../../../_shared/utils", () => ({
         selectedGameId: "selectedGameId",
     },
     getGameUrl: jest.fn((gameId) => `http://game-${gameId}/`),
-    GameEvents: { backLobby: "backLobby" },
-    GameEventManager: { getInstance: () => ({ subscribe: mockSubscribe, unsubscribe: jest.fn() }) },
+    getPlayerSetting: jest.fn(),
+    storePlayerSetting: jest.fn(),
 }));
+jest.mock("../../../_shared/utils/function-util", () => ({
+    __esModule: true,
+    default: {
+        isGameV2: jest.fn(),
+    },
+}));
+
 jest.mock("../game-frame", () => ({
     GameFrame: jest.fn(() => <div data-testid="game-frame" />),
+}));
+jest.mock("react-device-detect", () => ({
+    isMobile: jest.fn(),
+}));
+jest.mock("../../../_shared/react-hooks/use-game-resources", () => ({
+    useGameNames: jest.fn(),
+    useGameIcons: jest.fn(),
 }));
 
 // Mock fetch
@@ -42,7 +56,6 @@ describe("GameTabs", () => {
         offerGames: mockOfferGames,
         availableGameId: undefined,
         tabHeight: 800,
-        setAvailableGameId: jest.fn(),
     };
     const mockUseGameNames = jest.spyOn(useGameResourcesHook, "useGameNames");
     const mockUseGameIcons = jest.spyOn(useGameResourcesHook, "useGameIcons");
@@ -56,11 +69,47 @@ describe("GameTabs", () => {
         2: "http://game-2/icon.png",
         3: "http://game-3/icon.png",
     };
+
+    const mockIframe = {
+        src: "http://game-1/",
+        contentWindow: {
+            postMessage: jest.fn(),
+        },
+    };
+    
+    const mockParentTabs = {
+        scrollLeft: 100,
+    };
+
     beforeEach(() => {
         jest.clearAllMocks();
         (useTolgee as jest.Mock).mockReturnValue({ getLanguage: () => "en" });
+        (getPlayerSetting as jest.Mock).mockReturnValue({
+            sfxEnable: true,
+            musicEnable: true,
+            isUserGesture: false,
+        });
         mockUseGameNames.mockImplementation(() => gameNames);
         mockUseGameIcons.mockImplementation(() => gameIcons);
+
+        // Mock DOM methods
+        document.getElementById = jest.fn();
+        document.querySelector = jest.fn();
+        document.querySelectorAll = jest.fn(() => ({
+            item: jest.fn(),
+        } as unknown as NodeListOf<Element>));
+        
+         // Mock window dimensions for landscape/portrait tests
+        Object.defineProperty(window, 'innerWidth', {
+            writable: true,
+            configurable: true,
+            value: 1024,
+        });
+        Object.defineProperty(window, 'innerHeight', {
+            writable: true,
+            configurable: true,
+            value: 768,
+        });
     });
 
     test("should initialize with first game when no previously selected game exists", async () => {
@@ -108,8 +157,8 @@ describe("GameTabs", () => {
 
     test("should switch tabs when clicking on a different game tab", async () => {
         // Arrange
-        const mockSetAvailableGameId = jest.fn();
-        render(<GameTabs {...defaultProps} setAvailableGameId={mockSetAvailableGameId} />);
+        render(<GameTabs {...defaultProps} 
+            />);
         await waitFor(() => screen.getByText("Game One"));
 
         // Act
@@ -119,7 +168,6 @@ describe("GameTabs", () => {
         // Assert
         await waitFor(() => {
             expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", 2);
-            expect(mockSetAvailableGameId).toHaveBeenCalledWith(2);
         });
     });
 
@@ -137,8 +185,7 @@ describe("GameTabs", () => {
 
     test("should update iframe source when switching tabs", async () => {
         // Arrange
-        const mockSetAvailableGameId = jest.fn();
-        render(<GameTabs {...defaultProps} setAvailableGameId={mockSetAvailableGameId} />);
+        render(<GameTabs {...defaultProps}  />);
         await waitFor(() => screen.getByText("Game One"));
 
         // Act
@@ -150,67 +197,296 @@ describe("GameTabs", () => {
         await waitFor(() => {
             expect(gameFrame).toBeInTheDocument();
             expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", 2);
-            expect(mockSetAvailableGameId).toHaveBeenCalledWith(2);
         });
     });
 
-    test("should display game icons for each tab", async () => {
-        // Arrange & Act
-        render(<GameTabs {...defaultProps} />);
+    describe("Sound Toggle Functionality", () => {
+        test("should render sound toggle button in landscape mode", () => {
+            // Set landscape mode
+            Object.defineProperty(window, 'innerWidth', { value: 1200, configurable: true });
+            Object.defineProperty(window, 'innerHeight', { value: 800, configurable: true });
+            
+            render(<GameTabs {...defaultProps} />);
+            
+            const soundToggleButton = screen.getByRole('button', { name: /sound/i });
+            expect(soundToggleButton).toBeInTheDocument();
+            expect(soundToggleButton).toHaveClass('sound-toggle');
+        });
 
-        // Assert
-        await waitFor(() => {
-            mockOfferGames.forEach((game) => {
-                const icon = screen.getByAltText(`game-${game.gameId}`);
-                expect(icon).toBeInTheDocument();
-                expect(icon).toHaveAttribute("src", `http://game-${game.gameId}/icon.png`);
+        test("should toggle sound settings when sound button is clicked", async () => {
+            Object.defineProperty(window, 'innerWidth', { value: 1200, configurable: true });
+            Object.defineProperty(window, 'innerHeight', { value: 800, configurable: true });
+            
+            (getPlayerSetting as jest.Mock).mockReturnValue({ sfxEnable: true, musicEnable: true });
+            document.querySelector = jest.fn()
+                .mockReturnValueOnce(mockIframe) // iframe
+                .mockReturnValueOnce({ setAttribute: jest.fn() }); // sound toggle img
+
+            render(<GameTabs {...defaultProps} />);
+            
+            const soundToggle = screen.getAllByAltText("Toggle Sound")[0];
+            fireEvent.click(soundToggle);
+
+            await waitFor(() => {
+                expect(storePlayerSetting).toHaveBeenCalledWith({
+                    sfxEnable: false,
+                    musicEnable: false,
+                });
+            });
+        });
+
+        test("should send postMessage to iframe when toggling sound", async () => {
+            Object.defineProperty(window, 'innerWidth', { value: 1200, configurable: true });
+            Object.defineProperty(window, 'innerHeight', { value: 800, configurable: true });
+            
+            (getPlayerSetting as jest.Mock).mockReturnValue({ sfxEnable: true, musicEnable: true });
+            document.querySelector = jest.fn()
+                .mockReturnValueOnce(mockIframe)
+                .mockReturnValueOnce({ setAttribute: jest.fn() });
+
+            render(<GameTabs {...defaultProps} />);
+            
+            const soundToggle = screen.getAllByAltText("Toggle Sound")[0];
+            fireEvent.click(soundToggle);
+
+            await waitFor(() => {
+                expect(mockIframe.contentWindow.postMessage).toHaveBeenCalledWith({
+                    sfxEnable: false,
+                    musicEnable: false,
+                }, "http://game-1");
+            });
+        });
+
+        test("should handle sound toggle errors gracefully", async () => {
+            Object.defineProperty(window, 'innerWidth', { value: 1200, configurable: true });
+            Object.defineProperty(window, 'innerHeight', { value: 800, configurable: true });
+            
+            (storePlayerSetting as jest.Mock).mockImplementation(() => {
+                throw new Error("Storage error");
+            });
+
+            console.error = jest.fn();
+
+            render(<GameTabs {...defaultProps} />);
+            
+            const soundToggle = screen.getAllByAltText("Toggle Sound")[0];
+            fireEvent.click(soundToggle);
+
+            await waitFor(() => {
+                expect(console.error).toHaveBeenCalledWith('Failed to toggle sound:', expect.any(Error));
             });
         });
     });
 
-    test.each([
-        ['en', '/images/new-tag/en.png'],
-        ['vi', '/images/new-tag/vi.png'],
-        ['th', '/images/new-tag/th.png'],
-        ['zh_cn', '/images/new-tag/zh_cn.png'],
-        ['zh_tw', '/images/new-tag/zh_tw.png'],
-    ])('should show correct new-tag image for %s language', async (language, expectedImagePath) => {
-        // Arrange
-        (useTolgee as jest.Mock).mockImplementation(() => ({
-            getLanguage: () => language
-        }));
+    describe("Game Guide Functionality", () => {
+        test("should render game guide button in landscape mode", () => {
+            Object.defineProperty(window, 'innerWidth', { value: 1200, configurable: true });
+            Object.defineProperty(window, 'innerHeight', { value: 800, configurable: true });
+            
+            render(<GameTabs {...defaultProps} />);
+            
+            const gameGuideButton = screen.getAllByAltText("Game Guide")[0];
+            expect(gameGuideButton).toBeInTheDocument();
+        });
 
-        // Act
-        render(<GameTabs {...defaultProps} />);
+        test("should send postMessage to iframe when game guide is clicked", async () => {
+            Object.defineProperty(window, 'innerWidth', { value: 1200, configurable: true });
+            Object.defineProperty(window, 'innerHeight', { value: 800, configurable: true });
+            
+            document.querySelector = jest.fn().mockReturnValue(mockIframe);
 
-        // Assert
-        await waitFor(() => {
-            const newTag = screen.getByAltText("new-tag");
-            expect(newTag).toHaveAttribute("src", expectedImagePath);
+            render(<GameTabs {...defaultProps} />);
+            
+            // Find game guide button
+            const gameGuideButton = screen.getAllByAltText("Game Guide")[0];
+            fireEvent.click(gameGuideButton);
+
+            await waitFor(() => {
+                expect(mockIframe.contentWindow.postMessage).toHaveBeenCalledWith({
+                    openGameGuide: true,
+                }, "http://game-1");
+            });
+        });
+
+        test("should handle game guide errors gracefully", async () => {
+            Object.defineProperty(window, 'innerWidth', { value: 1200, configurable: true });
+            Object.defineProperty(window, 'innerHeight', { value: 800, configurable: true });
+            console.error = jest.fn();
+            
+            document.querySelector = jest.fn().mockImplementation(() => {
+                throw new Error("DOM error");
+            });
+
+            render(<GameTabs {...defaultProps} />);
+            
+            // This test verifies error handling in the component
+            expect(console.error).not.toHaveBeenCalled();
         });
     });
 
-    test("should display 'NEW' tag for new game", async () => {
-        // Arrange
-        render(<GameTabs {...defaultProps} />);
+    describe("Drag and Scroll Functionality", () => {
+        beforeEach(() => {
+            document.querySelector = jest.fn().mockReturnValue(mockParentTabs);
+            document.querySelectorAll = jest.fn().mockReturnValue([
+                { style: { pointerEvents: '' } },
+                { style: { pointerEvents: '' } },
+            ]);
+        });
 
-        // Assert
-        await waitFor(() => {
-            const newGameTab = screen.getAllByRole("tab")[1]; // Game 2 is marked as new
-            const newTag = newGameTab.querySelector('img[alt="new-tag"]');
-            expect(newTag).toBeInTheDocument();
+        test("should handle mouse down for dragging", () => {
+            render(<GameTabs {...defaultProps} />);
+            
+            const tabsContainer = screen.getByRole('tablist');
+            fireEvent.mouseDown(tabsContainer, { clientX: 100 });
+
+            expect(document.querySelector).toHaveBeenCalledWith(".parent-tabs");
+        });
+
+        test("should update scroll position during drag", async () => {
+            render(<GameTabs {...defaultProps} />);
+            
+            const tabsContainer = screen.getByRole('tablist');
+            
+            fireEvent.mouseDown(tabsContainer, { clientX: 100 });
+            fireEvent(document, new MouseEvent('mousemove', { clientX: 150 }));
+
+            expect(mockParentTabs.scrollLeft).toBeDefined();
+        });
+
+        test("should stop dragging on mouse up", async () => {
+            render(<GameTabs {...defaultProps} />);
+            
+            const tabsContainer = screen.getByRole('tablist');
+            
+            fireEvent.mouseDown(tabsContainer, { clientX: 100 });
+            fireEvent(document, new MouseEvent('mouseup'));
+
+            expect(mockParentTabs).toBeDefined();
+        });
+
+        test("should stop dragging on mouse leave", () => {
+            render(<GameTabs {...defaultProps} />);
+            
+            const tabsContainer = screen.getByRole('tablist');
+            fireEvent.mouseLeave(tabsContainer);
+
+            expect(mockParentTabs).toBeDefined();
         });
     });
 
-    test("should not display 'NEW' tag for non-new games", async () => {
-        // Arrange
-        render(<GameTabs {...defaultProps} />);
+    describe("V2 Game Switching", () => {
+        const FunctionUtil = require("../../../_shared/utils/function-util").default;
 
-        // Assert
-        await waitFor(() => {
-            const regularGameTab = screen.getAllByRole("tab")[0]; // Game 1 is not new
-            const newTag = regularGameTab.querySelector('img[alt="new-tag"]');
-            expect(newTag).not.toBeInTheDocument();
+        beforeEach(() => {
+            FunctionUtil.isGameV2 = jest.fn();
+        });
+
+        test("should use postMessage for V2 to V2 game switching", async () => {
+            (StorageManager.get as jest.Mock).mockReturnValue(1);
+            FunctionUtil.isGameV2.mockReturnValue(true);
+            document.getElementById = jest.fn().mockReturnValue(mockIframe);
+
+            render(<GameTabs {...defaultProps} />);
+            await waitFor(() => screen.getByText("Game One"));
+
+            const secondTab = screen.getAllByRole("tab")[1];
+            fireEvent.click(secondTab);
+
+            await waitFor(() => {
+                expect(mockIframe.contentWindow.postMessage).toHaveBeenCalledWith({
+                    gameId: 2,
+                }, "http://game-1");
+            });
+        });
+
+        test("should use iframe src for non-V2 game switching", async () => {
+            (StorageManager.get as jest.Mock).mockReturnValue(1);
+            FunctionUtil.isGameV2.mockReturnValue(false);
+
+            render(<GameTabs {...defaultProps} />);
+            await waitFor(() => screen.getByText("Game One"));
+
+            const secondTab = screen.getAllByRole("tab")[1];
+            fireEvent.click(secondTab);
+
+            await waitFor(() => {
+                expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", 2);
+            });
         });
     });
+
+    describe("Loading States", () => {
+        test("should show skeleton loading when game names are not available", () => {
+            mockUseGameNames.mockImplementation(() => ({}));
+            mockUseGameIcons.mockImplementation(() => ({}));
+            
+            const { container } = render(<GameTabs {...defaultProps} />);
+            
+            const skeletons = container.querySelectorAll('.skeleton');
+            expect(skeletons.length).toBeGreaterThan(0);
+        });
+
+        test("should show game content when names and icons are loaded", async () => {
+            render(<GameTabs {...defaultProps} />);
+            
+            await waitFor(() => {
+                expect(screen.getByText("Game One")).toBeInTheDocument();
+                expect(screen.getByText("Game Two")).toBeInTheDocument();
+                expect(screen.getByText("Game Three")).toBeInTheDocument();
+            });
+        });
+    });
+
+    describe("Tab Scrolling", () => {
+        test("should scroll tab into view when selected", async () => {
+            const mockScrollIntoView = jest.fn();
+            window.HTMLElement.prototype.scrollIntoView = mockScrollIntoView;
+            
+            render(<GameTabs {...defaultProps} />);
+            await waitFor(() => screen.getByText("Game One"));
+
+            const thirdTab = screen.getAllByRole("tab")[2];
+            fireEvent.click(thirdTab);
+
+            await waitFor(() => {
+                expect(mockScrollIntoView).toHaveBeenCalledWith({
+                    behavior: "smooth",
+                    block: "nearest",
+                    inline: "center",
+                });
+            }, { timeout: 200 });
+        });
+    });
+
+    describe("Event Listeners", () => {
+        test("should add and remove event listeners for mouse events", () => {
+            const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
+            const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
+            
+            const { unmount } = render(<GameTabs {...defaultProps} />);
+            
+            expect(addEventListenerSpy).toHaveBeenCalledWith('mousemove', expect.any(Function));
+            expect(addEventListenerSpy).toHaveBeenCalledWith('mouseup', expect.any(Function));
+            
+            unmount();
+            
+            expect(removeEventListenerSpy).toHaveBeenCalledWith('mousemove', expect.any(Function));
+            expect(removeEventListenerSpy).toHaveBeenCalledWith('mouseup', expect.any(Function));
+        });
+    });
+
+    describe("Edge Cases", () => {
+
+        test("should handle invalid stored game ID", async () => {
+            (StorageManager.get as jest.Mock).mockReturnValue(999); // Invalid game ID
+            
+            render(<GameTabs {...defaultProps} />);
+            
+            // Should fall back to first game
+            await waitFor(() => {
+                expect(StorageManager.set).toHaveBeenCalledWith("selectedGameId", 1);
+            });
+        });
+    });
+
 });

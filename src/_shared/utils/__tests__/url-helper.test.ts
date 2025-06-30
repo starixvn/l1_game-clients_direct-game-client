@@ -1,27 +1,27 @@
 import { appSettings } from "../../game-setting";
 import Base64Util from "../base64-util";
-import * as SessionManager from "../session-manager";
 import * as PlayerSetting from "../player-setting";
+import * as SessionManager from "../session-manager";
 import { StorageManager, localStorageKeys } from "../storage-manager";
 import {
+    buildServiceUrlWithPath,
+    fetchVersions,
     getBaseGameUrl,
+    getBaseServiceUrl,
     getGameUrl,
     getParamCurrentUrl,
-    buildServiceUrlWithPath,
-    getQueryParameters,
-    URLContextModel,
-    getBaseServiceUrl,
-    getRootHost,
-    getVersionsRemoteUrl,
-    fetchVersions,
     getPromotionTournamentUrl,
+    getQueryParameters,
+    getRootHost,
+    getVersionsRemoteUrl
 } from "../url-helper";
 
 // Mock external dependencies
 jest.mock("../../game-setting", () => ({
     appSettings: {
         serviceDomain: "https://test-domain.com",
-        clientUrlFormat: "https://{host}/direct-client-{gameId}",
+        clientUrlFormatV2: "https://{host}/site-instant-v2/",
+        clientUrlFormatV3: "https://{host}/site-instant-{gameId}/",
         isDev: false,
     },
 }));
@@ -61,15 +61,22 @@ describe("url-helper", () => {
     });
 
     describe("getBaseGameUrl", () => {
-        it("should return correct URL", () => {
+        it("should return correct V2 URL for V2 games", () => {
+            // Test with a game ID that would be considered V2 by FunctionUtil.isGameV2
             const result = getBaseGameUrl(1);
-            expect(result).toBe("https://test-domain.com/direct-client-1");
+            expect(result).toBe("https://test-domain.com/site-instant-v2/");
         });
 
-        it("should throw error when clientUrlFormat is not set", () => {
+        it("should return correct V3 URL for V3 games", () => {
+            // Test with a game ID that would be considered V3 by FunctionUtil.isGameV2  
+            const result = getBaseGameUrl(456);
+            expect(result).toBe("https://test-domain.com/site-instant-456/");
+        });
+
+        it("should throw error when clientUrlFormatV2 is not set", () => {
             // Temporarily override the mock
             const originalSettings = { ...appSettings };
-            (appSettings as any).clientUrlFormat = "";
+            (appSettings as any).clientUrlFormatV2 = "";
 
             expect(() => getBaseGameUrl(1)).toThrow("Domain URL format is not set");
 
@@ -77,22 +84,49 @@ describe("url-helper", () => {
             Object.assign(appSettings, originalSettings);
         });
 
-        it("should handle dev mode", () => {
+        it("should throw error when clientUrlFormatV3 is not set", () => {
             // Temporarily override the mock
             const originalSettings = { ...appSettings };
-            (appSettings as any).isDev = true;
+            (appSettings as any).clientUrlFormatV3 = "";
 
-            const result = getBaseGameUrl(1);
-            expect(result).toBe("https://{host}/direct-client-1");
+            expect(() => getBaseGameUrl(456)).toThrow("Domain URL format is not set");
 
             // Restore the original settings
             Object.assign(appSettings, originalSettings);
         });
 
-        it("should handle subdomain correctly", () => {
+        it("should handle dev mode for V2 games", () => {
+            // Temporarily override the mock
+            const originalSettings = { ...appSettings };
+            (appSettings as any).isDev = true;
+            Object.defineProperty(window, "location", {
+                value: { host: "test.example.com" },
+                writable: true,
+            });
+
+            const result = getBaseGameUrl(1);
+            expect(result).toBe("https://{host}/site-instant-v2/");
+
+            // Restore the original settings
+            Object.assign(appSettings, originalSettings);
+        });
+
+        it("should handle dev mode for V3 games", () => {
+            // Temporarily override the mock
+            const originalSettings = { ...appSettings };
+            (appSettings as any).isDev = true;
+
+            const result = getBaseGameUrl(456);
+            expect(result).toBe("https://{host}/site-instant-456/");
+
+            // Restore the original settings
+            Object.assign(appSettings, originalSettings);
+        });
+
+        it("should handle subdomain correctly for V3 games", () => {
             // Arrange
             const originalSettings = { ...appSettings };
-            appSettings.clientUrlFormat = "https://game-{gameId}.{host}";
+            appSettings.clientUrlFormatV3 = "https://game-{gameId}.{host}";
             Object.defineProperty(window, "location", {
                 value: { host: "test.example.com" },
                 writable: true,
@@ -108,10 +142,10 @@ describe("url-helper", () => {
             Object.assign(appSettings, originalSettings);
         });
 
-        it("should handle multiple subdomains correctly", () => {
+        it("should handle multiple subdomains correctly for V3 games", () => {
             // Arrange
             const originalSettings = { ...appSettings };
-            appSettings.clientUrlFormat = "https://game-{gameId}.{host}";
+            appSettings.clientUrlFormatV3 = "https://game-{gameId}.{host}";
             Object.defineProperty(window, "location", {
                 value: { host: "sub1.sub2.example.com" },
                 writable: true,
@@ -127,10 +161,10 @@ describe("url-helper", () => {
             Object.assign(appSettings, originalSettings);
         });
 
-        it("should not modify root domain", () => {
+        it("should not modify root domain for V3 games", () => {
             // Arrange
             const originalSettings = { ...appSettings };
-            appSettings.clientUrlFormat = "https://game-{gameId}.{host}";
+            appSettings.clientUrlFormatV3 = "https://game-{gameId}.{host}";
             Object.defineProperty(window, "location", {
                 value: { host: "example.com" },
                 writable: true,
@@ -141,6 +175,25 @@ describe("url-helper", () => {
 
             // Assert
             expect(result).toBe("https://game-456.example.com");
+
+            // Cleanup
+            Object.assign(appSettings, originalSettings);
+        });
+
+        it("should handle subdomain correctly for V2 games", () => {
+            // Arrange
+            const originalSettings = { ...appSettings };
+            appSettings.clientUrlFormatV2 = "https://v2.{host}";
+            Object.defineProperty(window, "location", {
+                value: { host: "test.example.com" },
+                writable: true,
+            });
+
+            // Act
+            const result = getBaseGameUrl(1);
+
+            // Assert
+            expect(result).toBe("https://v2.example.com");
 
             // Cleanup
             Object.assign(appSettings, originalSettings);
@@ -171,7 +224,7 @@ describe("url-helper", () => {
         it("should return complete game URL with encoded parameters", () => {
             const result = getGameUrl(1, [1, 2, 3]);
             expect(result).toContain(
-                "https://test-domain.com/direct-client-1?params=encoded_ss=test-session&uname=testuser&lang=en&appType=1&purl=encoded_https%3A%2F%2Ftest-domain.com%2F&ref=&rurl=&musicEnable=true&sfxEnable=true&isUserGesture=false&op=testOperator&supportedGamesId=2%2C3"
+                "https://test-domain.com/site-instant-v2/?gameId=1&params=encoded_ss=test-session&uname=testuser&lang=en&appType=1&purl=encoded_https%3A%2F%2Ftest-domain.com%2F&ref=&rurl=&musicEnable=true&sfxEnable=true&isUserGesture=false&op=testOperator&supportedGamesId=2%2C3"
             );
             expect(Base64Util.base64Encode).toHaveBeenCalled();
         });
@@ -190,7 +243,7 @@ describe("url-helper", () => {
             (StorageManager.get as jest.Mock).mockReturnValue(null);
             const result = getGameUrl(1, [1, 2, 3]);
             expect(result).toContain(
-                "https://test-domain.com/direct-client-1?params=encoded_ss=test-session&uname=testuser&lang=en&appType=1&purl=encoded_https%3A%2F%2Ftest-domain.com%2F&ref=&rurl=&musicEnable=true&sfxEnable=true&isUserGesture=false&op=null&supportedGamesId=2%2C3"
+                "https://test-domain.com/site-instant-v2/?gameId=1&params=encoded_ss=test-session&uname=testuser&lang=en&appType=1&purl=encoded_https%3A%2F%2Ftest-domain.com%2F&ref=&rurl=&musicEnable=true&sfxEnable=true&isUserGesture=false&op=null&supportedGamesId=2%2C3"
             );
             expect(Base64Util.base64Encode).toHaveBeenCalledWith(expect.not.stringContaining("op="));
         });
@@ -372,10 +425,22 @@ describe("url-helper", () => {
     });
 
     describe("getVersionsRemoteUrl", () => {
-        it("should construct correct versions URL", () => {
+        it("should construct correct versions URL for V3 games", () => {
             // Arrange
             const gameId = 123;
-            const expectedUrl = "https://test-domain.com/direct-client-123remote/versions.json";
+            const expectedUrl = "https://test-domain.com/site-instant-123/remote/versions.json";
+
+            // Act
+            const result = getVersionsRemoteUrl(gameId);
+
+            // Assert
+            expect(result).toBe(expectedUrl);
+        });
+
+        it("should construct correct versions URL for V2 games", () => {
+            // Arrange
+            const gameId = 1;
+            const expectedUrl = "https://test-domain.com/site-instant-v2/remote/versions.json";
 
             // Act
             const result = getVersionsRemoteUrl(gameId);

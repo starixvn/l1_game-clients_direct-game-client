@@ -1,10 +1,10 @@
-import { render, screen, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import Lobby from "../index";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import * as useAuthHook from "../../../_shared/react-hooks/use-authorization";
 import { StorageManager } from "../../../_shared/utils";
 import * as gameSettingUtils from "../../../_shared/utils/game-setting";
 import { LobbyConfig } from "../../../_shared/utils/game-setting";
+import Lobby from "../index";
 
 // Mock Clipboard API
 Object.defineProperty(window.navigator, "clipboard", {
@@ -56,11 +56,6 @@ jest.mock("../game-tabs", () => ({
 jest.mock("../../common/loading", () => ({
     __esModule: true,
     default: () => <div data-testid="loading">Loading...</div>,
-}));
-
-jest.mock("../../landscape-mode", () => ({
-    __esModule: true,
-    default: () => <div data-testid="landscape-mode">Landscape Mode</div>,
 }));
 
 // Mock the storage manager and utils

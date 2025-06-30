@@ -14,8 +14,6 @@ import { LobbyContainer } from "./styles/lobby.style";
 const SessionTimeoutPage = React.lazy(() => import("../timeout"));
 const UMPage = React.lazy(() => import("../um"));
 const NonOfferPage = React.lazy(() => import("../non-offer"));
-const LandscapeMode = React.lazy(() => import("../landscape-mode"));
-const PromotionTournamentContainer = React.lazy(() => import("../promotion-tournament"));
 
 const getTabHeight = (): number => {
     const tabHeightLandscape = 45;
@@ -119,7 +117,6 @@ const Lobby: React.FC = () => {
             <GameTabs
                 offerGames={offerGames}
                 availableGameId={availableGameId}
-                setAvailableGameId={setAvailableGameId}
                 tabHeight={getTabHeight()}
             />
         );
@@ -139,7 +136,6 @@ const Lobby: React.FC = () => {
     
     return (
         <>
-            <LandscapeMode />
             <LobbyContainer
                 $tabHeight={getTabHeight()}
                 $hideTab={(appSettings.hideGameTab) && availableGameId > 0}

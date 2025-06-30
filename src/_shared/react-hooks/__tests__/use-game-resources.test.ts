@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from "@testing-library/react";
-import { useGameNames, useGameIcons } from "../use-game-resources";
-import { getGameLocalizationUrl, getIconGameTabUrl } from "../../utils/url-helper";
 import { useTolgee } from "@tolgee/react";
+import { getGameLocalizationUrl, getIconGameTabUrl } from "../../utils/url-helper";
+import { useGameIcons, useGameNames } from "../use-game-resources";
 
 // Mock dependencies
 jest.mock("@tolgee/react", () => ({
@@ -25,15 +25,35 @@ describe("useGameNames", () => {
     it("should fetch and return game names for given game IDs", async () => {
         // Arrange
         const gameIds = [1, 2];
-        const mockResponse = {
+        const mockResponseGameV3 = {
             gameNames: {
                 en: "Test Game",
             },
         };
-        (global.fetch as jest.Mock).mockResolvedValue({
-            ok: true,
-            json: () => Promise.resolve(mockResponse),
-        });
+        const mockResponseGameV2 = {
+            gameNames: {
+                1: { en: "Test Game" },
+                2: { en: "Test Game" },
+            },
+        };
+        (global.fetch as jest.Mock)
+            .mockResolvedValueOnce({
+                ok: true,
+                json: () => Promise.resolve(mockResponseGameV3),
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: () => Promise.resolve(mockResponseGameV3),
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: () => Promise.resolve(mockResponseGameV2),
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: () => Promise.resolve(mockResponseGameV2),
+            });
+
         (getGameLocalizationUrl as jest.Mock).mockImplementation((id) => `url-${id}`);
 
         // Act
@@ -66,20 +86,21 @@ describe("useGameNames", () => {
         });
     });
 
-    it("should update game names when language changes", async () => {
+    it("should update game V2 names when language changes", async () => {
         // Arrange
         const gameIds = [1];
         const mockResponseEn = {
-            gameNames: { en: "English Name" },
+            gameNames: { 1: { en: "English Name" } },
         };
         const mockResponseDe = {
-            gameNames: { de: "German Name" },
+            gameNames: { 1: { de: "German Name" } },
         };
 
         (global.fetch as jest.Mock).mockResolvedValueOnce({
             ok: true,
             json: () => Promise.resolve(mockResponseEn),
         });
+        (getGameLocalizationUrl as jest.Mock).mockImplementation((id) => `url-${id}`);
 
         // Act
         const { result, rerender } = renderHook(() => useGameNames(gameIds));
@@ -105,6 +126,49 @@ describe("useGameNames", () => {
             });
         });
     });
+
+    // it("should update game V3 names when language changes", async () => {
+    //     // Arrange
+    //     const gameIds = [2];
+
+
+    //     const mockResponseV3En = {
+    //         gameNames: { en: "English Name" },
+    //     };
+    //     const mockResponseV3De = {
+    //         gameNames: { de: "German Name" },
+    //     };
+
+    //     (global.fetch as jest.Mock).mockResolvedValueOnce({
+    //         ok: true,
+    //         json: () => Promise.resolve(mockResponseV3En),
+    //     });
+    //     (getGameLocalizationUrl as jest.Mock).mockImplementation((id) => `url-${id}`);
+
+    //     // Act
+    //     const { result, rerender } = renderHook(() => useGameNames(gameIds));
+
+    //     // Assert initial language
+    //     await waitFor(() => {
+    //         expect(result.current).toEqual({
+    //             2: "English Name",
+    //         });
+    //     });
+
+    //     // Change language and rerender
+    //     mockTolgee.getLanguage.mockReturnValue("de");
+    //     (global.fetch as jest.Mock).mockResolvedValueOnce({
+    //         ok: true,
+    //         json: () => Promise.resolve(mockResponseV3De),
+    //     });
+    //     rerender();
+
+    //     await waitFor(() => {
+    //         expect(result.current).toEqual({
+    //             2: "German Name",
+    //         });
+    //     });
+    // });
 });
 
 describe("useGameIcons", () => {

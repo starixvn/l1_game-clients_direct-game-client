@@ -1,35 +1,28 @@
 import React, { MouseEvent, useEffect, useRef, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import { GameEventManager, GameEvents, getGameUrl, getPlayerSetting, localStorageKeys, StorageManager, storePlayerSetting } from "../../_shared/utils";
-import { GameFrame } from "./game-frame";
 import { isMobile } from "react-device-detect";
 import { useGameNames, useGameIcons } from "../../_shared/react-hooks/use-game-resources";
 import { LobbyConfig } from "../../_shared/utils/game-setting";
-import { useTolgee } from "@tolgee/react";
+import { getGameUrl, getPlayerSetting, localStorageKeys, StorageManager, storePlayerSetting } from "../../_shared/utils";
 import FunctionUtil from "../../_shared/utils/function-util";
+import { GameFrame } from "./game-frame";
 
 interface GameTabsProps {
     offerGames: LobbyConfig[];
     availableGameId: number | undefined;
     tabHeight: number;
-    setAvailableGameId: Function;
 }
 
-export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId, setAvailableGameId, tabHeight }) => {
-    const currentLanguage = useTolgee().getLanguage();
+export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId, tabHeight }) => {
     const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [activeKey, setActiveKey] = useState(0);
     const [iframeSrc, setIframeSrc] = useState<string>();
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [startX, setStartX] = useState<number>(0);
     const [scrollLeft, setScrollLeft] = useState<number>(0);
-    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
     const gameNames = useGameNames(offerGames.map((game) => game.gameId));
     const iconUrls = useGameIcons(offerGames.map((game) => game.gameId));
 
-    const handleMenuClick = () => {
-        setIsMenuOpen(!isMenuOpen);
-    };
 
     const isV2ToV2Game = (oldGameId: number | undefined, gameId: number): boolean => {
         return (oldGameId ? FunctionUtil.isGameV2(oldGameId) : false) && FunctionUtil.isGameV2(gameId);
@@ -54,7 +47,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                 )
             );
         }
-        //// setAvailableGameId(gameId);
         const index = offerGames.findIndex((game) => game.gameId === gameId);
         tabRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     };
@@ -79,7 +71,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
         setActiveKey(index);
         const gameId = offerGames[index].gameId;
         setSelectedGameId(gameId);
-        setIsMenuOpen(false);
     };
 
     useEffect(() => {
@@ -127,9 +118,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
         setIsDragging(false);
     };
 
-    const handleTouchStart = () => {
-        setIsMenuOpen(false);
-    };
 
     useEffect(() => {
         const moveListener = (e: MouseEvent) => handleMouseMove(e);
@@ -143,17 +131,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
             document.removeEventListener("mouseup", upListener as unknown as EventListener);
         };
     }, [isDragging]);
-
-    const renderIconGame = (gameId: number, isActive: boolean) => {
-        return <img src={iconUrls[gameId]} alt={`game-${gameId}`} className={`tab-icon ${!isActive ? "inactive" : ""}`} />;
-    };
-
-    const renderNewTag = (isNew: boolean, isMenuOpen = false) => {
-        if (!isNew) {
-            return <></>;
-        }
-        return <img src={`/images/new-tag/${currentLanguage}.png`} className={`new-tag ${isMenuOpen ? "menu-open" : ""}`} alt="new-tag" />;
-    };
 
     const SoundToggle = () => {
         const handleSoundToggle = (e: React.MouseEvent) => {
@@ -221,7 +198,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
             >
                <img
                     src="/images/icon_guide.png"
-                    alt="Toggle Sound"
+                    alt="Game Guide"
                 />
             </button>
         );
@@ -238,13 +215,11 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                         onMouseLeave={handleMouseLeave}
                         onMouseDown={handleMouseDown}
                         className={`parent-tabs ${isMobile ? "menu-tab-mobile" : ""}`}
-                        onTouchStart={handleTouchStart}
                         style={{ flex: 1 }}
                     >
                         {offerGames.map((game, index) => {
                             const isActive = activeKey === index;
                             const gameId = game.gameId;
-                            const isNew = game.isNew;
                             return (
                                 <Tab
                                     eventKey={index}
@@ -255,9 +230,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                                         >
                                             {iconUrls[gameId] ? (
                                                 <>
-                                                    {/* {renderIconGame(gameId, isActive)} */}
                                                     {gameNames[gameId]}
-                                                    {/* {renderNewTag(isNew)} */}
                                                 </>
                                             ) : (
                                                 <div className="skeleton">
