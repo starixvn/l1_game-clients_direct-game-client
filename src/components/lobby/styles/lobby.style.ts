@@ -81,6 +81,16 @@ export const LobbyContainer = styled.div<{ $tabHeight: number; $hideTab: boolean
         align-items: center;
         padding-bottom: 2px;
     }
+    
+    .game-frame-landscape{
+        height: 494px;
+        width: 100%;
+        max-width: 869px;
+        margin: 0 auto;
+    }
+
+    .game-frame-portrait{   
+    }
 
     .sound-toggle, .game-guide {
         display: flex;

@@ -6,7 +6,6 @@ import { isMobile } from "react-device-detect";
 import { useGameNames, useGameIcons } from "../../_shared/react-hooks/use-game-resources";
 import { LobbyConfig } from "../../_shared/utils/game-setting";
 import { useTolgee } from "@tolgee/react";
-import styled from "styled-components";
 import FunctionUtil from "../../_shared/utils/function-util";
 
 interface GameTabsProps {
@@ -231,7 +230,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
 
     return (
         <>
-            <div className="game-container">
+            <div className={`game-container game-frame-${FunctionUtil.isPortrait() ? "portrait" : "landscape"}`} >
                 <div className={`menu-container ${isLandscape() ? "menu-container-landscape" : "menu-container-portrait"}`}>
                     <Tabs
                         activeKey={activeKey}

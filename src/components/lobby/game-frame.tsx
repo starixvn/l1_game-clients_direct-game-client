@@ -20,10 +20,6 @@ interface GameFrameProps {
 }
 const { isMobile } = deviceInfo;
 
-const isPortrait = (): boolean => {
-    return window.innerWidth < window.innerHeight;
-};
-
 export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeight }) => {
     const wrapperIframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -47,7 +43,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
 
     useEffect(() => {
         const handleResize = () => {
-            const isPortraitMode = isPortrait();
+            const isPortraitMode = FunctionUtil.isPortrait();
             const isDesktop = calculateDesktopView();
             calculateDimensions(isPortraitMode);
         };
@@ -58,7 +54,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
     }, [tabHeight, viewport]);
 
     const cssIframeStyle = () => {
-        const isPortraitMode = isPortrait();
+        const isPortraitMode = FunctionUtil.isPortrait();
         const width = typeof dimensions.width === 'number' ? dimensions.width * 2 : dimensions.width;
         const height = typeof dimensions.height === 'number' ? dimensions.height * 2 : dimensions.height;
 

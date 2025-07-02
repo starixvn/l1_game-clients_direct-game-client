@@ -1,7 +1,10 @@
 const v2GameIds = [1, 3, 7, 9, 10, 25, 45];
 
 export default class FunctionUtil {
-    
+    public static isPortrait = (): boolean => {
+        return window.innerWidth < window.innerHeight;
+    };
+
     public static isGameV2 = (gameId: number): boolean => {   
         return v2GameIds.includes(gameId);
     };
