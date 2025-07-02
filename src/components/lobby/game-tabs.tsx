@@ -22,6 +22,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
     const [scrollLeft, setScrollLeft] = useState<number>(0);
     const gameNames = useGameNames(offerGames.map((game) => game.gameId));
     const iconUrls = useGameIcons(offerGames.map((game) => game.gameId));
+    const maxFrameWidth = 812;
 
 
     const isV2ToV2Game = (oldGameId: number | undefined, gameId: number): boolean => {
@@ -207,7 +208,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
 
     return (
         <>
-            <div className={`game-container game-frame-${FunctionUtil.isPortrait() ? "portrait" : "landscape"}`} >
+            <div className={`game-container game-frame-${(!FunctionUtil.isPortrait() && window.innerWidth > maxFrameWidth) ? "landscape" : ""}`} >
                 <div className={`menu-container ${isLandscape() ? "menu-container-landscape" : "menu-container-portrait"}`}>
                     <Tabs
                         activeKey={activeKey}
