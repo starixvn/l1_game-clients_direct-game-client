@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useTolgee } from "@tolgee/react";
 import * as useGameResourcesHook from "../../../_shared/react-hooks/use-game-resources";
 import { getPlayerSetting, StorageManager, storePlayerSetting } from "../../../_shared/utils";
+import FunctionUtil from "../../../_shared/utils/function-util";
 import { GameTabs } from "../game-tabs";
 // import FunctionUtil from "../../../_shared/utils/function-util";
 // Mock dependencies
@@ -26,6 +27,7 @@ jest.mock("../../../_shared/utils/function-util", () => ({
     __esModule: true,
     default: {
         isGameV2: jest.fn(),
+        isPortrait: jest.fn()
     },
 }));
 
@@ -89,6 +91,7 @@ describe("GameTabs", () => {
             musicEnable: true,
             isUserGesture: false,
         });
+        (FunctionUtil.isPortrait as jest.Mock).mockReturnValue(false);
         mockUseGameNames.mockImplementation(() => gameNames);
         mockUseGameIcons.mockImplementation(() => gameIcons);
 

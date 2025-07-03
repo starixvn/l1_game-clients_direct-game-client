@@ -1,10 +1,10 @@
 import React, { MouseEvent, useEffect, useRef, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import { isMobile } from "react-device-detect";
-import { useGameNames, useGameIcons } from "../../_shared/react-hooks/use-game-resources";
-import { LobbyConfig } from "../../_shared/utils/game-setting";
+import { useGameIcons, useGameNames } from "../../_shared/react-hooks/use-game-resources";
 import { getGameUrl, getPlayerSetting, localStorageKeys, StorageManager, storePlayerSetting } from "../../_shared/utils";
 import FunctionUtil from "../../_shared/utils/function-util";
+import { LobbyConfig } from "../../_shared/utils/game-setting";
 import { GameFrame } from "./game-frame";
 
 interface GameTabsProps {
@@ -50,13 +50,6 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
         }
         const index = offerGames.findIndex((game) => game.gameId === gameId);
         tabRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-    };
-
-    const isLandscape = () => {
-        if (typeof window !== 'undefined') {
-            return window.innerWidth > window.innerHeight;
-        }
-        return false;
     };
 
     useEffect(() => {
@@ -209,7 +202,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
     return (
         <>
             <div className={`game-container game-frame-${(!FunctionUtil.isPortrait() && window.innerWidth > maxFrameWidth) ? "landscape" : ""}`} >
-                <div className={`menu-container ${isLandscape() ? "menu-container-landscape" : "menu-container-portrait"}`}>
+                <div className={`menu-container ${FunctionUtil.isPortrait() ? "menu-container-portrait" : "menu-container-landscape"}`}>
                     <Tabs
                         activeKey={activeKey}
                         onSelect={(k) => k && handleTabSelect(+k)}
@@ -248,7 +241,7 @@ export const GameTabs: React.FC<GameTabsProps> = ({ offerGames, availableGameId,
                             );
                         })}
                     </Tabs>
-                    {isLandscape() && (
+                    {!FunctionUtil.isPortrait() && (
                         <div className="game-controls">
                             <SoundToggle />
                             <GameGuideButton />
