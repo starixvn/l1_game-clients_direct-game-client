@@ -23,6 +23,7 @@ const OPERATORS = {
 const LANGUAGE_MAP = {
     "vi-VN": "vi",
     "en-US": "en",
+    "ja-JP": "ja",
     "th-TH": "th",
     "id-ID": "id",
     "zh-CN": "zh_cn",

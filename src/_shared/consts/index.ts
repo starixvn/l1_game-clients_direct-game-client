@@ -2,15 +2,16 @@ export const languageMapping = {
     "vi-VN": "vi",
     "en-US": "en",
     "en-UK": "en",
+    "ja-JP": "ja",
     "th-TH": "th",
     "id-ID": "id",
     "zh-CN": "zh_cn",
     "zh-TW": "zh_tw",
 };
 
-export const languageCodes = ["en", "id", "th", "vi", "zh_cn", "zh_tw"];
+export const languageCodes = ["en", "id", "th", "vi", "zh_cn", "zh_tw", "ja"];
 
-export const locales = { en: "en", vi: "vi", th: "th", id: "id", zh_cn: "zh_cn", zh_tw: "zh_tw" };
+export const locales = { en: "en", vi: "vi", th: "th", id: "id", zh_cn: "zh_cn", zh_tw: "zh_tw", ja: "ja" };
 
 export const MAX_AVATAR_ID = 40;
 
