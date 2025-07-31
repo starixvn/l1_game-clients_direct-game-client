@@ -5,9 +5,9 @@ window.envConfig = {
     },
     system: "HD",
     ssl: true,
-    serviceDomain: "https://proxy.{host}",
+    serviceDomain: "https://client.{host}",
     env: "PROD",
-    clientUrlFormat: "https://proxy.{host}/portrait-client-{gameId}/",
+    clientUrlFormat: "https://client.{host}/portrait-client-{gameId}/",
     hideGameTab: true,
     xdGameUrl: "https://xd.{host}/",
     hotdogScript: {
