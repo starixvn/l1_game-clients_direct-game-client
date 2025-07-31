@@ -5,9 +5,9 @@ window.envConfig = {
     },
     system: "HD",
     ssl: true,
-    serviceDomain: "https://hdproxy.{host}/uat",
+    serviceDomain: "https://hduatclient.{host}/uat",
     env: "UAT",
-    clientUrlFormat: "https://hdproxy.{host}/uat/portrait-client-{gameId}/",
+    clientUrlFormat: "https://hduatclient.{host}/uat/portrait-client-{gameId}/",
     hideGameTab: true,
     xdGameUrl: "https://hd.{host}/",
     hotdogScript: {
