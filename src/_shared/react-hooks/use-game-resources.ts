@@ -12,7 +12,7 @@ export const useGameNames = (offerGameIds: number[]) => {
     // Memoize the fetch function to prevent recreating it on every render
     const getGameName = useCallback(
         async (gameId: number) => {
-            const url = getGameLocalizationUrl(gameId);
+            const url = await getGameLocalizationUrl(gameId);
             try {
                 const response = await fetch(url);
                 if (response.ok) {

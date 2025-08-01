@@ -1,9 +1,9 @@
+import { directRef, locales } from "../consts";
 import { appSettings } from "../game-setting";
 import Base64Util from "./base64-util";
-import { getSession } from "./session-manager";
 import { getPlayerSetting } from "./player-setting";
+import { getSession } from "./session-manager";
 import { localStorageKeys, StorageManager } from "./storage-manager";
-import { directRef, locales } from "../consts";
 
 export type VersionsModel = {
     banner: string;
@@ -77,7 +77,7 @@ export const fetchVersions = async (gameId: number): Promise<VersionsModel> => {
 
 export const getIconGameTabUrl = async (gameId: number) => {
     const versions = await fetchVersions(gameId);
-    const versionsIcon = versions.icon;
+    const versionsIcon = versions?.icon ?? Date.now();
     return `${getBaseGameUrl(gameId)}remote/icon/icon-game-tab.png?v=${versionsIcon}`;
 };
 
@@ -85,8 +85,10 @@ export const getGameBackgroundUrl = (gameId: number) => {
     return `${getBaseGameUrl(gameId)}remote/background/game-background.webp`;
 };
 
-export const getGameLocalizationUrl = (gameId: number) => {
-    return `${getBaseGameUrl(gameId)}remote/localization.json`;
+export const getGameLocalizationUrl = async (gameId: number) => {
+    const versions = await fetchVersions(gameId);
+    const versionsLocalization = versions?.localization ?? Date.now();
+    return `${getBaseGameUrl(gameId)}remote/localization.json?v=${versionsLocalization}`;
 };
 
 export const getGameUrl = (gameId: number, offeredGamesId: number[]) => {
