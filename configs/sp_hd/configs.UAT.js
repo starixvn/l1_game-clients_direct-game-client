@@ -5,11 +5,11 @@ window.envConfig = {
     },
     system: "HD",
     ssl: true,
-    serviceDomain: "https://hduatclient.{host}/uat",
+    serviceDomain: "https://hduatproxy.{host}/uat",
     env: "UAT",
     clientUrlFormat: "https://hduatclient.{host}/uat/portrait-client-{gameId}/",
     hideGameTab: true,
-    xdGameUrl: "https://hd.{host}/",
+    xdGameUrl: "https://hduatclient.{host}/",
     hotdogScript: {
         baseUrl: "https://res.hotdog-gaming.com/ingame-lobby-client/index.min.js",
     },
