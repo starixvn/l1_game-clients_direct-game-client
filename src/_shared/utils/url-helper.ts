@@ -1,10 +1,10 @@
+import { directRef, locales } from "../consts";
 import { appSettings } from "../game-setting";
 import Base64Util from "./base64-util";
-import { getSession } from "./session-manager";
-import { getPlayerSetting } from "./player-setting";
-import { localStorageKeys, StorageManager } from "./storage-manager";
-import { directRef, locales } from "../consts";
 import FunctionUtil from "./function-util";
+import { getPlayerSetting } from "./player-setting";
+import { getSession } from "./session-manager";
+import { localStorageKeys, StorageManager } from "./storage-manager";
 
 export type VersionsModel = {
     banner: string;
@@ -49,28 +49,30 @@ export const getBaseServiceUrl = (): string => {
 };
 
 export const getBaseGameUrl = (gameId: number) => {
-    if (appSettings.clientUrlFormatV3 === null || appSettings.clientUrlFormatV3 === "" 
-        || appSettings.clientUrlFormatV2 === null || appSettings.clientUrlFormatV2 === "") {
+    if (
+        appSettings.clientUrlFormatV3 === null ||
+        appSettings.clientUrlFormatV3 === "" ||
+        appSettings.clientUrlFormatV2 === null ||
+        appSettings.clientUrlFormatV2 === ""
+    ) {
         throw new Error("Domain URL format is not set");
     }
-    
+
     let baseUrl = "";
     if (appSettings.isDev) {
-        if(FunctionUtil.isGameV2(gameId)){
-            baseUrl =  appSettings.clientUrlFormatV2;
-            }
-            else{
-                baseUrl =  appSettings.clientUrlFormatV3.replace("{gameId}", gameId.toString());
-            }
-    }
-    else
-    {
-        if(FunctionUtil.isGameV2(gameId)){
-            baseUrl =  appSettings.clientUrlFormatV2.replace("{host}", getRootHost(window.location.host));
-            }
-            else{
-                baseUrl =  appSettings.clientUrlFormatV3.replace("{gameId}", gameId.toString()).replace("{host}", getRootHost(window.location.host));
-            }
+        if (FunctionUtil.isGameV2(gameId)) {
+            baseUrl = appSettings.clientUrlFormatV2;
+        } else {
+            baseUrl = appSettings.clientUrlFormatV3.replace("{gameId}", gameId.toString());
+        }
+    } else {
+        if (FunctionUtil.isGameV2(gameId)) {
+            baseUrl = appSettings.clientUrlFormatV2.replace("{host}", getRootHost(window.location.host));
+        } else {
+            baseUrl = appSettings.clientUrlFormatV3
+                .replace("{gameId}", gameId.toString())
+                .replace("{host}", getRootHost(window.location.host));
+        }
     }
 
     return baseUrl;
@@ -102,9 +104,9 @@ export const getGameBackgroundUrl = (gameId: number) => {
     return `${getBaseGameUrl(gameId)}remote/background/game-background.webp`;
 };
 
-export const getGameLocalizationUrl =  async (gameId: number) => {
+export const getGameLocalizationUrl = async (gameId: number) => {
     const versions = await fetchVersions(gameId);
-    const versionsLocalization = versions.localization;
+    const versionsLocalization = versions?.localization ?? Date.now();
     return `${getBaseGameUrl(gameId)}remote/localization.json?v=${versionsLocalization}`;
 };
 
@@ -112,7 +114,6 @@ export const getGameUrl = (gameId: number, offeredGamesId: number[]) => {
     const baseUrl = getBaseGameUrl(gameId);
     return `${baseUrl}?gameId=${gameId}&${buildSessionParams(offeredGamesId.filter((id) => id !== gameId))}`;
 };
-
 
 const buildSessionParams = (offeredGamesId: number[]) => {
     const sessionInfo = getSession();
