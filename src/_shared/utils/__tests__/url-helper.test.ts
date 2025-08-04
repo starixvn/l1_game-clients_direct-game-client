@@ -1,20 +1,19 @@
 import { appSettings } from "../../game-setting";
 import Base64Util from "../base64-util";
-import * as SessionManager from "../session-manager";
 import * as PlayerSetting from "../player-setting";
+import * as SessionManager from "../session-manager";
 import { StorageManager, localStorageKeys } from "../storage-manager";
 import {
+    buildServiceUrlWithPath,
+    fetchVersions,
     getBaseGameUrl,
+    getBaseServiceUrl,
     getGameUrl,
     getParamCurrentUrl,
-    buildServiceUrlWithPath,
+    getPromotionTournamentUrl,
     getQueryParameters,
-    URLContextModel,
-    getBaseServiceUrl,
     getRootHost,
     getVersionsRemoteUrl,
-    fetchVersions,
-    getPromotionTournamentUrl,
 } from "../url-helper";
 
 // Mock external dependencies
@@ -392,7 +391,7 @@ describe("url-helper", () => {
 
         it("should return version data when fetch succeeds", async () => {
             // Arrange
-            const mockVersions = { banner: "1.0", icon: "2.0", localization: 3 };
+            const mockVersions = { banner: "1.0", icon: "2.0", localization: "3" };
             (global.fetch as jest.Mock).mockResolvedValueOnce({
                 ok: true,
                 json: () => Promise.resolve(mockVersions),
@@ -413,7 +412,7 @@ describe("url-helper", () => {
             const result = await fetchVersions(123);
 
             // Assert
-            expect(result).toEqual({ banner: "", icon: "", localization: 0 });
+            expect(result).toEqual({ banner: "", icon: "", localization: "0" });
         });
     });
 

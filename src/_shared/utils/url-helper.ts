@@ -8,7 +8,7 @@ import { localStorageKeys, StorageManager } from "./storage-manager";
 export type VersionsModel = {
     banner: string;
     icon: string;
-    localization: number;
+    localization: string;
 };
 
 export type URLContextModel = {
@@ -72,7 +72,7 @@ export const fetchVersions = async (gameId: number): Promise<VersionsModel> => {
     } catch (error) {
         console.error(`Error fetching versions for game ${gameId}:`, error);
     }
-    return { banner: "", icon: "", localization: 0 };
+    return { banner: "", icon: "", localization: "0" };
 };
 
 export const getIconGameTabUrl = async (gameId: number) => {
@@ -87,7 +87,7 @@ export const getGameBackgroundUrl = (gameId: number) => {
 
 export const getGameLocalizationUrl = async (gameId: number) => {
     const versions = await fetchVersions(gameId);
-    const versionsLocalization = versions?.localization ?? Date.now();
+    const versionsLocalization = versions?.localization ?? Date.now().toString();
     return `${getBaseGameUrl(gameId)}remote/localization.json?v=${versionsLocalization}`;
 };
 
