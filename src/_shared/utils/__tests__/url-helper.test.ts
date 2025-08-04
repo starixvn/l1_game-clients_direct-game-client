@@ -425,10 +425,19 @@ describe("url-helper", () => {
     });
 
     describe("getVersionsRemoteUrl", () => {
+        beforeEach(() => {
+            // Mock Date.now() to return a fixed timestamp for consistent testing
+            jest.spyOn(Date, "now").mockReturnValue(1234567890123);
+        });
+
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
+
         it("should construct correct versions URL for V3 games", () => {
             // Arrange
             const gameId = 123;
-            const expectedUrl = "https://test-domain.com/site-instant-123/remote/versions.json";
+            const expectedUrl = "https://test-domain.com/site-instant-123/remote/versions.json?v=1234567890123";
 
             // Act
             const result = getVersionsRemoteUrl(gameId);
@@ -440,13 +449,24 @@ describe("url-helper", () => {
         it("should construct correct versions URL for V2 games", () => {
             // Arrange
             const gameId = 1;
-            const expectedUrl = "https://test-domain.com/site-instant-v2/remote/versions.json";
+            const expectedUrl = "https://test-domain.com/site-instant-v2/remote/versions.json?v=1234567890123";
 
             // Act
             const result = getVersionsRemoteUrl(gameId);
 
             // Assert
             expect(result).toBe(expectedUrl);
+        });
+
+        it("should include timestamp query parameter", () => {
+            // Arrange
+            const gameId = 123;
+
+            // Act
+            const result = getVersionsRemoteUrl(gameId);
+
+            // Assert
+            expect(result).toMatch(/\?v=\d+$/);
         });
     });
 
