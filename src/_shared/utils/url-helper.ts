@@ -60,7 +60,7 @@ export const getBaseGameUrl = (gameId: number) => {
 };
 
 export const getVersionsRemoteUrl = (gameId: number) => {
-    return `${getBaseGameUrl(gameId)}remote/versions.json`;
+    return `${getBaseGameUrl(gameId)}remote/versions.json?v=${Date.now()}`;
 };
 
 export const fetchVersions = async (gameId: number): Promise<VersionsModel> => {

@@ -28,6 +28,7 @@ const LANGUAGE_MAP = {
     "id-ID": "id",
     "zh-CN": "zh_cn",
     "zh-TW": "zh_tw",
+    "es-ES": "es",
 };
 class TitleManager {
     constructor() {
