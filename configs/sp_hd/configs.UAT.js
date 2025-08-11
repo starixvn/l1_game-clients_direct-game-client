@@ -1,6 +1,6 @@
 window.envConfig = {
     sentry: {
-        dsn: "https://08d902b128ea45b6a11639833224f481@scsentry.sgamesuat.com/25",
+        dsn: "http://aec64e89fed64d25a73926e63f2500f7@sentrysc-ovs.ops-kluat.gamora.prod/179",
         environment: "UAT",
     },
     system: "HD",
