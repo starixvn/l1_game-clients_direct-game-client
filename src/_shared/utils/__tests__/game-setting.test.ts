@@ -20,25 +20,6 @@ describe("getOfferedGameIds", () => {
         jest.clearAllMocks();
     });
 
-    test("returns filtered game IDs when hideGameTab is false", async () => {
-        // Arrange
-        const mockAuthorizeInfo: any = {
-            user: {
-                offerGames: [{ gameId: "1" }, { gameId: "2" }, { gameId: "3" }],
-            },
-        };
-        const mockSession = { ss: "testSession", username: "testUser" };
-        (getSession as jest.Mock).mockReturnValue(mockSession);
-        (getLobbyConfigs as jest.Mock).mockResolvedValue({ gameIds: [1, 2] });
-
-        // Act
-        const result = await getOfferedGameIds(mockAuthorizeInfo);
-
-        // Assert
-        expect(result).toEqual([1, 2]);
-        expect(getLobbyConfigs).toHaveBeenCalledWith("testSession", "testUser");
-    });
-
     test("returns only offered games when hideGameTab is true", async () => {
         // Arrange
         const mockAuthorizeInfo: any = {

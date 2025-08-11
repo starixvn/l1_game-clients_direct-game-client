@@ -5,7 +5,7 @@ import UserClientCommunication from "sc-user-service-client/dist/user-client-com
 jest.mock("sc-user-service-client/dist/user-client-communication", () => ({
     getUserClientInstance: jest.fn().mockReturnValue({
         lobby: {
-            getDirectLobbyConfigs: jest.fn(),
+            getLobbyConfigs: jest.fn(),
         },
     }),
 }));
@@ -15,7 +15,7 @@ jest.mock("../../utils", () => ({
 
 describe("Lobby Service", () => {
     const mockGetDirectLobbyConfigs = UserClientCommunication?.getUserClientInstance("http://test-url")?.lobby
-        ?.getDirectLobbyConfigs as jest.Mock;
+        ?.getLobbyConfigs as jest.Mock;
     beforeEach(() => {
         // Arrange - Setup for all tests
         jest.clearAllMocks();
@@ -27,7 +27,7 @@ describe("Lobby Service", () => {
             const session = "test-session";
             const username = "test-user";
             const mockConfigs = [{ id: 1, name: "config1" }];
-            mockGetDirectLobbyConfigs.mockResolvedValue({ directLobbyConfigs: mockConfigs });
+            mockGetDirectLobbyConfigs.mockResolvedValue({ lobbyConfigs: mockConfigs });
 
             // Act
             const result = await getLobbyConfigs(session, username);

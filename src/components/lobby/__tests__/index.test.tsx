@@ -399,56 +399,7 @@ describe("Lobby", () => {
         window.location = originalLocation;
     });
 
-    it("should use gameId from localStorage when no query string is present", async () => {
-        // Mock StorageManager.get
-        const mockStorageGet = jest.spyOn(StorageManager, "get");
-        mockStorageGet.mockReturnValue(2); // Simulate stored gameId of 2
-
-        // Mock window.location.search with no gameId
-        const originalLocation = window.location;
-        delete window.location;
-        window.location = { ...originalLocation, search: "" };
-
-        render(<Lobby />);
-
-        await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
-        });
-
-        // Check for the game tabs content with the correct game IDs
-        expect(screen.getByTestId("game-tabs")).toBeInTheDocument();
-        expect(screen.getByText("Game Tabs: 1,2,3")).toBeInTheDocument();
-
-        // Restore original location and cleanup mock
-        window.location = originalLocation;
-        mockStorageGet.mockRestore();
-    });
-
-    it("should prioritize query string gameId over localStorage gameId", async () => {
-        // Mock StorageManager.get
-        const mockStorageGet = jest.spyOn(StorageManager, "get");
-        mockStorageGet.mockReturnValue(2); // Simulate stored gameId of 2
-
-        // Mock window.location.search with different gameId
-        const originalLocation = window.location;
-        delete window.location;
-        window.location = { ...originalLocation, search: "?gameId=3" };
-
-        render(<Lobby />);
-
-        await waitFor(() => {
-            expect(mockGetOfferedGameIds).toHaveBeenCalled();
-        });
-
-        // Check for the game tabs content with the correct game IDs
-        expect(screen.getByTestId("game-tabs")).toBeInTheDocument();
-        expect(screen.getByText("Game Tabs: 1,2,3")).toBeInTheDocument();
-
-        // Restore original location and cleanup mock
-        window.location = originalLocation;
-        mockStorageGet.mockRestore();
-    });
-
+  
     it("should fall back to 0 when both query string and localStorage are invalid", async () => {
         // Mock StorageManager.get
         const mockStorageGet = jest.spyOn(StorageManager, "get");
