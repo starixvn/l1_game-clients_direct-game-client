@@ -35,11 +35,6 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
         isPortraitMode ? setDimensions({ width, height }) : setDimensions({ width: "100%", height: "100%" });
     };
 
-    const calculateDesktopView = () => {
-        const currentRatio = window.innerWidth / window.innerHeight;
-        return (currentRatio > viewport.aspectRatio && isMobile) || !isMobile;
-    };
-
     useEffect(() => {
         const handleResize = () => {
             const isPortraitMode = FunctionUtil.isPortrait();
