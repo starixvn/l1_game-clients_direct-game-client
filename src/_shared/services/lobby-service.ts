@@ -4,6 +4,6 @@ import { getBaseServiceUrl } from "../utils";
 const lobbyService = UserClientCommunication?.getUserClientInstance(getBaseServiceUrl())?.lobby;
 
 export const getLobbyConfigs = async (session: string, username: string) => {
-    const res = await lobbyService?.getDirectLobbyConfigs(session, username);
-    return res?.directLobbyConfigs;
+    const res = await lobbyService?.getLobbyConfigs(session, username);
+    return res?.lobbyConfigs;
 };
