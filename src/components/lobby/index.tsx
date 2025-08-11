@@ -28,7 +28,7 @@ const Lobby: React.FC = () => {
     const [offerGames, setOfferGames] = useState<LobbyConfig[]>([]);
     const [availableGameId, setAvailableGameId] = useState<number>(0);
     const [isTimeout, setIsTimeout] = useState(false);
-    const { umInfo, isSessionTimeout, session, setUMInfo, initialize } = useAuthorization();
+    const { umInfo, isSessionTimeout, setUMInfo, initialize } = useAuthorization();
     const [isLoading, setIsLoading] = useState(true);
     const [queryGameId, setQueryGameId] = useState(() => {
         const params = new URLSearchParams(window.location.search);
@@ -133,7 +133,7 @@ const Lobby: React.FC = () => {
     if (offerGames.length === 0 || (appSettings.hideGameTab && !offerGames.some((offer) => offer.gameId === queryGameId))) {
         return <NonOfferPage />;
     }
-    
+
     return (
         <>
             <LobbyContainer

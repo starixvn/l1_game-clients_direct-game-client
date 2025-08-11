@@ -43,7 +43,6 @@ export const GameFrame: React.FC<GameFrameProps> = ({ gameId, iframeSrc, tabHeig
     useEffect(() => {
         const handleResize = () => {
             const isPortraitMode = FunctionUtil.isPortrait();
-            const isDesktop = calculateDesktopView();
             calculateDimensions(isPortraitMode);
         };
 
