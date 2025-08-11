@@ -88,9 +88,11 @@ export const useHotdogScript = (config: HotdogConfig = DEFAULT_CONFIG) => {
         // Add onload event handler
         script.onload = () => {
             // Create and dispatch DOMContentLoaded event after script loads
-            const DOMContentLoaded_event = document.createEvent("Event");
-            DOMContentLoaded_event.initEvent("DOMContentLoaded", true, true);
-            window.document.dispatchEvent(DOMContentLoaded_event);
+            const domContentLoadedEvent = new Event("DOMContentLoaded", {
+                bubbles: true,
+                cancelable: true,
+            });
+            window.document.dispatchEvent(domContentLoadedEvent);
         };
 
         // Construct URL with parameters
