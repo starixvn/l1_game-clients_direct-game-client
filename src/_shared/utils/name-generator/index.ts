@@ -12,7 +12,7 @@ export default class NameGenerator {
     public static generateName(): string {
         const dictionaries = [Colors, Animals, Marvels, Fruits, Cools, NEW_202010];
 
-        const randomDictionaryIndex = Math.floor(Math.random() * dictionaries.length);
+        const randomDictionaryIndex = Math.floor(Math.random() * dictionaries.length); //NOSONAR
         const pickedDictionary = dictionaries[randomDictionaryIndex];
 
         const shortName = uniqueNamesGenerator({
@@ -26,7 +26,7 @@ export default class NameGenerator {
         for (let i = 0; i < numberLength; i++) {
             maxNumber = `9${maxNumber}`;
         }
-        const randomNumber = Math.floor(Math.random() * +maxNumber);
+        const randomNumber = Math.floor(Math.random() * +maxNumber); //NOSONAR
 
         return `${shortName}${randomNumber}`;
     }
