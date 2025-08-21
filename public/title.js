@@ -32,7 +32,6 @@ const LANGUAGE_MAP = {
     "ko-KR": "ko",
     "fil-PH": "fil_ph",
     "tr-TR": "tr",
-    "pt-BR": "pt_br",
 };
 class TitleManager {
     constructor() {
