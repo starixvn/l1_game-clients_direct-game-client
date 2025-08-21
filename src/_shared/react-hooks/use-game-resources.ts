@@ -17,7 +17,7 @@ export const useGameNames = (offerGameIds: number[]) => {
                 const response = await fetch(url);
                 if (response.ok) {
                     const data = await response.json();
-                    return { [gameId]: data.gameNames?.[currentLanguage] || `game-${gameId}` };
+                    return { [gameId]: data.gameNames?.[currentLanguage] || data.gameNames?.["en"] || `game-${gameId}` };
                 }
             } catch (error) {
                 console.error(`Error fetching game name for game ${gameId}:`, error);
