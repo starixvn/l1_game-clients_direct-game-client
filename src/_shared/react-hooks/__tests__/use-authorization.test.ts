@@ -1,10 +1,8 @@
-import { renderHook, act } from "@testing-library/react";
-import { useAuthorization } from "../use-authorization";
-import * as authService from "../../services/auth-service";
-import { StorageManager, storeSessionData } from "../../utils";
+import { act, renderHook } from "@testing-library/react";
 import { tolgee } from "../../../tolgee";
-import { localStorageKeys } from "../../utils";
-import { getQueryParameters } from "../../utils";
+import * as authService from "../../services/auth-service";
+import { getQueryParameters, localStorageKeys, StorageManager } from "../../utils";
+import { useAuthorization } from "../use-authorization";
 
 // Mock appSettings
 jest.mock("../../game-setting", () => ({
@@ -289,6 +287,69 @@ describe("useAuthorization", () => {
             });
 
             expect(StorageManager.remove).toHaveBeenCalledWith(localStorageKeys.selectedGameId);
+        });
+
+        describe("language fallback", () => {
+            it("uses mapped query language when available", async () => {
+                (getQueryParameters as jest.Mock).mockReturnValue({ token: mockToken, appType: mockAppType, lang: "vi-VN" });
+                (authService.sso as jest.Mock).mockResolvedValue({ isUM: false, isAuthenticated: true, language: "en-US" });
+                (authService.authorize as jest.Mock).mockResolvedValue({ authorized: true });
+                (StorageManager.get as jest.Mock).mockReturnValue(null);
+
+                const { result } = renderHook(() => useAuthorization());
+                await act(async () => {
+                    await result.current.initialize();
+                });
+
+                expect(tolgee.changeLanguage).toHaveBeenCalledWith("vi");
+                expect(StorageManager.set).toHaveBeenCalledWith(localStorageKeys.language, "vi");
+            });
+
+            it("falls back to mapped session language when query is unmapped", async () => {
+                (getQueryParameters as jest.Mock).mockReturnValue({ token: mockToken, appType: mockAppType, lang: "xx-XX" });
+                (authService.sso as jest.Mock).mockResolvedValue({ isUM: false, isAuthenticated: true, language: "zh-TW" });
+                (authService.authorize as jest.Mock).mockResolvedValue({ authorized: true });
+                (StorageManager.get as jest.Mock).mockReturnValue(null);
+
+                const { result } = renderHook(() => useAuthorization());
+                await act(async () => {
+                    await result.current.initialize();
+                });
+
+                expect(tolgee.changeLanguage).toHaveBeenCalledWith("zh_tw");
+                expect(StorageManager.set).toHaveBeenCalledWith(localStorageKeys.language, "zh_tw");
+            });
+
+            it("falls back to English when both query and session are unmapped (ignores oldLang)", async () => {
+                (getQueryParameters as jest.Mock).mockReturnValue({ token: mockToken, appType: mockAppType, lang: "xx-XX" });
+                (authService.sso as jest.Mock).mockResolvedValue({ isUM: false, isAuthenticated: true, language: "yy-YY" });
+                (authService.authorize as jest.Mock).mockResolvedValue({ authorized: true });
+                // Even if oldLang exists, we should use English because a language was provided but unmapped
+                (StorageManager.get as jest.Mock).mockReturnValue("th");
+
+                const { result } = renderHook(() => useAuthorization());
+                await act(async () => {
+                    await result.current.initialize();
+                });
+
+                expect(tolgee.changeLanguage).toHaveBeenCalledWith("en");
+                expect(StorageManager.set).toHaveBeenCalledWith(localStorageKeys.language, "en");
+            });
+
+            it("uses oldLang when no query or session language provided", async () => {
+                (getQueryParameters as jest.Mock).mockReturnValue({ token: mockToken, appType: mockAppType });
+                (authService.sso as jest.Mock).mockResolvedValue({ isUM: false, isAuthenticated: true });
+                (authService.authorize as jest.Mock).mockResolvedValue({ authorized: true });
+                (StorageManager.get as jest.Mock).mockReturnValue("th");
+
+                const { result } = renderHook(() => useAuthorization());
+                await act(async () => {
+                    await result.current.initialize();
+                });
+
+                expect(tolgee.changeLanguage).toHaveBeenCalledWith("th");
+                expect(StorageManager.set).toHaveBeenCalledWith(localStorageKeys.language, "th");
+            });
         });
     });
 
