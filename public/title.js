@@ -29,9 +29,9 @@ const LANGUAGE_MAP = {
     "zh-CN": "zh_cn",
     "zh-TW": "zh_tw",
     "es-ES": "es",
-    "ko-KR": "ko",
-    "fil-PH": "fil_ph",
-    "tr-TR": "tr",
+    "ko-KR": "en",
+    "fil-PH": "en",
+    "tr-TR": "en",
 };
 class TitleManager {
     constructor() {

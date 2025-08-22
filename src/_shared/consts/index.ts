@@ -8,9 +8,9 @@ export const languageMapping = {
     "zh-CN": "zh_cn",
     "zh-TW": "zh_tw",
     "es-ES": "es",
-    "ko-KR": "ko",
-    "fil-PH": "fil_ph",
-    "tr-TR": "tr",
+    "ko-KR": "en",
+    "fil-PH": "en",
+    "tr-TR": "en",
 };
 
 export const languageCodes = ["en", "id", "th", "vi", "zh_cn", "zh_tw", "ja", "es", "ko", "fil_ph", "tr"];
