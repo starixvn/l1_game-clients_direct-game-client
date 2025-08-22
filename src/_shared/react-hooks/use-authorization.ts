@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { authorize, autoCreateNickname, sso, verifySession } from "../services/auth-service";
-import { SSOResponse, AuthorizeResponse, UMInfo } from "sc-user-service-client/dist/auth";
-import { getQueryParameters, localStorageKeys, StorageManager, storeSessionData } from "../utils";
-import { languageMapping, locales } from "../consts";
+import { AuthorizeResponse, SSOResponse, UMInfo } from "sc-user-service-client/dist/auth";
 import { tolgee } from "../../tolgee";
+import { languageMapping, locales } from "../consts";
+import { authorize, autoCreateNickname, sso, verifySession } from "../services/auth-service";
+import { getQueryParameters, localStorageKeys, StorageManager, storeSessionData } from "../utils";
 
 export const useAuthorization = () => {
     const [isSessionTimeout, setIsSessionTimeout] = useState(false);
@@ -16,7 +16,10 @@ export const useAuthorization = () => {
 
     const loadLanguage = async (session: SSOResponse, languageCode: string) => {
         const oldLang = StorageManager.get<string>(localStorageKeys.language);
-        const lang = languageMapping[languageCode] || languageMapping[session?.language] || oldLang || locales.en;
+        const lang =
+            languageCode || session?.language
+                ? languageMapping[languageCode] || languageMapping[session?.language] || locales.en
+                : oldLang || locales.en;
         await tolgee.changeLanguage(lang);
         StorageManager.set(localStorageKeys.language, lang);
         return lang;
